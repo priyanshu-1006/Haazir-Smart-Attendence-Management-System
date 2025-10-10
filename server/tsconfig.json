@@ -1,17 +1,28 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
+    "target": "ES6",
     "module": "commonjs",
-    "lib": ["ES2020"],
-    "outDir": "./dist",
     "rootDir": "./src",
+    "outDir": "./dist",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "moduleResolution": "node"
+    "noImplicitAny": false,
+    "allowSyntheticDefaultImports": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src/**/*.ts"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    // Exclude legacy controllers/routes that used Mongoose-style APIs
+    "src/controllers/courseController.ts",
+    "src/controllers/studentController.ts",
+    "src/controllers/teacherController.ts",
+    "src/routes/students.ts",
+    "src/routes/teachers.ts",
+    "src/routes/courses.ts",
+    // Legacy validation using express-validator (not used in new routes)
+    "src/middleware/validation.ts"
+  ]
 }
