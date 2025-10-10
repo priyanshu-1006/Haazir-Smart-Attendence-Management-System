@@ -1,4 +1,11 @@
-import React from 'react';
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Route,
+  Switch,
+  Redirect,
+} from "react-router-dom";
+import Login from "./pages/Login";
 import logo from './logo.svg';
 import './App.css';
 

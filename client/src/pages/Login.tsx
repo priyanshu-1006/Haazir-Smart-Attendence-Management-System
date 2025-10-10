@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import { EnhancedInput, EnhancedButton } from "../components/common/EnhancedForms";
+import { EnhancedInput, EnhancedButton } from "../components/common/Forms";
 import { AnimatedCounter, SuccessAnimation, FadeIn, BouncingDots } from "../components/common/MicroInteractions";
 import { LoadingSpinner, PulseLoader } from "../components/common/EnhancedLoading";
 import { colors, animations } from "../utils/designTokens";
