@@ -14,6 +14,13 @@ import Layout from "./components/common/Layout";
 
 import CoordinatorDashboard from "./pages/CoordinatorDashboard";
 import DepartmentManagement from "./components/coordinator/DepartmentManagement";
+import StudentEnrollment from "./components/coordinator/StudentEnrollment";
+import SmartDataEntry from "./components/coordinator/SmartDataEntry";
+import StudentManagement from "./components/coordinator/StudentManagement";
+import TeacherManagement from "./components/coordinator/TeacherManagement";
+import CourseManagement from "./components/coordinator/CourseManagement";
+
+import TimetableManagement from "./components/coordinator/TimetableManagement";
 import EnhancedTeacherDashboard from "./pages/EnhancedTeacherDashboard";
 
 import EnhancedStudentDashboard from "./pages/EnhancedStudentDashboard";
@@ -114,7 +121,12 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({
 const coordinatorRoutes = [
   { path: "/coordinator", component: CoordinatorDashboard, exact: true },
   { path: "/departments", component: DepartmentManagement },
-  
+  { path: "/coordinator/student-enrollment", component: StudentEnrollment },
+  { path: "/coordinator/smart-data-entry", component: SmartDataEntry },
+  { path: "/coordinator/students", component: StudentManagement },
+  { path: "/coordinator/teachers", component: TeacherManagement },
+  { path: "/coordinator/courses", component: CourseManagement },
+  { path: "/coordinator/timetable", component: TimetableManagement },
 ];
 
 const teacherRoutes = [
