@@ -777,102 +777,15 @@ const CourseAssignmentMatrix: React.FC<CourseAssignmentMatrixProps> = ({
         })}
       </div>
 
-      {/* AI Timetable Generation Section */}
+      {/* Action Buttons */}
       {assignments.length > 0 && (
-        <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg p-6 border border-purple-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-lg font-semibold text-purple-800 mb-2">
-                🤖 AI Timetable Generation
-              </h3>
-              <p className="text-purple-600 text-sm mb-4">
-                Generate optimized timetables using AI with multiple solution
-                options
-              </p>
-              <div className="flex flex-wrap gap-2 text-xs text-purple-700">
-                <span className="bg-purple-100 px-2 py-1 rounded">
-                  Conflict-Free
-                </span>
-                <span className="bg-purple-100 px-2 py-1 rounded">
-                  Teacher-Optimized
-                </span>
-                <span className="bg-purple-100 px-2 py-1 rounded">
-                  Student-Friendly
-                </span>
-                <span className="bg-purple-100 px-2 py-1 rounded">
-                  Multiple Options
-                </span>
-              </div>
-            </div>
-            <div className="flex flex-col gap-2">
-              <button
-                onClick={handleGenerateAITimetable}
-                disabled={isGeneratingAI || !isValidForGeneration()}
-                className={`px-6 py-3 rounded-lg font-semibold text-white transition-all duration-200 flex items-center gap-2 ${
-                  isGeneratingAI || !isValidForGeneration()
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-lg hover:shadow-xl"
-                }`}
-              >
-                {isGeneratingAI ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                    Generating...
-                  </>
-                ) : (
-                  <>⚡ Generate AI Timetable</>
-                )}
-              </button>
-
-              {/* Simple Test Button - No Auth Required */}
-              <button
-                onClick={async () => {
-                  try {
-                    console.log("🧪 Testing AI endpoint...");
-                    const API_URL =
-                      process.env.REACT_APP_API_URL ||
-                      "http://localhost:5000/api";
-                    const response = await fetch(`${API_URL}/ai-test`, {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({
-                        test: true,
-                        courses: assignments.length,
-                        sections: sections.length,
-                      }),
-                    });
-
-                    const result = await response.json();
-                    console.log("✅ AI Test Result:", result);
-
-                    if (result.success) {
-                      alert(
-                        `🎉 AI Test Successful!\n\nGenerated ${
-                          result.solutions.length
-                        } solutions:\n${result.solutions
-                          .map((s: any) => `• ${s.name}: ${s.score}% score`)
-                          .join("\n")}`
-                      );
-                    } else {
-                      alert("❌ AI Test Failed: " + result.message);
-                    }
-                  } catch (error) {
-                    console.error("❌ Test Error:", error);
-                    alert("❌ Connection Error: " + (error as Error).message);
-                  }
-                }}
-                className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg text-sm font-medium transition-colors"
-              >
-                🧪 Test AI (No Auth)
-              </button>
-
-              {!isValidForGeneration() && (
-                <p className="text-xs text-red-600 text-center max-w-48">
-                  All sessions must have assigned teachers
-                </p>
-              )}
-            </div>
-          </div>
+        <div className="flex justify-end gap-3">
+          <button
+            onClick={() => onAssignmentsChange([])}
+            className="px-4 py-2 text-gray-600 hover:text-gray-800 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+          >
+            Clear All
+          </button>
         </div>
       )}
 

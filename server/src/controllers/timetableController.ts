@@ -40,9 +40,16 @@ export const createTimetableEntry = async (req: Request, res: Response) => {
         teacher_id,
         day_of_week,
       },
+      include: [
+        {
+          model: Section,
+          as: "section",
+          attributes: ["section_name"],
+        },
+      ],
     });
 
-    const hasOverlap = conflicts.some((c: any) => {
+    const conflictingClass = conflicts.find((c: any) => {
       const existingStartMinutes = timeToMinutes(c.start_time);
       const existingEndMinutes = timeToMinutes(c.end_time);
 
@@ -54,10 +61,17 @@ export const createTimetableEntry = async (req: Request, res: Response) => {
       );
     });
 
-    if (hasOverlap) {
+    if (conflictingClass) {
+      const sectionName =
+        (conflictingClass as any).section?.section_name || "another section";
       return res.status(409).json({
-        message:
-          "Time conflict: teacher already has a class overlapping this time on the selected day",
+        message: `Time conflict: teacher already has a class in Section ${sectionName} overlapping this time on ${day_of_week}`,
+        conflictDetails: {
+          section: sectionName,
+          time: `${(conflictingClass as any).start_time} - ${
+            (conflictingClass as any).end_time
+          }`,
+        },
       });
     }
 

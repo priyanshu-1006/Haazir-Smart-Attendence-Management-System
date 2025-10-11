@@ -80,7 +80,7 @@ const TimetableManagement: React.FC = () => {
     [sectionKey: string]: Array<{ day: string; start: string }>;
   }>(() => {
     try {
-      const saved = localStorage.getItem('autoSavedTimeSlots');
+      const saved = localStorage.getItem("autoSavedTimeSlots");
       return saved ? JSON.parse(saved) : {};
     } catch {
       return {};
@@ -158,7 +158,12 @@ const TimetableManagement: React.FC = () => {
   const [allTeachers, setAllTeachers] = useState<any[]>([]);
   const [filteredTeachers, setFilteredTeachers] = useState<any[]>([]);
   const [sections, setSections] = useState<
-    Array<{ section_id: number; section_name: string; department_id: number; semester: number }>
+    Array<{
+      section_id: number;
+      section_name: string;
+      department_id: number;
+      semester: number;
+    }>
   >([]);
   const [batches, setBatches] = useState<
     Array<{ batch_id: number; batch_name: string; section_id: number }>
@@ -178,21 +183,23 @@ const TimetableManagement: React.FC = () => {
   // Save view control settings to database
   const saveViewControlSettings = async () => {
     if (!currentDepartment || !currentSemester) {
-      console.log('⚠️ Cannot save settings: missing department or semester');
+      console.log("⚠️ Cannot save settings: missing department or semester");
       return;
     }
 
     // Get department ID
-    const selectedDept = departments.find(d => d.name === currentDepartment);
+    const selectedDept = departments.find((d) => d.name === currentDepartment);
     if (!selectedDept) {
-      console.log('⚠️ Cannot save settings: department not found');
+      console.log("⚠️ Cannot save settings: department not found");
       return;
     }
 
     // Get section ID if section is selected
-    let sectionId = 'all';
+    let sectionId = "all";
     if (currentSection) {
-      const selectedSection = sections.find(s => s.section_name === currentSection);
+      const selectedSection = sections.find(
+        (s) => s.section_name === currentSection
+      );
       if (selectedSection) {
         sectionId = String(selectedSection.section_id);
       }
@@ -215,9 +222,14 @@ const TimetableManagement: React.FC = () => {
         sectionId,
         settings
       );
-      console.log(`📾 Saved view controls to database for section ${currentSection || 'all'}:`, settings);
+      console.log(
+        `📾 Saved view controls to database for section ${
+          currentSection || "all"
+        }:`,
+        settings
+      );
     } catch (error) {
-      console.error('❌ Failed to save view settings:', error);
+      console.error("❌ Failed to save view settings:", error);
     }
   };
 
@@ -226,16 +238,18 @@ const TimetableManagement: React.FC = () => {
     if (!currentDepartment || !currentSemester) return;
 
     // Get department ID
-    const selectedDept = departments.find(d => d.name === currentDepartment);
+    const selectedDept = departments.find((d) => d.name === currentDepartment);
     if (!selectedDept) {
-      console.log('⚠️ Cannot load settings: department not found');
+      console.log("⚠️ Cannot load settings: department not found");
       return;
     }
 
     // Get section ID if section is selected
-    let sectionId = 'all';
+    let sectionId = "all";
     if (currentSection) {
-      const selectedSection = sections.find(s => s.section_name === currentSection);
+      const selectedSection = sections.find(
+        (s) => s.section_name === currentSection
+      );
       if (selectedSection) {
         sectionId = String(selectedSection.section_id);
       }
@@ -256,7 +270,12 @@ const TimetableManagement: React.FC = () => {
         setBreakEnabled(settings.breakEnabled);
         setBreakStart(settings.breakStart);
         setBreakEnd(settings.breakEnd);
-        console.log(`📂 Restored view controls from database for ${currentDepartment}-${currentSemester}-${currentSection || 'all'}:`, settings);
+        console.log(
+          `📂 Restored view controls from database for ${currentDepartment}-${currentSemester}-${
+            currentSection || "all"
+          }:`,
+          settings
+        );
       } else {
         // Set default values for new department-semester combination
         setGridView(true);
@@ -266,10 +285,14 @@ const TimetableManagement: React.FC = () => {
         setBreakEnabled(true);
         setBreakStart("12:00");
         setBreakEnd("13:00");
-        console.log(`🔧 Set default view controls for new ${currentDepartment}-${currentSemester}-${currentSection || 'all'}`);
+        console.log(
+          `🔧 Set default view controls for new ${currentDepartment}-${currentSemester}-${
+            currentSection || "all"
+          }`
+        );
       }
     } catch (error) {
-      console.error('❌ Failed to load view settings:', error);
+      console.error("❌ Failed to load view settings:", error);
       // Fall back to defaults
       setGridView(true);
       setGridStart("08:00");
@@ -310,7 +333,11 @@ const TimetableManagement: React.FC = () => {
 
         // Don't auto-select department - let users choose
         // This prevents confusion and ensures intentional selection
-        console.log(`Loaded ${departmentsData?.length || 0} departments, ${coursesData?.length || 0} courses, ${teachersData?.length || 0} teachers`);
+        console.log(
+          `Loaded ${departmentsData?.length || 0} departments, ${
+            coursesData?.length || 0
+          } courses, ${teachersData?.length || 0} teachers`
+        );
 
         setInitialLoadComplete(true);
         setError(""); // Clear any previous errors on successful load
@@ -349,15 +376,31 @@ const TimetableManagement: React.FC = () => {
       const saveTimeout = setTimeout(() => {
         saveViewControlSettings();
       }, 300);
-      
+
       return () => clearTimeout(saveTimeout);
     }
-  }, [gridView, gridStart, gridEnd, slotMinutes, breakEnabled, breakStart, breakEnd, currentDepartment, currentSemester, initialLoadComplete]);
+  }, [
+    gridView,
+    gridStart,
+    gridEnd,
+    slotMinutes,
+    breakEnabled,
+    breakStart,
+    breakEnd,
+    currentDepartment,
+    currentSemester,
+    initialLoadComplete,
+  ]);
 
   // Load sections when department and semester change
   useEffect(() => {
     const loadSections = async () => {
-      if (currentDepartment && currentSemester && departments.length > 0 && initialLoadComplete) {
+      if (
+        currentDepartment &&
+        currentSemester &&
+        departments.length > 0 &&
+        initialLoadComplete
+      ) {
         try {
           const selectedDept = departments.find(
             (d) => d.name === currentDepartment
@@ -395,7 +438,9 @@ const TimetableManagement: React.FC = () => {
             setSections([]);
             setCurrentSection("");
           } else {
-            setError("Failed to load sections for selected department and semester.");
+            setError(
+              "Failed to load sections for selected department and semester."
+            );
           }
           setSections([]);
           setCurrentSection("");
@@ -425,12 +470,14 @@ const TimetableManagement: React.FC = () => {
             let batchesData = await fetchBatchesBySection(
               selectedSection.section_id
             );
-            
+
             // If no batches exist, create default batches
             if (!batchesData || batchesData.length === 0) {
               try {
-                console.log(`Creating default batches for section ${selectedSection.section_name}`);
-                
+                console.log(
+                  `Creating default batches for section ${selectedSection.section_name}`
+                );
+
                 // Create default batches: P1, P2 for practicals/labs and T1, T2 for tutorials
                 const defaultBatches = [
                   { batch_name: "P1", description: "Practical Group 1" },
@@ -450,10 +497,13 @@ const TimetableManagement: React.FC = () => {
                     });
                     createdBatches.push(newBatch);
                   } catch (createError: any) {
-                    console.warn(`Failed to create batch ${batch.batch_name}:`, createError);
+                    console.warn(
+                      `Failed to create batch ${batch.batch_name}:`,
+                      createError
+                    );
                   }
                 }
-                
+
                 setBatches(createdBatches);
                 console.log(`Created ${createdBatches.length} default batches`);
               } catch (createError: any) {
@@ -465,11 +515,33 @@ const TimetableManagement: React.FC = () => {
             }
 
             // Automatically load timetable for the selected section
-            console.log(`Auto-loading timetable for section: ${selectedSection.section_name}`);
+            console.log(
+              `Auto-loading timetable for section: ${selectedSection.section_name}`
+            );
             try {
-              const timetableData = await fetchTimetableBySection(selectedSection.section_id);
+              const timetableData = await fetchTimetableBySection(
+                selectedSection.section_id
+              );
+              console.log("📥 RAW TIMETABLE DATA FROM BACKEND:", timetableData);
+              console.log(
+                `📊 Loaded ${timetableData?.length || 0} classes for section ${
+                  selectedSection.section_name
+                }`
+              );
+
+              // Log each entry with teacher info
+              if (timetableData && timetableData.length > 0) {
+                console.log("📋 TIMETABLE ENTRIES BREAKDOWN:");
+                timetableData.forEach((entry: any, idx: number) => {
+                  console.log(
+                    `  [${idx + 1}] ${
+                      entry.teacherName || "Unknown Teacher"
+                    } - ${entry.day} ${entry.start}-${entry.end}`
+                  );
+                });
+              }
+
               setTimetable(timetableData || []);
-              console.log(`Loaded ${timetableData?.length || 0} classes for section ${selectedSection.section_name}`);
             } catch (timetableError: any) {
               console.warn("Error auto-loading timetable:", timetableError);
               // Don't show error to user for auto-loading, they can manually load if needed
@@ -497,24 +569,26 @@ const TimetableManagement: React.FC = () => {
   useEffect(() => {
     if (currentSection && currentDepartment && currentSemester) {
       const sectionKey = `${currentDepartment}-${currentSemester}-${currentSection}`;
-      
+
       // Check if selectedCells actually changed from what's saved
       const currentSaved = autoSavedSlots[sectionKey] || [];
       const selectedCellsString = JSON.stringify(selectedCells.sort());
       const currentSavedString = JSON.stringify(currentSaved.sort());
-      
+
       // Only save if there's an actual change
       if (selectedCellsString !== currentSavedString) {
         const savedSlots = {
           ...autoSavedSlots,
-          [sectionKey]: selectedCells
+          [sectionKey]: selectedCells,
         };
-        
+
         setAutoSavedSlots(savedSlots);
-        localStorage.setItem('autoSavedTimeSlots', JSON.stringify(savedSlots));
+        localStorage.setItem("autoSavedTimeSlots", JSON.stringify(savedSlots));
         setLastAutoSave(new Date());
-        
-        console.log(`🔄 Auto-saved ${selectedCells.length} time slots for section: ${sectionKey}`);
+
+        console.log(
+          `🔄 Auto-saved ${selectedCells.length} time slots for section: ${sectionKey}`
+        );
       }
     }
   }, [selectedCells, currentSection, currentDepartment, currentSemester]);
@@ -523,19 +597,24 @@ const TimetableManagement: React.FC = () => {
   useEffect(() => {
     if (currentSection && currentDepartment && currentSemester) {
       const sectionKey = `${currentDepartment}-${currentSemester}-${currentSection}`;
-      
+
       // Load from current autoSavedSlots state (already initialized from localStorage)
       if (autoSavedSlots[sectionKey] && autoSavedSlots[sectionKey].length > 0) {
         setSelectedCells(autoSavedSlots[sectionKey]);
-        console.log(`✅ Restored ${autoSavedSlots[sectionKey].length} auto-saved time slots for section: ${sectionKey}`, autoSavedSlots[sectionKey]);
+        console.log(
+          `✅ Restored ${autoSavedSlots[sectionKey].length} auto-saved time slots for section: ${sectionKey}`,
+          autoSavedSlots[sectionKey]
+        );
       } else {
         setSelectedCells([]);
-        console.log(`🔄 No auto-saved time slots found for section: ${sectionKey}`);
+        console.log(
+          `🔄 No auto-saved time slots found for section: ${sectionKey}`
+        );
       }
     } else {
       // Clear selections when no section is selected
       setSelectedCells([]);
-      console.log('🧹 Cleared selections - no section selected');
+      console.log("🧹 Cleared selections - no section selected");
     }
   }, [currentSection, currentDepartment, currentSemester, autoSavedSlots]);
 
@@ -572,41 +651,41 @@ const TimetableManagement: React.FC = () => {
   // Helper function to get class type styling
   const getClassTypeStyle = (classType?: string) => {
     switch (classType?.toLowerCase()) {
-      case 'lecture':
+      case "lecture":
         return {
-          bg: 'from-blue-500 to-indigo-600',
-          bgHover: 'from-blue-600 to-indigo-700',
-          text: 'text-blue-50',
-          badge: 'bg-blue-200 text-blue-800',
-          icon: '🎓',
-          border: 'border-blue-300'
+          bg: "from-blue-500 to-indigo-600",
+          bgHover: "from-blue-600 to-indigo-700",
+          text: "text-blue-50",
+          badge: "bg-blue-200 text-blue-800",
+          icon: "🎓",
+          border: "border-blue-300",
         };
-      case 'lab':
+      case "lab":
         return {
-          bg: 'from-purple-500 to-pink-600',
-          bgHover: 'from-purple-600 to-pink-700',
-          text: 'text-purple-50',
-          badge: 'bg-purple-200 text-purple-800',
-          icon: '🔬',
-          border: 'border-purple-300'
+          bg: "from-purple-500 to-pink-600",
+          bgHover: "from-purple-600 to-pink-700",
+          text: "text-purple-50",
+          badge: "bg-purple-200 text-purple-800",
+          icon: "🔬",
+          border: "border-purple-300",
         };
-      case 'tutorial':
+      case "tutorial":
         return {
-          bg: 'from-emerald-500 to-green-600',
-          bgHover: 'from-emerald-600 to-green-700',
-          text: 'text-emerald-50',
-          badge: 'bg-emerald-200 text-emerald-800',
-          icon: '📝',
-          border: 'border-emerald-300'
+          bg: "from-emerald-500 to-green-600",
+          bgHover: "from-emerald-600 to-green-700",
+          text: "text-emerald-50",
+          badge: "bg-emerald-200 text-emerald-800",
+          icon: "📝",
+          border: "border-emerald-300",
         };
       default:
         return {
-          bg: 'from-gray-500 to-slate-600',
-          bgHover: 'from-gray-600 to-slate-700',
-          text: 'text-gray-50',
-          badge: 'bg-gray-200 text-gray-800',
-          icon: '📚',
-          border: 'border-gray-300'
+          bg: "from-gray-500 to-slate-600",
+          bgHover: "from-gray-600 to-slate-700",
+          text: "text-gray-50",
+          badge: "bg-gray-200 text-gray-800",
+          icon: "📚",
+          border: "border-gray-300",
         };
     }
   };
@@ -620,20 +699,57 @@ const TimetableManagement: React.FC = () => {
 
   // Computed values
   const filteredTimetable = useMemo(() => {
-    return timetable.filter((entry) => {
+    console.log("🔍 TIMETABLE FILTERING DEBUG:");
+    console.log("  Raw timetable entries:", timetable.length);
+    console.log("  Active filterDept:", filterDept);
+    console.log("  Active filterCourse:", filterCourse);
+
+    const filtered = timetable.filter((entry) => {
       if (filterDept) {
         const course = courses.find(
           (c) => String(c.course_id) === String(entry.courseId)
         );
-        if (!course || String(course.department_id) !== String(filterDept)) {
+        if (!course) {
+          console.log("  ❌ Entry filtered out (course not found):", entry);
+          return false;
+        }
+        if (String(course.department_id) !== String(filterDept)) {
+          console.log("  ❌ Entry filtered out (department mismatch):", {
+            entry,
+            course_dept: course.department_id,
+            filter_dept: filterDept,
+          });
           return false;
         }
       }
       if (filterCourse && String(entry.courseId) !== String(filterCourse)) {
+        console.log("  ❌ Entry filtered out (course mismatch):", {
+          entry,
+          entry_courseId: entry.courseId,
+          filter_courseId: filterCourse,
+        });
         return false;
       }
       return true;
     });
+
+    console.log("  ✅ Filtered timetable entries:", filtered.length);
+    console.log("  Filtered entries:", filtered);
+
+    // Help find specific entries by day and time
+    const tuesdayClasses = filtered.filter((e: any) => e.day === "Tuesday");
+    if (tuesdayClasses.length > 0) {
+      console.log("  📅 Tuesday classes:", tuesdayClasses.length);
+      tuesdayClasses.forEach((cls: any, idx: number) => {
+        console.log(
+          `    [${idx + 1}] ${cls.teacherName || "Unknown"} - ${cls.start}-${
+            cls.end
+          } (${cls.courseName || cls.courseId})`
+        );
+      });
+    }
+
+    return filtered;
   }, [timetable, filterDept, filterCourse, courses]);
 
   const gridSlots = useMemo(() => {
@@ -685,7 +801,9 @@ const TimetableManagement: React.FC = () => {
 
       // Skip slots with zero or negative duration
       if (actualDuration <= 0) {
-        current = new Date(current.getTime() + Math.max(slotMinutes * 60000, 60000));
+        current = new Date(
+          current.getTime() + Math.max(slotMinutes * 60000, 60000)
+        );
         continue;
       }
 
@@ -696,7 +814,7 @@ const TimetableManagement: React.FC = () => {
         // Check if current slot overlaps with break period
         const slotStart = current;
         const slotEnd = slotEndTime;
-        
+
         if (slotEnd <= breakStartTime) {
           // Slot is completely before break period
           firstHalf.push(slotRange);
@@ -715,19 +833,19 @@ const TimetableManagement: React.FC = () => {
               const preBreakSlot = formatTimeSlot(timeStr, preBreakDuration);
               firstHalf.push(preBreakSlot);
             }
-            
+
             // Add unified break slot if not already added
             if (breakSlots.length === 0) {
               const breakDuration = Math.round(
                 (breakEndTime.getTime() - breakStartTime.getTime()) / 60000
               );
               const unifiedBreakSlot = formatTimeSlot(
-                breakStartTime.toTimeString().slice(0, 5), 
+                breakStartTime.toTimeString().slice(0, 5),
                 breakDuration
               );
               breakSlots.push(unifiedBreakSlot);
             }
-            
+
             // Jump to break end for next iteration
             current = new Date(breakEndTime.getTime());
             continue;
@@ -739,16 +857,20 @@ const TimetableManagement: React.FC = () => {
                 (breakEndTime.getTime() - breakStartTime.getTime()) / 60000
               );
               const unifiedBreakSlot = formatTimeSlot(
-                breakStartTime.toTimeString().slice(0, 5), 
+                breakStartTime.toTimeString().slice(0, 5),
                 breakDuration
               );
               breakSlots.push(unifiedBreakSlot);
             }
-            
+
             // Jump to break end for next iteration
             current = new Date(breakEndTime.getTime());
             continue;
-          } else if (slotStart >= breakStartTime && slotStart < breakEndTime && slotEnd > breakEndTime) {
+          } else if (
+            slotStart >= breakStartTime &&
+            slotStart < breakEndTime &&
+            slotEnd > breakEndTime
+          ) {
             // Slot starts in break and extends beyond break
             // Add unified break slot if not already added
             if (breakSlots.length === 0) {
@@ -756,19 +878,22 @@ const TimetableManagement: React.FC = () => {
                 (breakEndTime.getTime() - breakStartTime.getTime()) / 60000
               );
               const unifiedBreakSlot = formatTimeSlot(
-                breakStartTime.toTimeString().slice(0, 5), 
+                breakStartTime.toTimeString().slice(0, 5),
                 breakDuration
               );
               breakSlots.push(unifiedBreakSlot);
             }
-            
+
             // Add post-break portion to second half
             const postBreakStart = breakEndTime.toTimeString().slice(0, 5);
             const postBreakDuration = Math.round(
               (slotEnd.getTime() - breakEndTime.getTime()) / 60000
             );
             if (postBreakDuration > 0) {
-              const postBreakSlot = formatTimeSlot(postBreakStart, postBreakDuration);
+              const postBreakSlot = formatTimeSlot(
+                postBreakStart,
+                postBreakDuration
+              );
               secondHalf.push(postBreakSlot);
             }
           } else {
@@ -779,7 +904,7 @@ const TimetableManagement: React.FC = () => {
                 (breakEndTime.getTime() - breakStartTime.getTime()) / 60000
               );
               const unifiedBreakSlot = formatTimeSlot(
-                breakStartTime.toTimeString().slice(0, 5), 
+                breakStartTime.toTimeString().slice(0, 5),
                 breakDuration
               );
               breakSlots.push(unifiedBreakSlot);
@@ -810,17 +935,25 @@ const TimetableManagement: React.FC = () => {
   }, [filteredTimetable, dayColumns]);
 
   // Timetable is automatically loaded when department/semester/section is selected
-  
+
   // Refresh current section's timetable data from database
   const refreshTimetable = async () => {
     if (currentSection && sections.length > 0) {
-      const selectedSection = sections.find(s => s.section_name === currentSection);
+      const selectedSection = sections.find(
+        (s) => s.section_name === currentSection
+      );
       if (selectedSection) {
         try {
           console.log(`🔄 Refreshing timetable for section: ${currentSection}`);
-          const timetableData = await fetchTimetableBySection(selectedSection.section_id);
+          const timetableData = await fetchTimetableBySection(
+            selectedSection.section_id
+          );
           setTimetable(timetableData || []);
-          console.log(`✅ Refreshed ${timetableData?.length || 0} classes for section ${selectedSection.section_name}`);
+          console.log(
+            `✅ Refreshed ${timetableData?.length || 0} classes for section ${
+              selectedSection.section_name
+            }`
+          );
         } catch (error: any) {
           console.error("Error refreshing timetable:", error);
           setError(`Failed to refresh timetable: ${error.message}`);
@@ -837,21 +970,27 @@ const TimetableManagement: React.FC = () => {
     }
 
     // Check if name already exists
-    const existingName = savedTimetables.find(t => t.name.toLowerCase() === saveModalName.trim().toLowerCase());
+    const existingName = savedTimetables.find(
+      (t) => t.name.toLowerCase() === saveModalName.trim().toLowerCase()
+    );
     if (existingName) {
-      setSaveError("A timetable with this name already exists. Please choose a different name.");
+      setSaveError(
+        "A timetable with this name already exists. Please choose a different name."
+      );
       return;
     }
 
     // Ensure we have section context for meaningful save
     if (!currentDepartment || !currentSemester || !currentSection) {
-      setSaveError("Please select department, semester, and section before saving timetable");
+      setSaveError(
+        "Please select department, semester, and section before saving timetable"
+      );
       return;
     }
 
     try {
       setSaveError(""); // Clear any previous errors
-      
+
       const newTimetable = {
         id: Date.now().toString(),
         name: saveModalName.trim(),
@@ -859,7 +998,7 @@ const TimetableManagement: React.FC = () => {
         context: {
           department: currentDepartment,
           semester: currentSemester,
-          section: currentSection
+          section: currentSection,
         },
         gridSettings: {
           gridStart,
@@ -878,8 +1017,10 @@ const TimetableManagement: React.FC = () => {
       setSaveModalName("");
       setSaveError("");
       setShowSaveModal(false);
-      
-      console.log(`Successfully saved timetable: ${newTimetable.name} for ${currentDepartment} - ${currentSection}`);
+
+      console.log(
+        `Successfully saved timetable: ${newTimetable.name} for ${currentDepartment} - ${currentSection}`
+      );
     } catch (error: any) {
       console.error("Error saving timetable:", error);
       setSaveError("Failed to save timetable. Please try again.");
@@ -906,7 +1047,9 @@ const TimetableManagement: React.FC = () => {
 
       // Show context information if available
       if (savedData.context) {
-        console.log(`Loaded timetable for: ${savedData.context.department} - Semester ${savedData.context.semester} - Section ${savedData.context.section}`);
+        console.log(
+          `Loaded timetable for: ${savedData.context.department} - Semester ${savedData.context.semester} - Section ${savedData.context.section}`
+        );
       }
 
       setShowLoadModal(false);
@@ -1011,23 +1154,29 @@ const TimetableManagement: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validate required fields
-    if (!newEntry.courseId || !newEntry.teacherId || !newEntry.dayOfWeek || 
-        !newEntry.startTime || !newEntry.endTime || !newEntry.classroom) {
+    if (
+      !newEntry.courseId ||
+      !newEntry.teacherId ||
+      !newEntry.dayOfWeek ||
+      !newEntry.startTime ||
+      !newEntry.endTime ||
+      !newEntry.classroom
+    ) {
       setError("Please fill in all required fields");
       return;
     }
-    
+
     // Validate time range
     if (newEntry.startTime >= newEntry.endTime) {
       setError("End time must be after start time");
       return;
     }
-    
+
     // Note: Batch validation removed as batch functionality is not yet implemented in database
     // Will be added when target_audience and batch_id columns are added to timetable table
-    
+
     try {
       setError(""); // Clear any previous errors
       // Get section ID from currentSection
@@ -1043,9 +1192,14 @@ const TimetableManagement: React.FC = () => {
         return;
       }
 
-      console.log("Creating timetable entry for section:", currentSection, "with ID:", sectionId);
+      console.log(
+        "Creating timetable entry for section:",
+        currentSection,
+        "with ID:",
+        sectionId
+      );
       await createTimetableEntry({ ...newEntry, sectionId });
-      
+
       // Reset form
       setNewEntry({
         courseId: "",
@@ -1059,16 +1213,23 @@ const TimetableManagement: React.FC = () => {
         targetAudience: "",
         batchId: "",
       });
-      
+
       console.log("Class created successfully, reloading timetable...");
       // Reload timetable to show the new entry
       if (selectedSection) {
         try {
-          const updatedTimetable = await fetchTimetableBySection(selectedSection.section_id);
+          const updatedTimetable = await fetchTimetableBySection(
+            selectedSection.section_id
+          );
           setTimetable(updatedTimetable || []);
-          console.log(`Reloaded ${updatedTimetable?.length || 0} classes after creation`);
+          console.log(
+            `Reloaded ${updatedTimetable?.length || 0} classes after creation`
+          );
         } catch (reloadError: any) {
-          console.error("Error reloading timetable after creation:", reloadError);
+          console.error(
+            "Error reloading timetable after creation:",
+            reloadError
+          );
           // Fall back to refresh function
           await refreshTimetable();
         }
@@ -1077,7 +1238,10 @@ const TimetableManagement: React.FC = () => {
       }
     } catch (err: any) {
       console.error("Error creating timetable entry:", err);
-      const errorMessage = err?.response?.data?.error || err?.message || "Failed to create timetable entry";
+      const errorMessage =
+        err?.response?.data?.error ||
+        err?.message ||
+        "Failed to create timetable entry";
       setError(errorMessage);
     }
   };
@@ -1117,23 +1281,29 @@ const TimetableManagement: React.FC = () => {
   const submitEdit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editEntry) return;
-    
+
     // Validate required fields
-    if (!editEntry.courseId || !editEntry.teacherId || !editEntry.dayOfWeek || 
-        !editEntry.startTime || !editEntry.endTime || !editEntry.classroom) {
+    if (
+      !editEntry.courseId ||
+      !editEntry.teacherId ||
+      !editEntry.dayOfWeek ||
+      !editEntry.startTime ||
+      !editEntry.endTime ||
+      !editEntry.classroom
+    ) {
       setEditError("Please fill in all required fields");
       return;
     }
-    
+
     // Validate time range
     if (editEntry.startTime >= editEntry.endTime) {
       setEditError("End time must be after start time");
       return;
     }
-    
+
     // Note: Batch validation removed as batch functionality is not yet implemented in database
     // Will be added when target_audience and batch_id columns are added to timetable table
-    
+
     try {
       setEditError(""); // Clear any previous errors
       console.log("Updating timetable entry:", editEntry.id);
@@ -1148,12 +1318,12 @@ const TimetableManagement: React.FC = () => {
         targetAudience: editEntry.targetAudience,
         batchId: editEntry.batchId,
       });
-      
+
       // Close modal and reset
       setEditOpen(false);
       setEditEntry(null);
       setFilteredTeachers(allTeachers); // Reset filtered teachers
-      
+
       console.log("Entry updated successfully, reloading timetable...");
       // Reload timetable to show the updated entry
       if (currentSection && sections.length > 0) {
@@ -1162,9 +1332,13 @@ const TimetableManagement: React.FC = () => {
         );
         if (selectedSection) {
           try {
-            const updatedTimetable = await fetchTimetableBySection(selectedSection.section_id);
+            const updatedTimetable = await fetchTimetableBySection(
+              selectedSection.section_id
+            );
             setTimetable(updatedTimetable || []);
-            console.log(`Reloaded ${updatedTimetable?.length || 0} classes after edit`);
+            console.log(
+              `Reloaded ${updatedTimetable?.length || 0} classes after edit`
+            );
           } catch (reloadError: any) {
             console.error("Error reloading timetable after edit:", reloadError);
             // Fall back to general reload
@@ -1178,9 +1352,12 @@ const TimetableManagement: React.FC = () => {
       }
     } catch (e: any) {
       console.error("Error updating timetable entry:", e);
-      const msg = e?.response?.status === 409
-        ? e.response.data?.message || "Time conflict for teacher"
-        : e?.response?.data?.error || e?.message || "Failed to update timetable entry";
+      const msg =
+        e?.response?.status === 409
+          ? e.response.data?.message || "Time conflict for teacher"
+          : e?.response?.data?.error ||
+            e?.message ||
+            "Failed to update timetable entry";
       setEditError(msg);
     }
   };
@@ -1191,7 +1368,7 @@ const TimetableManagement: React.FC = () => {
       setError(""); // Clear any previous errors
       console.log("Deleting timetable entry:", id);
       await deleteTimetableEntry(id);
-      
+
       console.log("Entry deleted successfully, reloading timetable...");
       // Reload timetable to remove the deleted entry
       if (currentSection && sections.length > 0) {
@@ -1200,11 +1377,18 @@ const TimetableManagement: React.FC = () => {
         );
         if (selectedSection) {
           try {
-            const updatedTimetable = await fetchTimetableBySection(selectedSection.section_id);
+            const updatedTimetable = await fetchTimetableBySection(
+              selectedSection.section_id
+            );
             setTimetable(updatedTimetable || []);
-            console.log(`Reloaded ${updatedTimetable?.length || 0} classes after deletion`);
+            console.log(
+              `Reloaded ${updatedTimetable?.length || 0} classes after deletion`
+            );
           } catch (reloadError: any) {
-            console.error("Error reloading timetable after deletion:", reloadError);
+            console.error(
+              "Error reloading timetable after deletion:",
+              reloadError
+            );
             // Fall back to general reload
             await refreshTimetable();
           }
@@ -1214,11 +1398,12 @@ const TimetableManagement: React.FC = () => {
       } else {
         await refreshTimetable();
       }
-      
+
       console.log(`Successfully deleted timetable entry with ID: ${id}`);
     } catch (err: any) {
       console.error("Error deleting timetable entry:", err);
-      const errorMessage = err?.response?.data?.error || err?.message || "Failed to delete entry";
+      const errorMessage =
+        err?.response?.data?.error || err?.message || "Failed to delete entry";
       setError(errorMessage);
     }
   };
@@ -1238,15 +1423,17 @@ const TimetableManagement: React.FC = () => {
 
   const clearSelection = () => {
     setSelectedCells([]);
-    
+
     // Also clear auto-saved data for current section
     if (currentSection && currentDepartment && currentSemester) {
       const sectionKey = `${currentDepartment}-${currentSemester}-${currentSection}`;
       const updatedSlots = { ...autoSavedSlots };
       delete updatedSlots[sectionKey];
       setAutoSavedSlots(updatedSlots);
-      localStorage.setItem('autoSavedTimeSlots', JSON.stringify(updatedSlots));
-      console.log(`🧹 Cleared auto-saved time slots for section: ${sectionKey}`);
+      localStorage.setItem("autoSavedTimeSlots", JSON.stringify(updatedSlots));
+      console.log(
+        `🧹 Cleared auto-saved time slots for section: ${sectionKey}`
+      );
     }
   };
 
@@ -1260,17 +1447,17 @@ const TimetableManagement: React.FC = () => {
 
   const submitBatch = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!batchCourseId || !batchTeacherId) {
       setBatchError("Please select both course and teacher");
       return;
     }
-    
+
     if (selectedCells.length === 0) {
       setBatchError("Please select at least one time slot");
       return;
     }
-    
+
     // Check if section is selected
     if (!currentSection) {
       setBatchError("Please select a section before creating batch entries");
@@ -1279,16 +1466,16 @@ const TimetableManagement: React.FC = () => {
 
     try {
       setBatchError(""); // Clear any previous errors
-      
+
       const selectedSection = sections.find(
         (s) => s.section_name === currentSection
       );
-      
+
       if (!selectedSection) {
         setBatchError("Invalid section selected");
         return;
       }
-      
+
       const entries = selectedCells.map((cell) => ({
         courseId: batchCourseId,
         teacherId: batchTeacherId,
@@ -1306,7 +1493,8 @@ const TimetableManagement: React.FC = () => {
           await createTimetableEntry(entry);
           results.push("Success");
         } catch (err: any) {
-          const errorMsg = err?.response?.data?.error || err?.message || "Unknown error";
+          const errorMsg =
+            err?.response?.data?.error || err?.message || "Unknown error";
           results.push(`Failed: ${errorMsg}`);
         }
       }
@@ -1317,7 +1505,8 @@ const TimetableManagement: React.FC = () => {
       await refreshTimetable();
     } catch (err: any) {
       console.error("Batch operation error:", err);
-      const errorMessage = err?.response?.data?.error || err?.message || "Batch operation failed";
+      const errorMessage =
+        err?.response?.data?.error || err?.message || "Batch operation failed";
       setBatchError(errorMessage);
     }
   };
@@ -1341,7 +1530,9 @@ const TimetableManagement: React.FC = () => {
   const openAddClass = (day: string, start: string) => {
     // Check if department, semester, and section are selected
     if (!currentDepartment || !currentSemester || !currentSection) {
-      setError("Please select department, semester, and section before adding classes");
+      setError(
+        "Please select department, semester, and section before adding classes"
+      );
       return;
     }
 
@@ -1362,7 +1553,9 @@ const TimetableManagement: React.FC = () => {
   const openAddLecture = (day: string, start: string) => {
     // Check if department, semester, and section are selected
     if (!currentDepartment || !currentSemester || !currentSection) {
-      setError("Please select department, semester, and section before adding classes");
+      setError(
+        "Please select department, semester, and section before adding classes"
+      );
       return;
     }
 
@@ -1383,7 +1576,9 @@ const TimetableManagement: React.FC = () => {
   const openAddTutorial = (day: string, start: string) => {
     // Check if department, semester, and section are selected
     if (!currentDepartment || !currentSemester || !currentSection) {
-      setError("Please select department, semester, and section before adding classes");
+      setError(
+        "Please select department, semester, and section before adding classes"
+      );
       return;
     }
 
@@ -1404,7 +1599,9 @@ const TimetableManagement: React.FC = () => {
   const openAddLab = (day: string, start: string) => {
     // Check if department, semester, and section are selected
     if (!currentDepartment || !currentSemester || !currentSection) {
-      setError("Please select department, semester, and section before adding classes");
+      setError(
+        "Please select department, semester, and section before adding classes"
+      );
       return;
     }
 
@@ -1423,23 +1620,29 @@ const TimetableManagement: React.FC = () => {
   };
   const createFromModal = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validate required fields
-    if (!newEntry.courseId || !newEntry.teacherId || !newEntry.dayOfWeek || 
-        !newEntry.startTime || !newEntry.endTime || !newEntry.classroom) {
+    if (
+      !newEntry.courseId ||
+      !newEntry.teacherId ||
+      !newEntry.dayOfWeek ||
+      !newEntry.startTime ||
+      !newEntry.endTime ||
+      !newEntry.classroom
+    ) {
       setError("Please fill in all required fields");
       return;
     }
-    
+
     // Validate time range
     if (newEntry.startTime >= newEntry.endTime) {
       setError("End time must be after start time");
       return;
     }
-    
+
     // Note: Batch validation removed as batch functionality is not yet implemented in database
     // Will be added when target_audience and batch_id columns are added to timetable table
-    
+
     try {
       setError(""); // Clear any previous errors
       // Get section ID from currentSection
@@ -1455,9 +1658,14 @@ const TimetableManagement: React.FC = () => {
         return;
       }
 
-      console.log("Creating timetable entry from modal for section:", currentSection, "with ID:", sectionId);
+      console.log(
+        "Creating timetable entry from modal for section:",
+        currentSection,
+        "with ID:",
+        sectionId
+      );
       await createTimetableEntry({ ...newEntry, sectionId });
-      
+
       // Close modal and reset form
       setAddOpen(false);
       setNewEntry({
@@ -1471,16 +1679,27 @@ const TimetableManagement: React.FC = () => {
         targetAudience: "",
         batchId: "",
       });
-      
-      console.log("Class created successfully from modal, reloading timetable...");
+
+      console.log(
+        "Class created successfully from modal, reloading timetable..."
+      );
       // Reload timetable to show the new entry
       if (selectedSection) {
         try {
-          const updatedTimetable = await fetchTimetableBySection(selectedSection.section_id);
+          const updatedTimetable = await fetchTimetableBySection(
+            selectedSection.section_id
+          );
           setTimetable(updatedTimetable || []);
-          console.log(`Reloaded ${updatedTimetable?.length || 0} classes after modal creation`);
+          console.log(
+            `Reloaded ${
+              updatedTimetable?.length || 0
+            } classes after modal creation`
+          );
         } catch (reloadError: any) {
-          console.error("Error reloading timetable after modal creation:", reloadError);
+          console.error(
+            "Error reloading timetable after modal creation:",
+            reloadError
+          );
           // Fall back to general reload
           await refreshTimetable();
         }
@@ -1489,8 +1708,56 @@ const TimetableManagement: React.FC = () => {
       }
     } catch (err: any) {
       console.error("Error creating timetable entry from modal:", err);
-      const errorMessage = err?.response?.data?.error || err?.message || "Failed to create entry";
+      console.log("🔴 ERROR DETAILS:");
+      console.log("  Status:", err?.response?.status);
+      console.log("  Response data:", err?.response?.data);
+      console.log("  Full response:", err?.response);
+
+      // Get the detailed error message from server response
+      const errorMessage =
+        err?.response?.data?.message ||
+        err?.response?.data?.error ||
+        err?.message ||
+        "Failed to create entry";
+      const conflictDetails = err?.response?.data?.conflictDetails;
+
+      console.log("  Parsed error message:", errorMessage);
+      console.log("  Conflict details:", conflictDetails);
+
       setError(errorMessage);
+
+      // Find the selected teacher name for better error message
+      const selectedTeacher = teachers.find(
+        (t: any) => t.teacher_id === parseInt(newEntry.teacherId)
+      );
+      const teacherName = selectedTeacher?.name || "Selected teacher";
+
+      // Enhanced conflict message with section and time details
+      let conflictMsg = `❌ Unable to add class:\n\n${errorMessage}\n\nTeacher: ${teacherName}\nDay: ${newEntry.dayOfWeek}\nTime: ${newEntry.startTime} - ${newEntry.endTime}`;
+
+      if (conflictDetails) {
+        conflictMsg += `\n\n⚠️ CONFLICT DETAILS:`;
+        conflictMsg += `\nConflicting Section: ${conflictDetails.section}`;
+        conflictMsg += `\nConflicting Time: ${conflictDetails.time}`;
+        conflictMsg += `\n\n🔍 Look for this class in the timetable grid!`;
+        conflictMsg += `\nClear all filters to see all classes.`;
+      }
+
+      conflictMsg += `\n\n💡 Solutions:\n• Choose a different time slot\n• Select a different teacher\n• Remove the conflicting class first`;
+
+      // Show alert with the conflict details
+      alert(conflictMsg);
+
+      // Auto-clear filters to help user see the conflicting class
+      if (conflictDetails && (filterDept || filterCourse)) {
+        const clearFilters = window.confirm(
+          "🔍 Want to clear filters to see the conflicting class?\n\nThis will show all classes in the timetable."
+        );
+        if (clearFilters) {
+          setFilterDept("");
+          setFilterCourse("");
+        }
+      }
     }
   };
 
@@ -1601,28 +1868,14 @@ const TimetableManagement: React.FC = () => {
               </div>
             </div>
 
-            {/* Save/Load Buttons */}
+            {/* Action Buttons */}
             <div className="flex items-center gap-2">
               <button
-                onClick={() => window.location.href = '/timetable/generate'}
+                onClick={() => (window.location.href = "/timetable/generate")}
                 className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-4 py-2 rounded-lg font-medium shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2"
               >
                 <span className="text-lg">🤖</span>
                 AI Generator
-              </button>
-              <button
-                onClick={() => setShowSaveModal(true)}
-                className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2 rounded-lg font-medium shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2"
-              >
-                <span className="text-lg">💾</span>
-                Save
-              </button>
-              <button
-                onClick={() => setShowLoadModal(true)}
-                className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white px-4 py-2 rounded-lg font-medium shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2"
-              >
-                <span className="text-lg">📂</span>
-                Load Saved
               </button>
             </div>
 
@@ -1728,7 +1981,9 @@ const TimetableManagement: React.FC = () => {
                 <div className="w-full px-4 py-3 border border-amber-300 rounded-lg bg-amber-50 text-amber-800">
                   <div className="flex items-center gap-2">
                     <span className="text-lg">⚠️</span>
-                    <span>No sections found for this department and semester.</span>
+                    <span>
+                      No sections found for this department and semester.
+                    </span>
                   </div>
                   <div className="mt-2">
                     <span className="text-sm text-amber-600">
@@ -1806,7 +2061,8 @@ const TimetableManagement: React.FC = () => {
               <div className="flex items-center gap-2 text-blue-800">
                 <span className="text-lg">📚</span>
                 <span className="font-medium">
-                  Managing timetable for: {currentDepartment} - Semester {currentSemester} - {currentSection}
+                  Managing timetable for: {currentDepartment} - Semester{" "}
+                  {currentSemester} - {currentSection}
                 </span>
                 {lastAutoSave && (
                   <span className="ml-auto text-sm text-green-600 flex items-center gap-1">
@@ -1819,7 +2075,8 @@ const TimetableManagement: React.FC = () => {
                 <div className="mt-2 flex items-center justify-between">
                   <div className="text-sm text-blue-600 flex items-center gap-2">
                     <span className="inline-flex items-center gap-1">
-                      📝 {selectedCells.length} time slot{selectedCells.length !== 1 ? 's' : ''} selected
+                      📝 {selectedCells.length} time slot
+                      {selectedCells.length !== 1 ? "s" : ""} selected
                     </span>
                     <span className="inline-flex items-center gap-1 text-green-600">
                       <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
@@ -2114,15 +2371,43 @@ const TimetableManagement: React.FC = () => {
               </div>
 
               {(filterDept || filterCourse) && (
-                <button
-                  onClick={() => {
-                    setFilterDept("");
-                    setFilterCourse("");
-                  }}
-                  className="px-3 py-2 text-sm text-gray-500 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-all duration-200"
-                >
-                  Clear Filters
-                </button>
+                <>
+                  <button
+                    onClick={() => {
+                      setFilterDept("");
+                      setFilterCourse("");
+                    }}
+                    className="px-3 py-2 text-sm text-gray-500 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-all duration-200"
+                  >
+                    Clear Filters
+                  </button>
+
+                  {/* Filter Warning Badge */}
+                  <div className="ml-auto flex items-center gap-2 bg-yellow-50 border border-yellow-200 px-4 py-2 rounded-lg">
+                    <svg
+                      className="w-5 h-5 text-yellow-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                      />
+                    </svg>
+                    <div className="text-sm">
+                      <span className="font-medium text-yellow-800">
+                        Filters Active:{" "}
+                      </span>
+                      <span className="text-yellow-700">
+                        Showing {filteredTimetable.length} of {timetable.length}{" "}
+                        classes
+                      </span>
+                    </div>
+                  </div>
+                </>
               )}
             </div>
           </div>
@@ -2138,15 +2423,20 @@ const TimetableManagement: React.FC = () => {
               👉 Scroll horizontally to view all time slots
             </p>
           </div>
-          
+
           <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-blue-200 scrollbar-track-gray-100 scroll-smooth">
-            <table className="min-w-full table-fixed" style={{minWidth: '1200px'}}>
+            <table
+              className="min-w-full table-fixed"
+              style={{ minWidth: "1200px" }}
+            >
               <thead>
                 <tr className="bg-gradient-to-r from-blue-50 via-purple-50 to-indigo-50">
                   <th className="w-32 sm:w-36 md:w-40 p-4 text-left font-bold text-gray-800 border-b-2 border-blue-200 sticky left-0 bg-gradient-to-r from-blue-50 via-purple-50 to-indigo-50 z-10">
                     <div className="flex items-center gap-2 md:gap-3">
                       <div className="w-6 h-6 md:w-8 md:h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-                        <span className="text-white font-bold text-xs md:text-sm">📅</span>
+                        <span className="text-white font-bold text-xs md:text-sm">
+                          📅
+                        </span>
                       </div>
                       <span className="text-sm md:text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                         Day
@@ -2162,9 +2452,13 @@ const TimetableManagement: React.FC = () => {
                       >
                         <div className="flex items-center justify-center gap-2">
                           <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
-                            <span className="text-white text-xs font-bold">📚</span>
+                            <span className="text-white text-xs font-bold">
+                              📚
+                            </span>
                           </div>
-                          <span className="text-lg font-bold">Morning Sessions</span>
+                          <span className="text-lg font-bold">
+                            Morning Sessions
+                          </span>
                         </div>
                       </th>
                     </>
@@ -2174,7 +2468,9 @@ const TimetableManagement: React.FC = () => {
                     <th className="p-3 text-center font-bold text-orange-900 border-b-2 border-orange-300 bg-gradient-to-r from-orange-100 to-amber-200">
                       <div className="flex items-center justify-center gap-2">
                         <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
-                          <span className="text-white text-xs font-bold">☕</span>
+                          <span className="text-white text-xs font-bold">
+                            ☕
+                          </span>
                         </div>
                         <span className="text-lg font-bold">Break Time</span>
                       </div>
@@ -2188,9 +2484,13 @@ const TimetableManagement: React.FC = () => {
                     >
                       <div className="flex items-center justify-center gap-2">
                         <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
-                          <span className="text-white text-xs font-bold">📖</span>
+                          <span className="text-white text-xs font-bold">
+                            📖
+                          </span>
                         </div>
-                        <span className="text-lg font-bold">Afternoon Sessions</span>
+                        <span className="text-lg font-bold">
+                          Afternoon Sessions
+                        </span>
                       </div>
                     </th>
                   )}
@@ -2200,7 +2500,9 @@ const TimetableManagement: React.FC = () => {
                   <th className="w-32 sm:w-36 md:w-40 p-4 text-left font-bold text-gray-800 border-b-2 border-gray-300 sticky left-0 bg-gradient-to-r from-gray-50 to-gray-100 z-10">
                     <div className="flex items-center gap-2 md:gap-3">
                       <div className="w-6 h-6 md:w-8 md:h-8 bg-purple-500 rounded-lg flex items-center justify-center">
-                        <span className="text-white font-bold text-xs md:text-sm">⏰</span>
+                        <span className="text-white font-bold text-xs md:text-sm">
+                          ⏰
+                        </span>
                       </div>
                       <span className="text-sm md:text-lg font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                         Time
@@ -2241,7 +2543,9 @@ const TimetableManagement: React.FC = () => {
                       <div className="bg-gradient-to-r from-orange-500 to-amber-500 text-white px-3 py-2 rounded-xl text-sm font-bold shadow-md">
                         <div className="flex items-center justify-center gap-1">
                           <span className="text-xs">☕</span>
-                          <span>{breakStart} - {breakEnd}</span>
+                          <span>
+                            {breakStart} - {breakEnd}
+                          </span>
                         </div>
                       </div>
                     </th>
@@ -2302,9 +2606,13 @@ const TimetableManagement: React.FC = () => {
                           <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-3 md:px-4 py-2 md:py-3 rounded-xl text-xs md:text-sm font-bold shadow-lg hover:shadow-xl transition-all duration-200 transform group-hover:scale-105">
                             <div className="flex items-center gap-2 md:gap-3">
                               <div className="w-6 h-6 md:w-8 md:h-8 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
-                                <span className="text-sm md:text-lg font-bold">📅</span>
+                                <span className="text-sm md:text-lg font-bold">
+                                  📅
+                                </span>
                               </div>
-                              <span className="text-xs md:text-base font-bold">{day}</span>
+                              <span className="text-xs md:text-base font-bold">
+                                {day}
+                              </span>
                             </div>
                           </div>
                         </td>
@@ -2337,23 +2645,29 @@ const TimetableManagement: React.FC = () => {
                                 >
                                   {/* Class type badge */}
                                   {main.classType && (
-                                    <div className={`inline-flex items-center gap-1 ${classStyle.badge} px-2 py-1 rounded-lg text-xs font-bold mb-2`}>
+                                    <div
+                                      className={`inline-flex items-center gap-1 ${classStyle.badge} px-2 py-1 rounded-lg text-xs font-bold mb-2`}
+                                    >
                                       <span>{classStyle.icon}</span>
                                       <span>{main.classType}</span>
                                     </div>
                                   )}
-                                  
+
                                   {/* Course code */}
-                                  <div className={`font-bold ${classStyle.text} text-sm mb-1 tracking-wide`}>
+                                  <div
+                                    className={`font-bold ${classStyle.text} text-sm mb-1 tracking-wide`}
+                                  >
                                     {courses.find(
                                       (c) =>
                                         String(c.course_id) ===
                                         String(main.courseId)
                                     )?.course_code || main.courseId}
                                   </div>
-                                  
+
                                   {/* Course name */}
-                                  <div className={`${classStyle.text} text-xs mb-2 font-medium opacity-90 line-clamp-2`}>
+                                  <div
+                                    className={`${classStyle.text} text-xs mb-2 font-medium opacity-90 line-clamp-2`}
+                                  >
                                     {
                                       courses.find(
                                         (c) =>
@@ -2362,9 +2676,11 @@ const TimetableManagement: React.FC = () => {
                                       )?.course_name
                                     }
                                   </div>
-                                  
+
                                   {/* Teacher name */}
-                                  <div className={`${classStyle.text} text-xs mb-1 opacity-80 flex items-center gap-1`}>
+                                  <div
+                                    className={`${classStyle.text} text-xs mb-1 opacity-80 flex items-center gap-1`}
+                                  >
                                     <span>👨‍🏫</span>
                                     {
                                       teachers.find(
@@ -2374,22 +2690,26 @@ const TimetableManagement: React.FC = () => {
                                       )?.name
                                     }
                                   </div>
-                                  
+
                                   {/* Classroom */}
                                   {main.classroom && (
-                                    <div className={`${classStyle.text} text-xs opacity-70 flex items-center gap-1`}>
+                                    <div
+                                      className={`${classStyle.text} text-xs opacity-70 flex items-center gap-1`}
+                                    >
                                       <span>📍</span>
                                       <span>{main.classroom}</span>
                                     </div>
                                   )}
-                                  
+
                                   {/* Hover overlay */}
                                   <div className="absolute inset-0 bg-white bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300 rounded-xl"></div>
                                 </div>
                               ) : (
                                 <button
                                   onClick={() =>
-                                    batchMode ? toggleSelectCell(day, slotStartTime) : openAddClass(day, slotStartTime)
+                                    batchMode
+                                      ? toggleSelectCell(day, slotStartTime)
+                                      : openAddClass(day, slotStartTime)
                                   }
                                   className={`w-full h-16 md:h-20 border-3 border-dashed transition-all duration-300 rounded-xl flex flex-col items-center justify-center cursor-pointer group ${
                                     isSelected
@@ -2397,18 +2717,26 @@ const TimetableManagement: React.FC = () => {
                                       : "border-blue-200 hover:border-blue-400 hover:bg-blue-50 hover:scale-102"
                                   }`}
                                 >
-                                  <div className={`transition-all duration-300 ${
-                                    isSelected ? "text-blue-600" : "text-blue-300 group-hover:text-blue-500"
-                                  }`}>
+                                  <div
+                                    className={`transition-all duration-300 ${
+                                      isSelected
+                                        ? "text-blue-600"
+                                        : "text-blue-300 group-hover:text-blue-500"
+                                    }`}
+                                  >
                                     <div className="text-2xl mb-1">
-                                      {batchMode ? (
-                                        isSelected ? "✓" : "+"
-                                      ) : (
-                                        "+"
-                                      )}
+                                      {batchMode
+                                        ? isSelected
+                                          ? "✓"
+                                          : "+"
+                                        : "+"}
                                     </div>
                                     <div className="text-xs font-medium">
-                                      {batchMode ? (isSelected ? "Selected" : "Select") : "Add Class"}
+                                      {batchMode
+                                        ? isSelected
+                                          ? "Selected"
+                                          : "Select"
+                                        : "Add Class"}
                                     </div>
                                   </div>
                                 </button>
@@ -2458,13 +2786,11 @@ const TimetableManagement: React.FC = () => {
                                     }
                                   </div>
                                   <div className="text-xs text-orange-700">
-                                    {
-                                      teachers.find(
-                                        (t) =>
-                                          String(t.teacher_id) ===
-                                          String(main.teacherId)
-                                      )?.name || main.teacherId
-                                    }
+                                    {teachers.find(
+                                      (t) =>
+                                        String(t.teacher_id) ===
+                                        String(main.teacherId)
+                                    )?.name || main.teacherId}
                                   </div>
                                   <div className="text-xs text-orange-600 mt-1">
                                     {main.classroom || "TBA"}
@@ -2737,165 +3063,6 @@ const TimetableManagement: React.FC = () => {
         </div>
       )}
 
-      {/* Save Timetable Modal */}
-      {showSaveModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md mx-4 transform animate-in fade-in duration-200">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold text-gray-900">
-                💾 Save Timetable
-              </h3>
-              <button
-                onClick={() => setShowSaveModal(false)}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                ✕
-              </button>
-            </div>
-
-            {/* Context Information */}
-            {currentDepartment && currentSemester && currentSection && (
-              <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                <h4 className="text-sm font-medium text-blue-800 mb-1">Saving timetable for:</h4>
-                <div className="text-sm text-blue-700">
-                  <p><strong>Department:</strong> {currentDepartment}</p>
-                  <p><strong>Semester:</strong> {currentSemester}</p>
-                  <p><strong>Section:</strong> {currentSection}</p>
-                  <p><strong>Classes:</strong> {timetable.length} entries</p>
-                </div>
-              </div>
-            )}
-
-            {/* Error Display */}
-            {saveError && (
-              <div className="mb-4 p-3 bg-red-50 rounded-lg border border-red-200">
-                <p className="text-sm text-red-600">{saveError}</p>
-              </div>
-            )}
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Timetable Name
-                </label>
-                <input
-                  type="text"
-                  value={saveModalName}
-                  onChange={(e) => setSaveModalName(e.target.value)}
-                  placeholder="Enter timetable name..."
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-              <div className="flex gap-3">
-                <button
-                  onClick={() => {
-                    setShowSaveModal(false);
-                    setSaveError("");
-                    setSaveModalName("");
-                  }}
-                  className="flex-1 px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleSave}
-                  disabled={!saveModalName.trim() || (!currentDepartment || !currentSemester || !currentSection)}
-                  className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 text-white rounded-lg transition-colors"
-                >
-                  Save
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Load Timetable Modal */}
-      {showLoadModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md mx-4 transform animate-in fade-in duration-200">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold text-gray-900">
-                📂 Load Saved Timetable
-              </h3>
-              <button
-                onClick={() => setShowLoadModal(false)}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                ✕
-              </button>
-            </div>
-            <div className="space-y-4">
-              {savedTimetables.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
-                  <div className="text-4xl mb-2">📝</div>
-                  <p>No saved timetables found</p>
-                </div>
-              ) : (
-                <div className="space-y-2 max-h-60 overflow-y-auto">
-                  {savedTimetables.map((timetable) => (
-                    <div
-                      key={timetable.id}
-                      className="flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors"
-                    >
-                      <div className="flex-1">
-                        <div className="font-medium text-gray-900">
-                          {timetable.name}
-                        </div>
-                        <div className="text-xs text-gray-500 space-y-0.5 mt-1">
-                          <div>
-                            Saved:{" "}
-                            {new Date(timetable.createdAt).toLocaleDateString()}
-                          </div>
-                          <div>{timetable.data.length} classes</div>
-                          {timetable.context && (
-                            <div className="text-xs text-green-600 bg-green-50 px-2 py-1 rounded mt-1">
-                              📍 {timetable.context.department} • Sem {timetable.context.semester} • {timetable.context.section}
-                            </div>
-                          )}
-                          {timetable.gridSettings && (
-                            <div className="text-xs text-blue-600">
-                              ⏰ {timetable.gridSettings.gridStart} -{" "}
-                              {timetable.gridSettings.gridEnd}
-                              {timetable.gridSettings.breakEnabled &&
-                                ` | Break: ${timetable.gridSettings.breakStart}-${timetable.gridSettings.breakEnd}`}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex gap-2 ml-2">
-                        <button
-                          onClick={() => handleLoad(timetable.id)}
-                          className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded transition-colors"
-                        >
-                          Load
-                        </button>
-                        <button
-                          onClick={() => handleDeleteSaved(timetable.id)}
-                          className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-sm rounded transition-colors"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-              <div className="flex justify-end">
-                <button
-                  onClick={() => setShowLoadModal(false)}
-                  className="px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-
-
       {/* Enhanced Edit Modal */}
       {editOpen && editEntry && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -3131,11 +3298,15 @@ const TimetableManagement: React.FC = () => {
                       required
                     >
                       <option value="">Select course</option>
-                      {courses.map((c: any) => (
-                        <option key={c.course_id} value={c.course_id}>
-                          {c.course_code} — {c.course_name}
-                        </option>
-                      ))}
+                      {courses
+                        .filter(
+                          (c: any) => c.semester === parseInt(currentSemester)
+                        )
+                        .map((c: any) => (
+                          <option key={c.course_id} value={c.course_id}>
+                            {c.course_code} — {c.course_name}
+                          </option>
+                        ))}
                     </select>
                   </div>
 
@@ -3366,11 +3537,15 @@ const TimetableManagement: React.FC = () => {
                     required
                   >
                     <option value="">Select course</option>
-                    {courses.map((c: any) => (
-                      <option key={c.course_id} value={c.course_id}>
-                        {c.course_code} — {c.course_name}
-                      </option>
-                    ))}
+                    {courses
+                      .filter(
+                        (c: any) => c.semester === parseInt(currentSemester)
+                      )
+                      .map((c: any) => (
+                        <option key={c.course_id} value={c.course_id}>
+                          {c.course_code} — {c.course_name}
+                        </option>
+                      ))}
                   </select>
                 </div>
 
@@ -3400,7 +3575,8 @@ const TimetableManagement: React.FC = () => {
                     </h3>
                     <div className="flex items-center gap-2">
                       <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs font-medium">
-                        {selectedCells.length} slot{selectedCells.length !== 1 ? 's' : ''}
+                        {selectedCells.length} slot
+                        {selectedCells.length !== 1 ? "s" : ""}
                       </span>
                       {selectedCells.length > 0 && lastAutoSave && (
                         <span className="text-xs text-green-600 flex items-center gap-1">
@@ -3413,12 +3589,17 @@ const TimetableManagement: React.FC = () => {
                   {selectedCells.length > 0 ? (
                     <div className="space-y-2 max-h-32 overflow-y-auto">
                       {selectedCells.map((cell, index) => (
-                        <div key={index} className="bg-white rounded-lg p-2 border border-purple-100 flex items-center justify-between">
+                        <div
+                          key={index}
+                          className="bg-white rounded-lg p-2 border border-purple-100 flex items-center justify-between"
+                        >
                           <div className="text-sm font-medium text-purple-700">
                             📅 {cell.day} at {cell.start}
                           </div>
                           <button
-                            onClick={() => toggleSelectCell(cell.day, cell.start)}
+                            onClick={() =>
+                              toggleSelectCell(cell.day, cell.start)
+                            }
                             className="text-purple-400 hover:text-purple-600 text-xs"
                           >
                             ✕
