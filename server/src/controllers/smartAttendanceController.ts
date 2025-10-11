@@ -716,9 +716,126 @@ export const processClassPhoto = async (req: Request, res: Response) => {
 };
 
 /**
+ * Preview attendance and send notifications to students BEFORE finalizing
+ * POST /api/smart-attendance/preview-attendance
+ * Body: { sessionId: string, studentStatuses: Array<{ studentId: number, status: 'present' | 'absent', reason?: string }> }
+ */
+export const previewAttendance = async (req: Request, res: Response) => {
+  try {
+    const { sessionId, studentStatuses } = req.body;
+
+    if (!sessionId || !studentStatuses || !Array.isArray(studentStatuses)) {
+      return res.status(400).json({
+        error: "sessionId and studentStatuses array are required",
+      });
+    }
+
+    console.log("\n🔔 ========== PREVIEW ATTENDANCE NOTIFICATIONS ===========");
+    console.log("📨 Sending preview notifications for session:", sessionId);
+    console.log("📊 Total students:", studentStatuses.length);
+    console.log(
+      "  Present:",
+      studentStatuses.filter((s: any) => s.status === "present").length
+    );
+    console.log(
+      "  Absent:",
+      studentStatuses.filter((s: any) => s.status === "absent").length
+    );
+
+    // Find session
+    const session = await AttendanceSession.findOne({
+      where: { session_id: sessionId },
+    });
+
+    if (!session) {
+      return res.status(404).json({ error: "Session not found" });
+    }
+
+    // Get timetable slot details
+    const timetableSlot = (await Timetable.findByPk(session.schedule_id, {
+      include: [
+        {
+          model: Course,
+          as: "course",
+          attributes: ["course_id", "course_code", "course_name"],
+        },
+      ],
+    })) as any;
+
+    if (!timetableSlot || !timetableSlot.course) {
+      return res.status(404).json({ error: "Timetable or course not found" });
+    }
+
+    const date = new Date().toISOString().split("T")[0];
+    const notificationResults = {
+      success: [] as number[],
+      failed: [] as number[],
+      total: studentStatuses.length,
+    };
+
+    // Send preview notifications to ALL students (both present and absent)
+    for (const studentStatus of studentStatuses) {
+      const { studentId, status, reason } = studentStatus;
+
+      try {
+        await NotificationService.notifyAttendancePreview({
+          studentId,
+          courseName: timetableSlot.course.course_name,
+          courseCode: timetableSlot.course.course_code,
+          date,
+          timeSlot: timetableSlot.time_slot,
+          status,
+          sessionId,
+          reason,
+        });
+
+        notificationResults.success.push(studentId);
+        console.log(
+          `✅ Preview notification sent to student ${studentId} - Status: ${status}`
+        );
+      } catch (error) {
+        notificationResults.failed.push(studentId);
+        console.error(
+          `❌ Failed to send preview notification to student ${studentId}:`,
+          error
+        );
+      }
+    }
+
+    console.log("\n📊 Preview Notifications Summary:");
+    console.log(
+      `  Successful: ${notificationResults.success.length}/${notificationResults.total}`
+    );
+    console.log(
+      `  Failed: ${notificationResults.failed.length}/${notificationResults.total}`
+    );
+    console.log("=======================================================\n");
+
+    return res.status(200).json({
+      message: "Preview notifications sent successfully",
+      results: notificationResults,
+      session: {
+        sessionId: session.session_id,
+        scheduleId: session.schedule_id,
+        course: {
+          code: timetableSlot.course.course_code,
+          name: timetableSlot.course.course_name,
+        },
+      },
+    });
+  } catch (error: any) {
+    console.error("Error sending preview attendance notifications:", error);
+    return res.status(500).json({
+      error: "Failed to send preview notifications",
+      details: error.message,
+    });
+  }
+};
+
+/**
  * Finalize attendance - cross-verify scans and class photo, mark attendance
  * POST /api/smart-attendance/finalize
- * Body: { sessionId: string, manualAdjustments?: Array<{ studentId: number, status: 'present' | 'absent' }> }
+ * Body: { sessionId: string, studentStatuses?: Array<{ studentId: number, status: 'present' | 'absent' }> }
  */
 export const finalizeAttendance = async (req: Request, res: Response) => {
   try {
@@ -983,11 +1100,13 @@ export const finalizeAttendance = async (req: Request, res: Response) => {
             timeSlot: timetableSlot.time_slot,
             attendanceId: record.record_id,
           });
-          
+
           // Update notification_sent flag
           await record.update({ notification_sent: true });
-          
-          console.log(`📧 Notification sent to student ${studentId} for absence`);
+
+          console.log(
+            `📧 Notification sent to student ${studentId} for absence`
+          );
         } catch (notificationError) {
           console.error(
             `❌ Failed to send notification to student ${studentId}:`,

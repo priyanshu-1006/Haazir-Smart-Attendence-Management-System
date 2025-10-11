@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface ErrorBoundaryState {
   hasError: boolean;
@@ -19,7 +19,7 @@ class ErrorBoundary extends React.Component<
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('Error caught by boundary:', error, errorInfo);
+    console.error("Error caught by boundary:", error, errorInfo);
   }
 
   render() {
@@ -32,7 +32,8 @@ class ErrorBoundary extends React.Component<
               Oops! Something went wrong
             </h1>
             <p className="text-gray-600 mb-6">
-              Haazir encountered an unexpected error. Please refresh the page or try again later.
+              Haazir encountered an unexpected error. Please refresh the page or
+              try again later.
             </p>
             <div className="space-y-3">
               <button
@@ -48,7 +49,7 @@ class ErrorBoundary extends React.Component<
                 Try Again
               </button>
             </div>
-            {process.env.NODE_ENV === 'development' && this.state.error && (
+            {process.env.NODE_ENV === "development" && this.state.error && (
               <details className="mt-4 text-left">
                 <summary className="text-sm text-gray-500 cursor-pointer">
                   Error Details (Development)

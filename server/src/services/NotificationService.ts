@@ -1,11 +1,84 @@
-import Notification from '../models/Notification';
-import Student from '../models/Student';
-import Course from '../models/Course';
+import Notification from "../models/Notification";
+import Student from "../models/Student";
+import Course from "../models/Course";
 
 /**
  * NotificationService - Centralized service for creating and managing notifications
  */
 class NotificationService {
+  /**
+   * Create an attendance preview notification (before teacher finalizes)
+   */
+  static async notifyAttendancePreview(params: {
+    studentId: number;
+    courseName: string;
+    courseCode: string;
+    date: string;
+    timeSlot?: string;
+    status: "present" | "absent";
+    sessionId: string;
+    reason?: string;
+  }) {
+    try {
+      const {
+        studentId,
+        courseName,
+        courseCode,
+        date,
+        timeSlot,
+        status,
+        sessionId,
+        reason,
+      } = params;
+
+      const formattedDate = new Date(date).toLocaleDateString("en-US", {
+        weekday: "short",
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      });
+
+      const timeInfo = timeSlot ? ` at ${timeSlot}` : "";
+      const statusEmoji = status === "present" ? "✅" : "⚠️";
+      const statusText = status === "present" ? "Present" : "Absent";
+
+      const message =
+        status === "present"
+          ? `You will be marked PRESENT for ${courseCode} - ${courseName} on ${formattedDate}${timeInfo}. Teacher has NOT finalized yet.`
+          : `You will be marked ABSENT for ${courseCode} - ${courseName} on ${formattedDate}${timeInfo}. ${
+              reason ? `Reason: ${reason}. ` : ""
+            }⚠️ Inform your teacher immediately if this is incorrect! Teacher has NOT finalized yet.`;
+
+      const notification = await Notification.create({
+        user_id: studentId,
+        user_role: "student",
+        type: "attendance_preview",
+        title: `${statusEmoji} Attendance Preview - ${statusText}`,
+        message: message,
+        related_data: {
+          course_name: courseName,
+          course_code: courseCode,
+          date: date,
+          time_slot: timeSlot,
+          status: status,
+          session_id: sessionId,
+          reason: reason,
+          is_preview: true,
+        },
+        priority: status === "absent" ? "urgent" : "high",
+        is_read: false,
+      });
+
+      console.log(
+        `📢 Preview notification sent to student ${studentId} - Status: ${status}`
+      );
+      return notification;
+    } catch (error) {
+      console.error("Error creating attendance preview notification:", error);
+      throw error;
+    }
+  }
+
   /**
    * Create an attendance absent notification
    */
@@ -18,22 +91,29 @@ class NotificationService {
     attendanceId?: number;
   }) {
     try {
-      const { studentId, courseName, courseCode, date, timeSlot, attendanceId } = params;
+      const {
+        studentId,
+        courseName,
+        courseCode,
+        date,
+        timeSlot,
+        attendanceId,
+      } = params;
 
-      const formattedDate = new Date(date).toLocaleDateString('en-US', {
-        weekday: 'short',
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
+      const formattedDate = new Date(date).toLocaleDateString("en-US", {
+        weekday: "short",
+        year: "numeric",
+        month: "short",
+        day: "numeric",
       });
 
-      const timeInfo = timeSlot ? ` at ${timeSlot}` : '';
+      const timeInfo = timeSlot ? ` at ${timeSlot}` : "";
 
       const notification = await Notification.create({
         user_id: studentId,
-        user_role: 'student',
-        type: 'attendance_absent',
-        title: '⚠️ Absent Marked',
+        user_role: "student",
+        type: "attendance_absent",
+        title: "⚠️ Absent Marked",
         message: `You were marked absent for ${courseCode} - ${courseName} on ${formattedDate}${timeInfo}.`,
         related_data: {
           course_name: courseName,
@@ -42,14 +122,16 @@ class NotificationService {
           time_slot: timeSlot,
           attendance_id: attendanceId,
         },
-        priority: 'high',
+        priority: "high",
         is_read: false,
       });
 
-      console.log(`📢 Notification sent to student ${studentId} for absent attendance`);
+      console.log(
+        `📢 Notification sent to student ${studentId} for absent attendance`
+      );
       return notification;
     } catch (error) {
-      console.error('Error creating attendance absent notification:', error);
+      console.error("Error creating attendance absent notification:", error);
       throw error;
     }
   }
@@ -65,28 +147,36 @@ class NotificationService {
     threshold: number;
   }) {
     try {
-      const { studentId, courseName, courseCode, attendancePercentage, threshold } = params;
+      const {
+        studentId,
+        courseName,
+        courseCode,
+        attendancePercentage,
+        threshold,
+      } = params;
 
       const notification = await Notification.create({
         user_id: studentId,
-        user_role: 'student',
-        type: 'attendance_warning',
-        title: '🚨 Low Attendance Alert',
-        message: `Your attendance in ${courseCode} - ${courseName} is ${attendancePercentage.toFixed(1)}%, below the required ${threshold}%. Please improve your attendance.`,
+        user_role: "student",
+        type: "attendance_warning",
+        title: "🚨 Low Attendance Alert",
+        message: `Your attendance in ${courseCode} - ${courseName} is ${attendancePercentage.toFixed(
+          1
+        )}%, below the required ${threshold}%. Please improve your attendance.`,
         related_data: {
           course_name: courseName,
           course_code: courseCode,
           attendance_percentage: attendancePercentage,
           threshold: threshold,
         },
-        priority: 'urgent',
+        priority: "urgent",
         is_read: false,
       });
 
       console.log(`📢 Low attendance warning sent to student ${studentId}`);
       return notification;
     } catch (error) {
-      console.error('Error creating attendance warning notification:', error);
+      console.error("Error creating attendance warning notification:", error);
       throw error;
     }
   }
@@ -106,9 +196,9 @@ class NotificationService {
 
       const notification = await Notification.create({
         user_id: studentId,
-        user_role: 'student',
-        type: 'grade_update',
-        title: '📝 New Grade Posted',
+        user_role: "student",
+        type: "grade_update",
+        title: "📝 New Grade Posted",
         message: `Your grade for ${gradeName} in ${courseCode} - ${courseName} has been posted: ${score}`,
         related_data: {
           course_name: courseName,
@@ -116,14 +206,14 @@ class NotificationService {
           grade_name: gradeName,
           score: score,
         },
-        priority: 'normal',
+        priority: "normal",
         is_read: false,
       });
 
       console.log(`📢 Grade notification sent to student ${studentId}`);
       return notification;
     } catch (error) {
-      console.error('Error creating grade notification:', error);
+      console.error("Error creating grade notification:", error);
       throw error;
     }
   }
@@ -140,14 +230,21 @@ class NotificationService {
     relatedData?: any;
   }) {
     try {
-      const { userIds, userRole, title, message, priority = 'normal', relatedData } = params;
+      const {
+        userIds,
+        userRole,
+        title,
+        message,
+        priority = "normal",
+        relatedData,
+      } = params;
 
       const notifications = await Promise.all(
         userIds.map((userId) =>
           Notification.create({
             user_id: userId,
             user_role: userRole,
-            type: 'announcement',
+            type: "announcement",
             title: `📢 ${title}`,
             message: message,
             related_data: relatedData,
@@ -160,7 +257,7 @@ class NotificationService {
       console.log(`📢 Announcement sent to ${userIds.length} users`);
       return notifications;
     } catch (error) {
-      console.error('Error creating announcement notifications:', error);
+      console.error("Error creating announcement notifications:", error);
       throw error;
     }
   }
@@ -175,13 +272,13 @@ class NotificationService {
           user_id: userId,
           is_read: false,
         },
-        order: [['created_at', 'DESC']],
+        order: [["created_at", "DESC"]],
         limit: 50,
       });
 
       return notifications;
     } catch (error) {
-      console.error('Error fetching unread notifications:', error);
+      console.error("Error fetching unread notifications:", error);
       throw error;
     }
   }
@@ -191,16 +288,18 @@ class NotificationService {
    */
   static async getAllNotifications(userId: number, limit = 50, offset = 0) {
     try {
-      const { count, rows: notifications } = await Notification.findAndCountAll({
-        where: { user_id: userId },
-        order: [['created_at', 'DESC']],
-        limit,
-        offset,
-      });
+      const { count, rows: notifications } = await Notification.findAndCountAll(
+        {
+          where: { user_id: userId },
+          order: [["created_at", "DESC"]],
+          limit,
+          offset,
+        }
+      );
 
       return { total: count, notifications };
     } catch (error) {
-      console.error('Error fetching notifications:', error);
+      console.error("Error fetching notifications:", error);
       throw error;
     }
   }
@@ -215,7 +314,7 @@ class NotificationService {
       });
 
       if (!notification) {
-        throw new Error('Notification not found');
+        throw new Error("Notification not found");
       }
 
       await notification.update({
@@ -225,7 +324,7 @@ class NotificationService {
 
       return notification;
     } catch (error) {
-      console.error('Error marking notification as read:', error);
+      console.error("Error marking notification as read:", error);
       throw error;
     }
   }
@@ -250,7 +349,7 @@ class NotificationService {
 
       return updated[0]; // Returns count of updated rows
     } catch (error) {
-      console.error('Error marking all notifications as read:', error);
+      console.error("Error marking all notifications as read:", error);
       throw error;
     }
   }
@@ -269,7 +368,7 @@ class NotificationService {
 
       return deleted > 0;
     } catch (error) {
-      console.error('Error deleting notification:', error);
+      console.error("Error deleting notification:", error);
       throw error;
     }
   }
@@ -288,7 +387,7 @@ class NotificationService {
 
       return deleted;
     } catch (error) {
-      console.error('Error clearing read notifications:', error);
+      console.error("Error clearing read notifications:", error);
       throw error;
     }
   }
@@ -307,7 +406,7 @@ class NotificationService {
 
       return count;
     } catch (error) {
-      console.error('Error getting unread count:', error);
+      console.error("Error getting unread count:", error);
       throw error;
     }
   }
