@@ -22,7 +22,7 @@ import {
 
 import { authMiddleware } from "../middleware/auth";
 import TimetableExportService from "../services/timetableExportService";
-import GeminiTimetableService from "../services/geminiTimetableService";
+import GeminiTimetableService from "../services/GeminiTimetableService";
 import SmartTimetableSolution from "../models/SmartTimetableSolution";
 
 // Extend Request interface for authenticated requests
