@@ -29,28 +29,6 @@
   --color-border: #334155;
 }
 
-/* SVG Icon Size Fixes */
-svg.w-8.h-8 {
-  width: 2rem !important;
-  height: 2rem !important;
-  max-width: 2rem !important;
-  max-height: 2rem !important;
-}
-
-svg.w-6.h-6 {
-  width: 1.5rem !important;
-  height: 1.5rem !important;
-  max-width: 1.5rem !important;
-  max-height: 1.5rem !important;
-}
-
-svg.w-4.h-4 {
-  width: 1rem !important;
-  height: 1rem !important;
-  max-width: 1rem !important;
-  max-height: 1rem !important;
-}
-
 /* Smooth transitions for theme switching - optimized for performance */
 *:not(canvas):not(svg):not(path) {
   transition-property: background-color, border-color, color;
