@@ -133,18 +133,7 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({
 
 // Route configurations by role for better organization
 const coordinatorRoutes = [
-<<<<<<< HEAD
   { path: "/coordinator", component: CoordinatorDashboard, exact: true },
-  { path: "/students", component: EnhancedStudentManagement },
-  { path: "/students/:id", component: StudentProfileDashboard },
-  { path: "/teachers", component: TeacherManagement },
-  { path: "/courses", component: CourseManagement },
-  { path: "/departments", component: DepartmentManagement },
-  { path: "/timetable/generate", component: SmartTimetableGenerator }, // More specific route first
-  { path: "/timetable/results", component: TimetableResults }, // Results page
-  { path: "/timetable", component: TimetableManagement },
-=======
-  { path: "/coordinator", component: Dashboard, exact: true },
   { path: "/students", component: EnhancedStudentManagement, exact: false },
   { path: "/students/:id", component: StudentProfileDashboard, exact: false },
   { path: "/teachers", component: TeacherManagement, exact: false },
@@ -157,7 +146,6 @@ const coordinatorRoutes = [
   }, // More specific route first
   { path: "/timetable/results", component: TimetableResults, exact: false }, // Results page
   { path: "/timetable", component: TimetableManagement, exact: false },
->>>>>>> c2c544274d6d360c1d815fdd2cad3f2ef4f63342
   { path: "/attendance", component: AttendancePage, exact: true },
   {
     path: "/attendance/reports",
