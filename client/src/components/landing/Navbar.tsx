@@ -52,11 +52,19 @@ const Navbar: React.FC = () => {
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           isScrolled
             ? theme === 'dark'
+<<<<<<< HEAD
               ? 'bg-slate-900/85 backdrop-blur-xl border-b border-slate-800 shadow-xl'
               : 'bg-white/85 backdrop-blur-xl border-b border-gray-200 shadow-lg'
             : theme === 'dark'
             ? 'bg-slate-900/40 backdrop-blur-md'
             : 'bg-white/40 backdrop-blur-md'
+=======
+              ? 'bg-slate-900/95 backdrop-blur-xl border-b border-slate-800 shadow-xl'
+              : 'bg-white/95 backdrop-blur-xl border-b border-gray-200 shadow-lg'
+            : theme === 'dark'
+            ? 'bg-slate-900/60 backdrop-blur-md'
+            : 'bg-white/60 backdrop-blur-md'
+>>>>>>> 488858f244fcf9207888a455c364a7099ea86b8b
         }`}
         initial={{ y: -100 }}
         animate={{ y: 0 }}
@@ -162,7 +170,11 @@ const Navbar: React.FC = () => {
                     ? 'text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400' 
                     : 'text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600'
                 }`}>
+<<<<<<< HEAD
                   Made in India 🇮🇳
+=======
+                  Smart Attendance
+>>>>>>> 488858f244fcf9207888a455c364a7099ea86b8b
                 </span>
               </div>
             </Link>

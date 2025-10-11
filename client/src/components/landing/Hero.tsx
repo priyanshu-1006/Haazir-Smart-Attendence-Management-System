@@ -15,7 +15,10 @@ import {
 
 // Import Lottie animations
 import heroAnimationData from '../../assets/lottie/hero-animation.json';
+<<<<<<< HEAD
 import backgroundAnimationData from '../../assets/lottie/background.json';
+=======
+>>>>>>> 488858f244fcf9207888a455c364a7099ea86b8b
 
 const Hero: React.FC = () => {
   const { theme } = useTheme();
@@ -49,6 +52,14 @@ const Hero: React.FC = () => {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
+<<<<<<< HEAD
+=======
+  // Animated gradient background
+  const gradientStyles = theme === 'dark'
+    ? 'bg-gradient-to-b from-slate-900 via-purple-900 to-slate-900'
+    : 'bg-gradient-to-b from-blue-50 via-indigo-50 to-blue-50';
+
+>>>>>>> 488858f244fcf9207888a455c364a7099ea86b8b
   return (
     <motion.section
       ref={heroRef}
@@ -57,6 +68,7 @@ const Hero: React.FC = () => {
       }`}
       style={{ opacity }}
     >
+<<<<<<< HEAD
       {/* Lottie Background Animation for Hero Section - Only in Dark Mode */}
       {theme === 'dark' && (
         <div className="absolute inset-0 z-0 opacity-20 pointer-events-none">
@@ -64,6 +76,31 @@ const Hero: React.FC = () => {
             animationData={backgroundAnimationData}
             loop
             className="w-full h-full object-cover"
+=======
+      {/* Animated Background Particles */}
+      <div className="absolute inset-0 overflow-hidden">
+        {[...Array(20)].map((_, i) => (
+          <motion.div
+            key={i}
+            className={`absolute w-2 h-2 rounded-full ${
+              theme === 'dark' ? 'bg-purple-500/20' : 'bg-indigo-500/20'
+            }`}
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+            }}
+            animate={{
+              y: [0, -30, 0],
+              x: [0, Math.random() * 20 - 10, 0],
+              opacity: [0.2, 0.5, 0.2],
+              scale: [1, 1.5, 1],
+            }}
+            transition={{
+              duration: 3 + Math.random() * 2,
+              repeat: Infinity,
+              delay: Math.random() * 2,
+            }}
+>>>>>>> 488858f244fcf9207888a455c364a7099ea86b8b
           />
         </div>
       )}
@@ -114,8 +151,13 @@ const Hero: React.FC = () => {
             <p className={`text-xl md:text-2xl mb-8 leading-relaxed ${
               theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
             }`}>
+<<<<<<< HEAD
               India's most trusted attendance management system with face recognition, 
               real-time analytics, and automated reporting. Built for Indian educational institutions.
+=======
+              Modern, intelligent attendance management system with face recognition, 
+              real-time analytics, and automated reporting.
+>>>>>>> 488858f244fcf9207888a455c364a7099ea86b8b
             </p>
 
             {/* Feature Pills */}

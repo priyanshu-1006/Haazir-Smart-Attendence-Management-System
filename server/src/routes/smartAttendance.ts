@@ -4,7 +4,6 @@ import {
   validateQR,
   verifyFace,
   processClassPhoto,
-  previewAttendance,
   finalizeAttendance,
   getSessionStatus,
   registerStudentFace,
@@ -27,9 +26,6 @@ router.post("/generate-qr", generateAttendanceQR);
 
 // Process class photo captured by teacher (Teacher)
 router.post("/process-class-photo", processClassPhoto);
-
-// Preview attendance and send notifications BEFORE finalizing (Teacher)
-router.post("/preview-attendance", previewAttendance);
 
 // Finalize attendance after cross-verification (Teacher)
 router.post("/finalize", finalizeAttendance);
