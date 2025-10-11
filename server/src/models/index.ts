@@ -1,57 +1,79 @@
-import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
+// Import database connection
+import { sequelize } from '../config/database';
 
-import authRoutes from "../routes/auth";
+// Import all models
+import User from './User';
+import Department from './Department';
+import Student from './Student';
+import Teacher from './Teacher';
+import Course from './Course';
+import Section from './Section';
+import Batch from './Batch';
+import Timetable from './Timetable';
+import Attendance from './Attendance';
+import Notification from './Notification';
+import SavedTimetable from './SavedTimetable';
+import TeacherCourse from './TeacherCourse';
+import AttendanceSession from './AttendanceSession';
+import StudentFace from './StudentFace';
+import StudentScanRecord from './StudentScanRecord';
+import TeacherClassCapture from './TeacherClassCapture';
+import DetectedClassFace from './DetectedClassFace';
+import SmartAttendanceRecord from './SmartAttendanceRecord';
+import SmartTimetableSolution from './SmartTimetableSolution';
 
-dotenv.config();
+// Initialize associations
+const models = {
+  User,
+  Department,
+  Student,
+  Teacher,
+  Course,
+  Section,
+  Batch,
+  Timetable,
+  Attendance,
+  Notification,
+  SavedTimetable,
+  TeacherCourse,
+  AttendanceSession,
+  StudentFace,
+  StudentScanRecord,
+  TeacherClassCapture,
+  DetectedClassFace,
+  SmartAttendanceRecord,
+  SmartTimetableSolution,
+};
 
-const app = express();
-const PORT = process.env.PORT || 5001;
+// Set up associations
+Object.values(models).forEach((model: any) => {
+  if (model.associate) {
+    model.associate(models);
+  }
+});
 
-// Middleware
-// CORS: support comma-separated origins in CORS_ORIGIN env and trim trailing slashes
-const rawCors = process.env.CORS_ORIGIN || "http://localhost:3000";
-const allowedOrigins = rawCors
-  .split(",")
-  .map((o) => o.trim())
-  .filter(Boolean)
-  .map((o) => o.replace(/\/$/, ""));
+// Export everything
+export {
+  sequelize,
+  User,
+  Department,
+  Student,
+  Teacher,
+  Course,
+  Section,
+  Batch,
+  Timetable,
+  Attendance,
+  Notification,
+  SavedTimetable,
+  TeacherCourse,
+  AttendanceSession,
+  StudentFace,
+  StudentScanRecord,
+  TeacherClassCapture,
+  DetectedClassFace,
+  SmartAttendanceRecord,
+  SmartTimetableSolution,
+};
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      // Allow non-browser requests (no Origin header) like curl/health checks
-      if (!origin) return callback(null, true);
-
-      const normalized = origin.replace(/\/$/, "");
-
-      // Allow localhost:3000 and localhost:5000 (for proxy)
-      if (
-        normalized === "http://localhost:3000" ||
-        normalized === "http://localhost:5000"
-      ) {
-        return callback(null, true);
-      }
-
-      // Check against configured origins
-      if (allowedOrigins.includes(normalized)) {
-        return callback(null, true);
-      }
-
-      // For development, allow all localhost origins
-      if (normalized.startsWith("http://localhost:")) {
-        console.log(`✅ CORS allowing localhost origin: ${origin}`);
-        return callback(null, true);
-      }
-
-      console.warn(`⚠️ CORS blocked origin: ${origin}`);
-      // Don't throw error, just deny - this prevents 500 errors
-      return callback(null, false);
-    },
-    credentials: true,
-    optionsSuccessStatus: 204,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+export default models;

@@ -12,8 +12,9 @@ import Login from "./pages/Login";
 
 import Layout from "./components/common/Layout";
 
-
+import CoordinatorDashboard from "./pages/CoordinatorDashboard";
 import DepartmentManagement from "./components/coordinator/DepartmentManagement";
+import EnhancedTeacherDashboard from "./pages/EnhancedTeacherDashboard";
 
 import EnhancedStudentDashboard from "./pages/EnhancedStudentDashboard";
 import Profile from "./pages/Profile";
@@ -111,13 +112,13 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({
 
 // Route configurations by role for better organization
 const coordinatorRoutes = [
-  
+  { path: "/coordinator", component: CoordinatorDashboard, exact: true },
   { path: "/departments", component: DepartmentManagement },
   
 ];
 
 const teacherRoutes = [
-  
+  { path: "/teacher", component: EnhancedTeacherDashboard, exact: true },
   { path: "/attendance/take", component: TakeAttendance },
   { path: "/teacher/attendance", component: TeacherAttendanceDashboard },
   { path: "/teacher/attendance/history", component: UnifiedAttendanceHistory },
@@ -159,8 +160,11 @@ const App: React.FC = () => {
       <ToastProvider>
         <Router>
           <Switch>
-            {/* Public Routes */}
+            {/* Root route - redirect to login */}
+            <Route exact path="/" render={() => <Redirect to="/login" />} />
             
+            {/* Public Routes */}
+            <Route path="/login" component={Login} />
             <Route path="/login-old" component={Login} />
 
             {/* Coordinator Routes */}
