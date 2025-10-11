@@ -67,7 +67,7 @@ export const fetchAllStudents = async () => {
 };
 
 export const fetchAllTeachers = async () => {
-  const response = await api.get("/teachers_new");
+  const response = await api.get("/teachers");
   return response.data;
 };
 
