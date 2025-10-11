@@ -1,5 +1,5 @@
-import React, { useMemo } from "react";
-import { Link, useLocation } from "react-router-dom";
+import React, { useMemo } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 
 interface BreadcrumbItem {
   label: string;
@@ -8,34 +8,34 @@ interface BreadcrumbItem {
 }
 
 const breadcrumbConfig: Record<string, BreadcrumbItem> = {
-  "/coordinator": { label: "Dashboard", icon: "📊" },
-  "/students": { label: "Students", icon: "👥" },
-  "/teachers": { label: "Teachers", icon: "👨‍🏫" },
-  "/courses": { label: "Courses", icon: "📚" },
-  "/departments": { label: "Departments", icon: "🏢" },
-  "/timetable": { label: "Timetable", icon: "🗓️" },
-  "/attendance": { label: "Attendance", icon: "📝" },
-  "/teacher": { label: "Dashboard", icon: "📊" },
-  "/student": { label: "Dashboard", icon: "📊" },
-  "/my-timetable": { label: "My Schedule", icon: "🗓️" },
-  "/attendance/take": { label: "Take Attendance", icon: "✅" },
-  "/attendance/me": { label: "My Attendance", icon: "📈" },
-  "/profile": { label: "Account Settings", icon: "⚙️" },
-  "/student/profile": { label: "Student Profile", icon: "👤" },
+  '/coordinator': { label: 'Dashboard', icon: '📊' },
+  '/students': { label: 'Students', icon: '👥' },
+  '/teachers': { label: 'Teachers', icon: '👨‍🏫' },
+  '/courses': { label: 'Courses', icon: '📚' },
+  '/departments': { label: 'Departments', icon: '🏢' },
+  '/timetable': { label: 'Timetable', icon: '🗓️' },
+  '/attendance': { label: 'Attendance', icon: '📝' },
+  '/teacher': { label: 'Dashboard', icon: '📊' },
+  '/student': { label: 'Dashboard', icon: '📊' },
+  '/my-timetable': { label: 'My Schedule', icon: '🗓️' },
+  '/attendance/take': { label: 'Take Attendance', icon: '✅' },
+  '/attendance/me': { label: 'My Attendance', icon: '📈' },
+  '/profile': { label: 'Account Settings', icon: '⚙️' },
+  '/student/profile': { label: 'Student Profile', icon: '👤' },
 };
 
 const roleConfig = {
-  coordinator: { label: "Administration", icon: "🛡️" },
-  teacher: { label: "Teaching", icon: "👨‍🏫" },
-  student: { label: "Student Portal", icon: "🎓" },
+  coordinator: { label: 'Administration', icon: '🛡️' },
+  teacher: { label: 'Teaching', icon: '👨‍🏫' },
+  student: { label: 'Student Portal', icon: '🎓' },
 };
 
 const Breadcrumb: React.FC = () => {
   const location = useLocation();
-
+  
   const user = useMemo(() => {
     try {
-      const raw = localStorage.getItem("user");
+      const raw = localStorage.getItem('user');
       return raw ? JSON.parse(raw) : null;
     } catch {
       return null;
@@ -52,7 +52,7 @@ const Breadcrumb: React.FC = () => {
       items.push({
         label: roleInfo.label,
         icon: roleInfo.icon,
-        href: `/${user.role}`,
+        href: `/${user.role}`
       });
     }
 
@@ -61,7 +61,7 @@ const Breadcrumb: React.FC = () => {
     if (currentPage && path !== `/${user?.role}`) {
       items.push({
         ...currentPage,
-        href: path,
+        href: path
       });
     }
 
@@ -69,7 +69,7 @@ const Breadcrumb: React.FC = () => {
   }, [location.pathname, user?.role]);
 
   // Don't show breadcrumb if there's only one item or on login page
-  if (breadcrumbs.length <= 1 || location.pathname === "/login") {
+  if (breadcrumbs.length <= 1 || location.pathname === '/login') {
     return null;
   }
 
@@ -77,10 +77,7 @@ const Breadcrumb: React.FC = () => {
     <nav className="flex mb-4 text-sm" aria-label="Breadcrumb">
       <ol className="inline-flex items-center space-x-1 md:space-x-3">
         {breadcrumbs.map((item, index) => (
-          <li
-            key={item.href || item.label}
-            className="inline-flex items-center"
-          >
+          <li key={item.href || item.label} className="inline-flex items-center">
             {index > 0 && (
               <svg
                 className="w-4 h-4 text-gray-400 mx-2"
@@ -101,7 +98,7 @@ const Breadcrumb: React.FC = () => {
               </span>
             ) : (
               <Link
-                to={item.href || "#"}
+                to={item.href || '#'}
                 className="flex items-center space-x-1 text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200"
               >
                 {item.icon && <span>{item.icon}</span>}

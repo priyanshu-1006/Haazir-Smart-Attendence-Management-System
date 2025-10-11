@@ -9,18 +9,14 @@ const Header: React.FC = () => {
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setShowProfileMenu(false);
       }
     };
 
     if (showProfileMenu) {
       document.addEventListener("mousedown", handleClickOutside);
-      return () =>
-        document.removeEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
     }
   }, [showProfileMenu]);
 
@@ -187,9 +183,7 @@ const Header: React.FC = () => {
                             user.role
                           )} rounded-xl flex items-center justify-center text-white shadow-md`}
                         >
-                          <span className="text-lg">
-                            {getRoleIcon(user.role)}
-                          </span>
+                          <span className="text-lg">{getRoleIcon(user.role)}</span>
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="font-semibold text-slate-800 truncate">

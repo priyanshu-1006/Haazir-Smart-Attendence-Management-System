@@ -1,5 +1,5 @@
-import React, { useMemo } from "react";
-import { Link } from "react-router-dom";
+import React, { useMemo } from 'react';
+import { Link } from 'react-router-dom';
 
 interface QuickAction {
   title: string;
@@ -12,79 +12,79 @@ interface QuickAction {
 const quickActionsConfig = {
   coordinator: [
     {
-      title: "Add Student",
-      description: "Register a new student",
-      icon: "👥",
-      href: "/students",
-      color: "bg-blue-500 hover:bg-blue-600",
+      title: 'Add Student',
+      description: 'Register a new student',
+      icon: '👥',
+      href: '/students',
+      color: 'bg-blue-500 hover:bg-blue-600'
     },
     {
-      title: "View Reports",
-      description: "Check attendance reports",
-      icon: "📊",
-      href: "/attendance",
-      color: "bg-green-500 hover:bg-green-600",
+      title: 'View Reports',
+      description: 'Check attendance reports',
+      icon: '📊',
+      href: '/attendance',
+      color: 'bg-green-500 hover:bg-green-600'
     },
     {
-      title: "Manage Courses",
-      description: "Create and edit courses",
-      icon: "📚",
-      href: "/courses",
-      color: "bg-purple-500 hover:bg-purple-600",
+      title: 'Manage Courses',
+      description: 'Create and edit courses',
+      icon: '📚',
+      href: '/courses',
+      color: 'bg-purple-500 hover:bg-purple-600'
     },
     {
-      title: "Setup Timetable",
-      description: "Configure class schedules",
-      icon: "🗓️",
-      href: "/timetable",
-      color: "bg-orange-500 hover:bg-orange-600",
-    },
+      title: 'Setup Timetable',
+      description: 'Configure class schedules',
+      icon: '🗓️',
+      href: '/timetable',
+      color: 'bg-orange-500 hover:bg-orange-600'
+    }
   ],
   teacher: [
     {
-      title: "Take Attendance",
-      description: "Mark student attendance",
-      icon: "✅",
-      href: "/attendance/take",
-      color: "bg-green-500 hover:bg-green-600",
+      title: 'Take Attendance',
+      description: 'Mark student attendance',
+      icon: '✅',
+      href: '/attendance/take',
+      color: 'bg-green-500 hover:bg-green-600'
     },
     {
-      title: "View Schedule",
-      description: "Check your timetable",
-      icon: "🗓️",
-      href: "/my-timetable",
-      color: "bg-blue-500 hover:bg-blue-600",
-    },
+      title: 'View Schedule',
+      description: 'Check your timetable',
+      icon: '🗓️',
+      href: '/my-timetable',
+      color: 'bg-blue-500 hover:bg-blue-600'
+    }
   ],
   student: [
     {
-      title: "Check Attendance",
-      description: "View your attendance record",
-      icon: "📈",
-      href: "/attendance/me",
-      color: "bg-blue-500 hover:bg-blue-600",
+      title: 'Check Attendance',
+      description: 'View your attendance record',
+      icon: '📈',
+      href: '/attendance/me',
+      color: 'bg-blue-500 hover:bg-blue-600'
     },
     {
-      title: "View Schedule",
-      description: "Check your class timetable",
-      icon: "🗓️",
-      href: "/my-timetable",
-      color: "bg-green-500 hover:bg-green-600",
+      title: 'View Schedule',
+      description: 'Check your class timetable',
+      icon: '🗓️',
+      href: '/my-timetable',
+      color: 'bg-green-500 hover:bg-green-600'
     },
     {
-      title: "Update Profile",
-      description: "Edit your information",
-      icon: "👤",
-      href: "/student/profile",
-      color: "bg-purple-500 hover:bg-purple-600",
-    },
-  ],
+      title: 'Update Profile',
+      description: 'Edit your information',
+      icon: '👤',
+      href: '/student/profile',
+      color: 'bg-purple-500 hover:bg-purple-600'
+    }
+  ]
 };
 
 const QuickActions: React.FC = () => {
   const user = useMemo(() => {
     try {
-      const raw = localStorage.getItem("user");
+      const raw = localStorage.getItem('user');
       return raw ? JSON.parse(raw) : null;
     } catch {
       return null;
@@ -93,9 +93,7 @@ const QuickActions: React.FC = () => {
 
   const quickActions = useMemo(() => {
     if (!user?.role) return [];
-    return (
-      quickActionsConfig[user.role as keyof typeof quickActionsConfig] || []
-    );
+    return quickActionsConfig[user.role as keyof typeof quickActionsConfig] || [];
   }, [user?.role]);
 
   if (quickActions.length === 0) {
@@ -104,9 +102,7 @@ const QuickActions: React.FC = () => {
 
   return (
     <div className="mb-8">
-      <h2 className="text-lg font-semibold text-gray-900 mb-4">
-        Quick Actions
-      </h2>
+      <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {quickActions.map((action, index) => (
           <Link

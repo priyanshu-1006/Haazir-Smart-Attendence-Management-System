@@ -7,7 +7,6 @@ import {
   Clock,
   Users,
   AlertCircle,
-  Bell,
 } from "lucide-react";
 import QRDisplay from "./QRDisplay";
 import ClassPhotoCapture from "./ClassPhotoCapture";
@@ -91,12 +90,6 @@ const SmartAttendanceDashboard: React.FC = () => {
   const [finalizing, setFinalizing] = useState(false);
   const [attendanceSummary, setAttendanceSummary] = useState<any>(null);
   const [currentDateTime, setCurrentDateTime] = useState(new Date());
-  const [previewNotificationsSent, setPreviewNotificationsSent] =
-    useState(false);
-  const [previewNotificationsCount, setPreviewNotificationsCount] = useState({
-    success: 0,
-    failed: 0,
-  });
 
   // Update current date and time every second
   useEffect(() => {
@@ -123,8 +116,7 @@ const SmartAttendanceDashboard: React.FC = () => {
 
       try {
         const token = localStorage.getItem("token");
-        const API_URL =
-          process.env.REACT_APP_API_URL || "http://localhost:5000/api";
+        const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
         const response = await fetch(
           `${API_URL}/timetable/teacher/${teacherId}`,
           {
@@ -201,8 +193,7 @@ const SmartAttendanceDashboard: React.FC = () => {
 
     try {
       const token = localStorage.getItem("token");
-      const API_URL =
-        process.env.REACT_APP_API_URL || "http://localhost:5000/api";
+      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
       const response = await fetch(
         `${API_URL}/smart-attendance/session/${sessionData.sessionId}/status`,
         {
@@ -272,8 +263,7 @@ const SmartAttendanceDashboard: React.FC = () => {
       async (position) => {
         try {
           const token = localStorage.getItem("token");
-          const API_URL =
-            process.env.REACT_APP_API_URL || "http://localhost:5000/api";
+          const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
           const response = await fetch(
             `${API_URL}/smart-attendance/generate-qr`,
             {
@@ -360,98 +350,6 @@ const SmartAttendanceDashboard: React.FC = () => {
     setMatchedStudentIds(matchedIds);
     setCurrentStep("finalize");
     fetchSessionStatus();
-    // Send preview notifications when entering finalize step
-    sendPreviewNotifications(matchedIds);
-  };
-
-  // Send preview notifications to students before teacher finalizes
-  const sendPreviewNotifications = async (photoMatchedIds: number[]) => {
-    if (!sessionData?.sessionId) return;
-
-    try {
-      const token = localStorage.getItem("token");
-      const API_URL =
-        process.env.REACT_APP_API_URL || "http://localhost:5000/api";
-
-      // Calculate student statuses (same logic as finalize step)
-      const scannedIds = new Set(
-        sessionData?.scans.records
-          .filter((s) => s.status === "verified")
-          .map((s) => s.studentId) || []
-      );
-      const photoIds = new Set(photoMatchedIds);
-      const eligibleStudents = sessionData?.eligibleStudents || [];
-
-      const studentStatuses: Array<{
-        studentId: number;
-        status: "present" | "absent";
-        reason?: string;
-      }> = [];
-
-      eligibleStudents.forEach((student) => {
-        const scanned = scannedIds.has(student.studentId);
-        const inPhoto = photoIds.has(student.studentId);
-        const manualStatus = manualAdjustments.get(student.studentId);
-
-        let status: "present" | "absent" = "absent";
-        let reason = "Did not scan QR code";
-
-        if (scanned && inPhoto) {
-          status = "present";
-          reason = "Verified in both scan & photo";
-        } else if (scanned && !inPhoto) {
-          status = "absent";
-          reason = "Not detected in class photo";
-        } else if (!scanned && inPhoto) {
-          status = "absent";
-          reason = "Did not scan QR code";
-        }
-
-        if (manualStatus) {
-          status = manualStatus;
-          reason = "Manually adjusted by teacher";
-        }
-
-        studentStatuses.push({
-          studentId: student.studentId,
-          status,
-          reason,
-        });
-      });
-
-      console.log("📧 Sending preview notifications to students...");
-
-      const response = await fetch(
-        `${API_URL}/smart-attendance/preview-attendance`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            sessionId: sessionData.sessionId,
-            studentStatuses,
-          }),
-        }
-      );
-
-      const data = await response.json();
-
-      if (response.ok) {
-        console.log("✅ Preview notifications sent successfully:", data);
-        setPreviewNotificationsSent(true);
-        setPreviewNotificationsCount({
-          success: data.notificationsSent || 0,
-          failed: data.notificationsFailed || 0,
-        });
-      } else {
-        console.error("❌ Failed to send preview notifications:", data);
-      }
-    } catch (err) {
-      console.error("Error sending preview notifications:", err);
-      // Don't show error to teacher - preview notifications are optional
-    }
   };
 
   const handleToggleManualAttendance = (
@@ -465,11 +363,6 @@ const SmartAttendanceDashboard: React.FC = () => {
       newAdjustments.set(studentId, "present");
     }
     setManualAdjustments(newAdjustments);
-
-    // Resend preview notifications with updated status
-    if (sessionData) {
-      sendPreviewNotifications(matchedStudentIds);
-    }
   };
 
   const handleFinalizeAttendance = async () => {
@@ -543,19 +436,21 @@ const SmartAttendanceDashboard: React.FC = () => {
         statuses: allStudentStatuses,
       });
 
-      const API_URL =
-        process.env.REACT_APP_API_URL || "http://localhost:5000/api";
-      const response = await fetch(`${API_URL}/smart-attendance/finalize`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          sessionId: sessionData.sessionId,
-          studentStatuses: allStudentStatuses, // Send ALL statuses
-        }),
-      });
+      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+      const response = await fetch(
+        `${API_URL}/smart-attendance/finalize`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            sessionId: sessionData.sessionId,
+            studentStatuses: allStudentStatuses, // Send ALL statuses
+          }),
+        }
+      );
 
       const data = await response.json();
 
@@ -958,25 +853,6 @@ const SmartAttendanceDashboard: React.FC = () => {
               marked present.
             </p>
           </div>
-
-          {previewNotificationsSent && (
-            <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
-              <div className="flex items-center space-x-2">
-                <Bell className="text-blue-600" size={20} />
-                <p className="font-semibold text-blue-800">
-                  Preview Notifications Sent to Students
-                </p>
-              </div>
-              <p className="text-sm text-blue-700 mt-1">
-                {previewNotificationsCount.success} student(s) notified of their
-                current attendance status
-                {previewNotificationsCount.failed > 0 &&
-                  ` (${previewNotificationsCount.failed} failed)`}
-                . Students can inform you of any errors before you finalize the
-                attendance.
-              </p>
-            </div>
-          )}
 
           <div className="space-y-2 max-h-96 overflow-y-auto mb-6">
             {Array.from(studentStatuses.entries()).map(([studentId, data]) => (
