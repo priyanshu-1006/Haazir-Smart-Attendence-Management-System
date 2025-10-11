@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface SkeletonProps {
   className?: string;
@@ -8,18 +8,19 @@ interface SkeletonProps {
   circle?: boolean;
 }
 
-export const Skeleton: React.FC<SkeletonProps> = ({ 
-  className = '', 
-  width = 'w-full', 
-  height = 'h-4', 
-  rounded = true, 
-  circle = false 
+export const Skeleton: React.FC<SkeletonProps> = ({
+  className = "",
+  width = "w-full",
+  height = "h-4",
+  rounded = true,
+  circle = false,
 }) => {
-  const baseClasses = 'animate-pulse bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 bg-size-200 animate-shimmer';
-  const shapeClasses = circle ? 'rounded-full' : rounded ? 'rounded' : '';
-  
+  const baseClasses =
+    "animate-pulse bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 bg-size-200 animate-shimmer";
+  const shapeClasses = circle ? "rounded-full" : rounded ? "rounded" : "";
+
   return (
-    <div 
+    <div
       className={`${baseClasses} ${shapeClasses} ${width} ${height} ${className}`}
       role="status"
       aria-label="Loading content"
@@ -28,40 +29,40 @@ export const Skeleton: React.FC<SkeletonProps> = ({
 };
 
 interface LoadingSpinnerProps {
-  size?: 'sm' | 'md' | 'lg' | 'xl';
-  color?: 'blue' | 'purple' | 'green' | 'red' | 'gray';
+  size?: "sm" | "md" | "lg" | "xl";
+  color?: "blue" | "purple" | "green" | "red" | "gray";
   text?: string;
   centered?: boolean;
 }
 
-export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ 
-  size = 'md',
-  color = 'blue',
+export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
+  size = "md",
+  color = "blue",
   text,
-  centered = true
+  centered = true,
 }) => {
   const sizeClasses = {
-    sm: 'w-4 h-4',
-    md: 'w-8 h-8',
-    lg: 'w-12 h-12',
-    xl: 'w-16 h-16'
+    sm: "w-4 h-4",
+    md: "w-8 h-8",
+    lg: "w-12 h-12",
+    xl: "w-16 h-16",
   };
 
   const colorClasses = {
-    blue: 'border-blue-600',
-    purple: 'border-purple-600',
-    green: 'border-green-600',
-    red: 'border-red-600',
-    gray: 'border-gray-600'
+    blue: "border-blue-600",
+    purple: "border-purple-600",
+    green: "border-green-600",
+    red: "border-red-600",
+    gray: "border-gray-600",
   };
 
-  const containerClasses = centered 
-    ? 'flex flex-col items-center justify-center p-8' 
-    : 'flex items-center space-x-3';
+  const containerClasses = centered
+    ? "flex flex-col items-center justify-center p-8"
+    : "flex items-center space-x-3";
 
   return (
     <div className={containerClasses} role="status" aria-live="polite">
-      <div 
+      <div
         className={`animate-spin rounded-full border-4 border-gray-200 ${colorClasses[color]} border-t-transparent ${sizeClasses[size]}`}
         aria-hidden="true"
       />
@@ -81,12 +82,16 @@ interface CardSkeletonProps {
   showButton?: boolean;
 }
 
-export const CardSkeleton: React.FC<CardSkeletonProps> = ({ 
-  rows = 3, 
-  showAvatar = false, 
-  showButton = false 
+export const CardSkeleton: React.FC<CardSkeletonProps> = ({
+  rows = 3,
+  showAvatar = false,
+  showButton = false,
 }) => (
-  <div className="bg-white rounded-2xl shadow-lg p-6 space-y-4" role="status" aria-label="Loading card">
+  <div
+    className="bg-white rounded-2xl shadow-lg p-6 space-y-4"
+    role="status"
+    aria-label="Loading card"
+  >
     {showAvatar && (
       <div className="flex items-center space-x-4">
         <Skeleton circle width="w-12" height="h-12" />
@@ -96,20 +101,18 @@ export const CardSkeleton: React.FC<CardSkeletonProps> = ({
         </div>
       </div>
     )}
-    
+
     <div className="space-y-3">
       {Array.from({ length: rows }).map((_, index) => (
-        <Skeleton 
-          key={index} 
-          width={index === rows - 1 ? 'w-3/4' : 'w-full'} 
-          height="h-4" 
+        <Skeleton
+          key={index}
+          width={index === rows - 1 ? "w-3/4" : "w-full"}
+          height="h-4"
         />
       ))}
     </div>
-    
-    {showButton && (
-      <Skeleton width="w-32" height="h-10" />
-    )}
+
+    {showButton && <Skeleton width="w-32" height="h-10" />}
   </div>
 );
 
@@ -118,8 +121,15 @@ interface TableSkeletonProps {
   columns?: number;
 }
 
-export const TableSkeleton: React.FC<TableSkeletonProps> = ({ rows = 5, columns = 4 }) => (
-  <div className="bg-white rounded-2xl shadow-lg overflow-hidden" role="status" aria-label="Loading table">
+export const TableSkeleton: React.FC<TableSkeletonProps> = ({
+  rows = 5,
+  columns = 4,
+}) => (
+  <div
+    className="bg-white rounded-2xl shadow-lg overflow-hidden"
+    role="status"
+    aria-label="Loading table"
+  >
     {/* Header */}
     <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
       <div className="grid grid-cols-4 gap-4">
@@ -128,17 +138,17 @@ export const TableSkeleton: React.FC<TableSkeletonProps> = ({ rows = 5, columns 
         ))}
       </div>
     </div>
-    
+
     {/* Rows */}
     <div className="divide-y divide-gray-200">
       {Array.from({ length: rows }).map((_, rowIndex) => (
         <div key={rowIndex} className="px-6 py-4">
           <div className="grid grid-cols-4 gap-4">
             {Array.from({ length: columns }).map((_, colIndex) => (
-              <Skeleton 
-                key={colIndex} 
-                width={colIndex === 0 ? 'w-full' : 'w-2/3'} 
-                height="h-4" 
+              <Skeleton
+                key={colIndex}
+                width={colIndex === 0 ? "w-full" : "w-2/3"}
+                height="h-4"
               />
             ))}
           </div>
@@ -149,15 +159,21 @@ export const TableSkeleton: React.FC<TableSkeletonProps> = ({ rows = 5, columns 
 );
 
 interface ChartSkeletonProps {
-  type?: 'line' | 'bar' | 'doughnut';
+  type?: "line" | "bar" | "doughnut";
 }
 
-export const ChartSkeleton: React.FC<ChartSkeletonProps> = ({ type = 'line' }) => (
-  <div className="bg-white rounded-2xl shadow-lg p-6" role="status" aria-label="Loading chart">
+export const ChartSkeleton: React.FC<ChartSkeletonProps> = ({
+  type = "line",
+}) => (
+  <div
+    className="bg-white rounded-2xl shadow-lg p-6"
+    role="status"
+    aria-label="Loading chart"
+  >
     <div className="space-y-4">
       <Skeleton width="w-1/3" height="h-6" />
-      
-      {type === 'doughnut' ? (
+
+      {type === "doughnut" ? (
         <div className="flex justify-center">
           <Skeleton circle width="w-48" height="h-48" />
         </div>
@@ -166,10 +182,10 @@ export const ChartSkeleton: React.FC<ChartSkeletonProps> = ({ type = 'line' }) =
           {Array.from({ length: 8 }).map((_, index) => (
             <div key={index} className="flex items-end space-x-2 h-8">
               {Array.from({ length: 12 }).map((_, barIndex) => (
-                <Skeleton 
-                  key={barIndex} 
-                  width="w-4" 
-                  height={`h-${Math.floor(Math.random() * 6) + 2}`} 
+                <Skeleton
+                  key={barIndex}
+                  width="w-4"
+                  height={`h-${Math.floor(Math.random() * 6) + 2}`}
                 />
               ))}
             </div>
@@ -181,10 +197,12 @@ export const ChartSkeleton: React.FC<ChartSkeletonProps> = ({ type = 'line' }) =
 );
 
 interface PageSkeletonProps {
-  type?: 'dashboard' | 'table' | 'profile' | 'form';
+  type?: "dashboard" | "table" | "profile" | "form";
 }
 
-export const PageSkeleton: React.FC<PageSkeletonProps> = ({ type = 'dashboard' }) => {
+export const PageSkeleton: React.FC<PageSkeletonProps> = ({
+  type = "dashboard",
+}) => {
   const renderDashboardSkeleton = () => (
     <div className="space-y-8">
       {/* Header */}
@@ -192,14 +210,14 @@ export const PageSkeleton: React.FC<PageSkeletonProps> = ({ type = 'dashboard' }
         <Skeleton width="w-1/4" height="h-8" />
         <Skeleton width="w-1/2" height="h-4" />
       </div>
-      
+
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {Array.from({ length: 4 }).map((_, index) => (
           <CardSkeleton key={index} rows={2} />
         ))}
       </div>
-      
+
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <ChartSkeleton type="line" />
@@ -215,7 +233,7 @@ export const PageSkeleton: React.FC<PageSkeletonProps> = ({ type = 'dashboard' }
         <Skeleton width="w-1/4" height="h-8" />
         <Skeleton width="w-48" height="h-10" />
       </div>
-      
+
       {/* Table */}
       <TableSkeleton rows={8} columns={5} />
     </div>
@@ -230,7 +248,7 @@ export const PageSkeleton: React.FC<PageSkeletonProps> = ({ type = 'dashboard' }
         <Skeleton width="w-1/2" height="h-4" className="mx-auto" />
         <Skeleton width="w-3/4" height="h-8" className="mx-auto" />
       </div>
-      
+
       {/* Main Content */}
       <div className="lg:col-span-2 space-y-6">
         <CardSkeleton rows={4} />
@@ -245,7 +263,7 @@ export const PageSkeleton: React.FC<PageSkeletonProps> = ({ type = 'dashboard' }
         <Skeleton width="w-1/3" height="h-8" />
         <Skeleton width="w-2/3" height="h-4" />
       </div>
-      
+
       <div className="bg-white rounded-2xl p-6 space-y-6">
         {Array.from({ length: 5 }).map((_, index) => (
           <div key={index} className="space-y-2">
@@ -253,7 +271,7 @@ export const PageSkeleton: React.FC<PageSkeletonProps> = ({ type = 'dashboard' }
             <Skeleton width="w-full" height="h-12" />
           </div>
         ))}
-        
+
         <div className="flex justify-end space-x-4">
           <Skeleton width="w-24" height="h-10" />
           <Skeleton width="w-32" height="h-10" />
@@ -266,24 +284,24 @@ export const PageSkeleton: React.FC<PageSkeletonProps> = ({ type = 'dashboard' }
     dashboard: renderDashboardSkeleton,
     table: renderTableSkeleton,
     profile: renderProfileSkeleton,
-    form: renderFormSkeleton
+    form: renderFormSkeleton,
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
-      <div className="max-w-7xl mx-auto">
-        {skeletonTypes[type]()}
-      </div>
+      <div className="max-w-7xl mx-auto">{skeletonTypes[type]()}</div>
     </div>
   );
 };
 
 // Pulse Loading Animation Component
-export const PulseLoader: React.FC<{ size?: 'sm' | 'md' | 'lg' }> = ({ size = 'md' }) => {
+export const PulseLoader: React.FC<{ size?: "sm" | "md" | "lg" }> = ({
+  size = "md",
+}) => {
   const sizeClasses = {
-    sm: 'w-2 h-2',
-    md: 'w-3 h-3',
-    lg: 'w-4 h-4'
+    sm: "w-2 h-2",
+    md: "w-3 h-3",
+    lg: "w-4 h-4",
   };
 
   return (
@@ -294,7 +312,7 @@ export const PulseLoader: React.FC<{ size?: 'sm' | 'md' | 'lg' }> = ({ size = 'm
           className={`${sizeClasses[size]} bg-blue-600 rounded-full animate-pulse`}
           style={{
             animationDelay: `${index * 0.2}s`,
-            animationDuration: '1.4s'
+            animationDuration: "1.4s",
           }}
         />
       ))}
@@ -306,26 +324,32 @@ export const PulseLoader: React.FC<{ size?: 'sm' | 'md' | 'lg' }> = ({ size = 'm
 // Progress Bar Component
 interface ProgressBarProps {
   progress: number;
-  color?: 'blue' | 'green' | 'purple' | 'red';
+  color?: "blue" | "green" | "purple" | "red";
   showPercentage?: boolean;
   animated?: boolean;
 }
 
 export const ProgressBar: React.FC<ProgressBarProps> = ({
   progress,
-  color = 'blue',
+  color = "blue",
   showPercentage = true,
-  animated = true
+  animated = true,
 }) => {
   const colorClasses = {
-    blue: 'bg-blue-600',
-    green: 'bg-green-600',
-    purple: 'bg-purple-600',
-    red: 'bg-red-600'
+    blue: "bg-blue-600",
+    green: "bg-green-600",
+    purple: "bg-purple-600",
+    red: "bg-red-600",
   };
 
   return (
-    <div className="w-full" role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100}>
+    <div
+      className="w-full"
+      role="progressbar"
+      aria-valuenow={progress}
+      aria-valuemin={0}
+      aria-valuemax={100}
+    >
       <div className="flex justify-between items-center mb-2">
         <span className="text-sm font-medium text-gray-700">Progress</span>
         {showPercentage && (
@@ -334,8 +358,10 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
       </div>
       <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
         <div
-          className={`h-2 ${colorClasses[color]} rounded-full transition-all duration-500 ease-out ${
-            animated ? 'animate-pulse' : ''
+          className={`h-2 ${
+            colorClasses[color]
+          } rounded-full transition-all duration-500 ease-out ${
+            animated ? "animate-pulse" : ""
           }`}
           style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
         />
@@ -352,5 +378,5 @@ export default {
   ChartSkeleton,
   PageSkeleton,
   PulseLoader,
-  ProgressBar
+  ProgressBar,
 };
