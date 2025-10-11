@@ -1,21 +1,21 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
-import Lottie from 'lottie-react';
-import { Link } from 'react-router-dom';
-import { useTheme } from '../../hooks/useTheme';
-import { 
-  Sparkles, 
-  ArrowRight, 
-  Play, 
-  CheckCircle2, 
-  Users, 
-  BarChart3, 
-  Shield 
-} from 'lucide-react';
+import React, { useRef, useEffect, useState } from "react";
+import { motion, useScroll, useTransform, useSpring } from "framer-motion";
+import Lottie from "lottie-react";
+import { Link } from "react-router-dom";
+import { useTheme } from "../../hooks/useTheme";
+import {
+  Sparkles,
+  ArrowRight,
+  Play,
+  CheckCircle2,
+  Users,
+  BarChart3,
+  Shield,
+} from "lucide-react";
 
 // Import Lottie animations
-import heroAnimationData from '../../assets/lottie/hero-animation.json';
-import backgroundAnimationData from '../../assets/lottie/background.json';
+import heroAnimationData from "../../assets/lottie/hero-animation.json";
+import backgroundAnimationData from "../../assets/lottie/background.json";
 
 const Hero: React.FC = () => {
   const { theme } = useTheme();
@@ -45,20 +45,20 @@ const Hero: React.FC = () => {
       setMousePosition({ x, y });
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
   return (
     <motion.section
       ref={heroRef}
       className={`relative min-h-screen flex items-center justify-center overflow-hidden pt-6 ${
-        theme === 'dark' ? '' : 'bg-white'
+        theme === "dark" ? "" : "bg-white"
       }`}
       style={{ opacity }}
     >
       {/* Lottie Background Animation for Hero Section - Only in Dark Mode */}
-      {theme === 'dark' && (
+      {theme === "dark" && (
         <div className="absolute inset-0 z-0 opacity-20 pointer-events-none">
           <Lottie
             animationData={backgroundAnimationData}
@@ -69,9 +69,8 @@ const Hero: React.FC = () => {
       )}
 
       {/* Main Content */}
-  <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
-          
           {/* Left Content */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
@@ -86,9 +85,11 @@ const Hero: React.FC = () => {
               whileTap={{ scale: 0.95 }}
             >
               <Sparkles className="w-4 h-4 text-yellow-500" />
-              <span className={`text-sm font-medium ${
-                theme === 'dark' ? 'text-gray-200' : 'text-gray-700'
-              }`}>
+              <span
+                className={`text-sm font-medium ${
+                  theme === "dark" ? "text-gray-200" : "text-gray-700"
+                }`}
+              >
                 AI-Powered Attendance System
               </span>
               <motion.span
@@ -101,9 +102,11 @@ const Hero: React.FC = () => {
             </motion.div>
 
             {/* Heading */}
-            <h1 className={`text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6 ${
-              theme === 'dark' ? 'text-white' : 'text-gray-900'
-            }`}>
+            <h1
+              className={`text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6 ${
+                theme === "dark" ? "text-white" : "text-gray-900"
+              }`}
+            >
               <span className="block">Attendance</span>
               <span className="block bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
                 Made Simple
@@ -111,47 +114,69 @@ const Hero: React.FC = () => {
             </h1>
 
             {/* Subheading */}
-            <p className={`text-xl md:text-2xl mb-8 leading-relaxed ${
-              theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
-            }`}>
-              India's most trusted attendance management system with face recognition, 
-              real-time analytics, and automated reporting. Built for Indian educational institutions.
+            <p
+              className={`text-xl md:text-2xl mb-8 leading-relaxed ${
+                theme === "dark" ? "text-gray-300" : "text-gray-600"
+              }`}
+            >
+              India's most trusted attendance management system with face
+              recognition, real-time analytics, and automated reporting. Built
+              for Indian educational institutions.
             </p>
 
             {/* Feature Pills */}
             <div className="flex flex-wrap gap-3 mb-10">
               {[
-                { icon: CheckCircle2, text: 'Face Recognition', color: 'text-green-500' },
-                { icon: BarChart3, text: 'Real-time Analytics', color: 'text-blue-500' },
-                { icon: Users, text: 'Multi-role Access', color: 'text-purple-500' },
-                { icon: Shield, text: 'Secure & Private', color: 'text-orange-500' },
+                {
+                  icon: CheckCircle2,
+                  text: "Face Recognition",
+                  color: "text-green-500",
+                },
+                {
+                  icon: BarChart3,
+                  text: "Real-time Analytics",
+                  color: "text-blue-500",
+                },
+                {
+                  icon: Users,
+                  text: "Multi-role Access",
+                  color: "text-purple-500",
+                },
+                {
+                  icon: Shield,
+                  text: "Secure & Private",
+                  color: "text-orange-500",
+                },
               ].map((feature, index) => (
                 <motion.div
                   key={index}
                   className={`flex items-center gap-2 px-4 py-2 rounded-full ${
-                    theme === 'dark' 
-                      ? 'bg-slate-800/50 text-gray-300' 
-                      : 'bg-white/50 text-gray-700'
+                    theme === "dark"
+                      ? "bg-slate-800/50 text-gray-300"
+                      : "bg-white/50 text-gray-700"
                   } backdrop-blur-sm border ${
-                    theme === 'dark' ? 'border-slate-700' : 'border-gray-200'
+                    theme === "dark" ? "border-slate-700" : "border-gray-200"
                   } shadow-sm hover:shadow-md cursor-pointer`}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5 + index * 0.1 }}
-                  whileHover={{ 
+                  whileHover={{
                     scale: 1.05,
-                    backgroundColor: theme === 'dark' ? 'rgba(99, 102, 241, 0.2)' : 'rgba(99, 102, 241, 0.1)',
+                    backgroundColor:
+                      theme === "dark"
+                        ? "rgba(99, 102, 241, 0.2)"
+                        : "rgba(99, 102, 241, 0.1)",
                   }}
                 >
                   <motion.div
-                    animate={{ 
+                    animate={{
                       rotate: [0, 5, -5, 0],
-                      scale: [1, 1.1, 1]
+                      scale: [1, 1.1, 1],
                     }}
-                    transition={{ 
+                    transition={{
                       duration: 2,
                       repeat: Infinity,
-                      delay: index * 0.2
+                      delay: index * 0.2,
                     }}
                   >
                     <feature.icon className={`w-4 h-4 ${feature.color}`} />
@@ -163,15 +188,17 @@ const Hero: React.FC = () => {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link to="/login">
-                <motion.button
-                  className="group relative px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold text-lg shadow-lg shadow-indigo-500/50 overflow-hidden"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Link
+                  to="/login"
+                  className="group relative inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold text-lg shadow-lg shadow-indigo-500/50 overflow-hidden"
                 >
                   <motion.span
                     className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600"
-                    initial={{ x: '100%' }}
+                    initial={{ x: "100%" }}
                     whileHover={{ x: 0 }}
                     transition={{ duration: 0.3 }}
                   />
@@ -179,15 +206,15 @@ const Hero: React.FC = () => {
                     Get Started
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </span>
-                </motion.button>
-              </Link>
+                </Link>
+              </motion.div>
 
               <motion.button
                 onClick={() => setIsVideoPlaying(true)}
                 className={`group px-8 py-4 rounded-xl font-semibold text-lg flex items-center gap-3 ${
-                  theme === 'dark'
-                    ? 'bg-slate-800/50 text-white border border-slate-700 hover:bg-slate-800'
-                    : 'bg-white text-gray-900 border border-gray-200 hover:bg-gray-50'
+                  theme === "dark"
+                    ? "bg-slate-800/50 text-white border border-slate-700 hover:bg-slate-800"
+                    : "bg-white text-gray-900 border border-gray-200 hover:bg-gray-50"
                 } backdrop-blur-sm transition-all`}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -211,44 +238,60 @@ const Hero: React.FC = () => {
               transition={{ delay: 1 }}
             >
               <div>
-                <div className={`text-3xl font-bold ${
-                  theme === 'dark' ? 'text-white' : 'text-gray-900'
-                }`}>
+                <div
+                  className={`text-3xl font-bold ${
+                    theme === "dark" ? "text-white" : "text-gray-900"
+                  }`}
+                >
                   50K+
                 </div>
-                <div className={`text-sm ${
-                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                }`}>
+                <div
+                  className={`text-sm ${
+                    theme === "dark" ? "text-gray-400" : "text-gray-600"
+                  }`}
+                >
                   Active Users
                 </div>
               </div>
-              <div className={`h-12 w-px ${
-                theme === 'dark' ? 'bg-gray-700' : 'bg-gray-300'
-              }`} />
+              <div
+                className={`h-12 w-px ${
+                  theme === "dark" ? "bg-gray-700" : "bg-gray-300"
+                }`}
+              />
               <div>
-                <div className={`text-3xl font-bold ${
-                  theme === 'dark' ? 'text-white' : 'text-gray-900'
-                }`}>
+                <div
+                  className={`text-3xl font-bold ${
+                    theme === "dark" ? "text-white" : "text-gray-900"
+                  }`}
+                >
                   150+
                 </div>
-                <div className={`text-sm ${
-                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                }`}>
+                <div
+                  className={`text-sm ${
+                    theme === "dark" ? "text-gray-400" : "text-gray-600"
+                  }`}
+                >
                   Institutions
                 </div>
               </div>
-              <div className={`h-12 w-px ${
-                theme === 'dark' ? 'bg-gray-700' : 'bg-gray-300'
-              }`} />
+              <div
+                className={`h-12 w-px ${
+                  theme === "dark" ? "bg-gray-700" : "bg-gray-300"
+                }`}
+              />
               <div>
-                <div className={`text-3xl font-bold ${
-                  theme === 'dark' ? 'text-white' : 'text-gray-900'
-                }`}>
+                <div
+                  className={`text-3xl font-bold ${
+                    theme === "dark" ? "text-white" : "text-gray-900"
+                  }`}
+                >
                   98%
                 </div>
-                <div className={`text-sm ${
-                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                }`}>
+                <div
+                  className={`text-sm ${
+                    theme === "dark" ? "text-gray-400" : "text-gray-600"
+                  }`}
+                >
                   Satisfaction
                 </div>
               </div>
@@ -261,7 +304,7 @@ const Hero: React.FC = () => {
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            style={{ 
+            style={{
               y: smoothY2,
               rotateX: mousePosition.y * 5,
               rotateY: mousePosition.x * 5,
@@ -315,7 +358,7 @@ const Hero: React.FC = () => {
       >
         <motion.div
           className={`flex flex-col items-center gap-2 ${
-            theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+            theme === "dark" ? "text-gray-400" : "text-gray-600"
           }`}
           animate={{ y: [0, 10, 0] }}
           transition={{ duration: 1.5, repeat: Infinity }}

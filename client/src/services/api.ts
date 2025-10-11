@@ -450,7 +450,10 @@ export const fetchTimetableBySection = async (
     if (options?.signal) axiosConfig.signal = options.signal;
     if (options?.timeoutMs) axiosConfig.timeout = options.timeoutMs;
 
-    const { data } = await api.get(`/timetable/section/${sectionId}`, axiosConfig);
+    const { data } = await api.get(
+      `/timetable/section/${sectionId}`,
+      axiosConfig
+    );
 
     // Handle null, undefined, or non-array responses
     if (!data || !Array.isArray(data)) {
@@ -506,7 +509,7 @@ export const createTimetableEntry = async (
   // Include optional fields if provided and they exist in database
   if (entryData.sectionId) payload.section_id = entryData.sectionId;
   if (entryData.classType) payload.class_type = entryData.classType;
-  
+
   // Note: target_audience and batch_id are not in database schema yet
   // These will be implemented when batch functionality is added to backend
   // if (entryData.targetAudience) payload.target_audience = entryData.targetAudience;
@@ -548,12 +551,12 @@ export const updateTimetableEntryApi = async (
     payload.classroom = entryData.classroom;
   if (entryData.classType !== undefined)
     payload.class_type = entryData.classType;
-  
+
   // Note: target_audience and batch_id are not in database schema yet
   // These will be implemented when batch functionality is added to backend
   // if (entryData.targetAudience !== undefined) payload.target_audience = entryData.targetAudience;
   // if (entryData.batchId !== undefined) payload.batch_id = entryData.batchId;
-  
+
   const response = await api.put(`/timetable/${scheduleId}`, payload);
   return response.data;
 };
@@ -707,7 +710,9 @@ export const fetchSectionsByDepartmentAndSemester = async (
   departmentId: string | number,
   semester: string | number
 ) => {
-  const response = await api.get(`/sections/department/${departmentId}/semester/${semester}`);
+  const response = await api.get(
+    `/sections/department/${departmentId}/semester/${semester}`
+  );
   return response.data;
 };
 
@@ -777,7 +782,9 @@ export const fetchStudentsBySection = async (sectionId: string | number) => {
   return response.data;
 };
 
-export const fetchUnassignedStudents = async (departmentId?: string | number) => {
+export const fetchUnassignedStudents = async (
+  departmentId?: string | number
+) => {
   const params = departmentId ? { department_id: departmentId } : {};
   const response = await api.get("/students/unassigned", { params });
   return response.data;
@@ -793,7 +800,9 @@ export const enrollStudentInSection = async (
   return response.data;
 };
 
-export const unenrollStudentFromSection = async (studentId: string | number) => {
+export const unenrollStudentFromSection = async (
+  studentId: string | number
+) => {
   const response = await api.put(`/students/${studentId}/unenroll`);
   return response.data;
 };
@@ -844,8 +853,12 @@ export const fetchTimetableViewSettings = async (
   return response.data;
 };
 
-export const fetchTimetableViewSettingsBySection = async (sectionId: string | number) => {
-  const response = await api.get(`/timetable/view-settings/section/${sectionId}`);
+export const fetchTimetableViewSettingsBySection = async (
+  sectionId: string | number
+) => {
+  const response = await api.get(
+    `/timetable/view-settings/section/${sectionId}`
+  );
   return response.data;
 };
 
@@ -882,7 +895,7 @@ export interface EligibleStudent {
 
 export interface AttendanceRecord {
   student_id: number;
-  status: 'present' | 'absent';
+  status: "present" | "absent";
 }
 
 export interface AttendanceSummary {
@@ -903,8 +916,12 @@ export interface CourseWiseAttendance {
 }
 
 // Get students eligible for a timetable slot
-export const getStudentsForTimetableSlot = async (scheduleId: string | number) => {
-  const response = await api.get(`/attendance/timetable/${scheduleId}/students`);
+export const getStudentsForTimetableSlot = async (
+  scheduleId: string | number
+) => {
+  const response = await api.get(
+    `/attendance/timetable/${scheduleId}/students`
+  );
   return response.data as {
     timetableSlot: TimetableSlot;
     eligibleStudents: EligibleStudent[];
@@ -933,13 +950,15 @@ export const getAttendanceReport = async (
   sectionId?: string | number
 ) => {
   const params = new URLSearchParams();
-  if (startDate) params.append('start_date', startDate);
-  if (endDate) params.append('end_date', endDate);
-  if (sectionId) params.append('section_id', sectionId.toString());
-  
+  if (startDate) params.append("start_date", startDate);
+  if (endDate) params.append("end_date", endDate);
+  if (sectionId) params.append("section_id", sectionId.toString());
+
   const queryString = params.toString();
-  const url = `/attendance/report/course/${courseId}${queryString ? `?${queryString}` : ''}`;
-  
+  const url = `/attendance/report/course/${courseId}${
+    queryString ? `?${queryString}` : ""
+  }`;
+
   const response = await api.get(url);
   return response.data;
 };
@@ -951,12 +970,14 @@ export const getStudentAttendanceSummary = async (
   endDate?: string
 ) => {
   const params = new URLSearchParams();
-  if (startDate) params.append('start_date', startDate);
-  if (endDate) params.append('end_date', endDate);
-  
+  if (startDate) params.append("start_date", startDate);
+  if (endDate) params.append("end_date", endDate);
+
   const queryString = params.toString();
-  const url = `/attendance/summary/student/${studentId}${queryString ? `?${queryString}` : ''}`;
-  
+  const url = `/attendance/summary/student/${studentId}${
+    queryString ? `?${queryString}` : ""
+  }`;
+
   const response = await api.get(url);
   return response.data as {
     student_id: number;
@@ -979,15 +1000,19 @@ export const enrollStudentsInCourse = async (
 };
 
 // Get teacher's timetable with attendance marking capability
-export const getTeacherTimetableForAttendance = async (teacherId: string | number) => {
+export const getTeacherTimetableForAttendance = async (
+  teacherId: string | number
+) => {
   const response = await api.get(`/timetable/teacher/${teacherId}`);
   return response.data;
 };
 
 // Get today's classes for a teacher
 export const getTodayClassesForTeacher = async (teacherId: string | number) => {
-  const today = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD format
-  const response = await api.get(`/timetable/teacher/${teacherId}?date=${today}`);
+  const today = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD format
+  const response = await api.get(
+    `/timetable/teacher/${teacherId}?date=${today}`
+  );
   return response.data;
 };
 
@@ -996,7 +1021,9 @@ export const getAttendanceStatus = async (
   scheduleId: string | number,
   date: string
 ) => {
-  const response = await api.get(`/attendance/class/${scheduleId}?date=${date}`);
+  const response = await api.get(
+    `/attendance/class/${scheduleId}?date=${date}`
+  );
   return response.data;
 };
 
@@ -1007,19 +1034,19 @@ export const getAttendanceHistory = async (
   scheduleId?: string | number
 ) => {
   const params = new URLSearchParams();
-  params.append('teacher_id', teacherId.toString());
-  
+  params.append("teacher_id", teacherId.toString());
+
   if (date) {
-    params.append('date', date);
+    params.append("date", date);
   }
-  
+
   if (scheduleId) {
-    params.append('schedule_id', scheduleId.toString());
+    params.append("schedule_id", scheduleId.toString());
   }
-  
+
   const queryString = params.toString();
-  const url = `/attendance/history${queryString ? `?${queryString}` : ''}`;
-  
+  const url = `/attendance/history${queryString ? `?${queryString}` : ""}`;
+
   const response = await api.get(url);
   return response.data;
 };
@@ -1031,18 +1058,20 @@ export const getAttendanceDatesForTeacher = async (
   endDate?: string
 ) => {
   const params = new URLSearchParams();
-  
+
   if (startDate) {
-    params.append('start_date', startDate);
+    params.append("start_date", startDate);
   }
-  
+
   if (endDate) {
-    params.append('end_date', endDate);
+    params.append("end_date", endDate);
   }
-  
+
   const queryString = params.toString();
-  const url = `/attendance/dates/teacher/${teacherId}${queryString ? `?${queryString}` : ''}`;
-  
+  const url = `/attendance/dates/teacher/${teacherId}${
+    queryString ? `?${queryString}` : ""
+  }`;
+
   const response = await api.get(url);
   return response.data;
 };
@@ -1052,22 +1081,22 @@ export const getUnifiedAttendance = async (
   scheduleId: string | number,
   date: string,
   filters?: {
-    method?: 'all' | 'manual' | 'smart';
-    status?: 'all' | 'present' | 'absent';
+    method?: "all" | "manual" | "smart";
+    status?: "all" | "present" | "absent";
   }
 ) => {
   const params = new URLSearchParams();
-  params.append('schedule_id', scheduleId.toString());
-  params.append('date', date);
-  
-  if (filters?.method && filters.method !== 'all') {
-    params.append('method', filters.method);
+  params.append("schedule_id", scheduleId.toString());
+  params.append("date", date);
+
+  if (filters?.method && filters.method !== "all") {
+    params.append("method", filters.method);
   }
-  
-  if (filters?.status && filters.status !== 'all') {
-    params.append('status', filters.status);
+
+  if (filters?.status && filters.status !== "all") {
+    params.append("status", filters.status);
   }
-  
+
   const response = await api.get(`/attendance/unified?${params.toString()}`);
   return response.data;
 };
@@ -1078,155 +1107,201 @@ export const getTeacherUnifiedAttendanceHistory = async (
   filters?: {
     startDate?: string;
     endDate?: string;
-    method?: 'all' | 'manual' | 'smart';
+    method?: "all" | "manual" | "smart";
     courseId?: string | number;
   }
 ) => {
   const params = new URLSearchParams();
-  params.append('teacher_id', teacherId.toString());
-  
+  params.append("teacher_id", teacherId.toString());
+
   if (filters?.startDate) {
-    params.append('start_date', filters.startDate);
+    params.append("start_date", filters.startDate);
   }
-  
+
   if (filters?.endDate) {
-    params.append('end_date', filters.endDate);
+    params.append("end_date", filters.endDate);
   }
-  
-  if (filters?.method && filters.method !== 'all') {
-    params.append('method', filters.method);
+
+  if (filters?.method && filters.method !== "all") {
+    params.append("method", filters.method);
   }
-  
+
   if (filters?.courseId) {
-    params.append('course_id', filters.courseId.toString());
+    params.append("course_id", filters.courseId.toString());
   }
-  
-  const response = await api.get(`/attendance/unified/teacher?${params.toString()}`);
+
+  const response = await api.get(
+    `/attendance/unified/teacher?${params.toString()}`
+  );
   return response.data;
 };
 
 // Smart Data Entry API Functions
 
 // Download student template
-export const downloadStudentTemplate = async (departmentId?: string, sectionId?: string, autoGenerate?: boolean) => {
+export const downloadStudentTemplate = async (
+  departmentId?: string,
+  sectionId?: string,
+  autoGenerate?: boolean
+) => {
   const params = new URLSearchParams();
-  
+
   if (departmentId) {
-    params.append('department_id', departmentId);
+    params.append("department_id", departmentId);
   }
-  
+
   if (sectionId) {
-    params.append('section_id', sectionId);
+    params.append("section_id", sectionId);
   }
-  
+
   if (autoGenerate) {
-    params.append('autoGenerate', 'true');
+    params.append("autoGenerate", "true");
   }
-  
+
   const queryString = params.toString();
-  const url = `/data-entry/templates/student${queryString ? `?${queryString}` : ''}`;
-  
+  const url = `/data-entry/templates/student${
+    queryString ? `?${queryString}` : ""
+  }`;
+
   const response = await api.get(url, {
-    responseType: 'blob'
+    responseType: "blob",
   });
   return response;
 };
 
 // Download teacher template
 export const downloadTeacherTemplate = async () => {
-  const response = await api.get('/data-entry/templates/teacher', {
-    responseType: 'blob'
+  const response = await api.get("/data-entry/templates/teacher", {
+    responseType: "blob",
   });
   return response;
 };
 
 // Get validation rules for student or teacher data
-export const getValidationRules = async (type: 'student' | 'teacher') => {
+export const getValidationRules = async (type: "student" | "teacher") => {
   const response = await api.get(`/data-entry/validation-rules/${type}`);
   return response;
 };
 
 // Parse uploaded file
-export const parseUploadedFile = async (file: File, autoGenerate?: boolean, departmentId?: string) => {
+export const parseUploadedFile = async (
+  file: File,
+  autoGenerate?: boolean,
+  departmentId?: string
+) => {
   const formData = new FormData();
-  formData.append('file', file);
-  
+  formData.append("file", file);
+
   if (autoGenerate) {
-    formData.append('autoGenerate', 'true');
+    formData.append("autoGenerate", "true");
   }
-  
+
   if (departmentId) {
-    formData.append('departmentId', departmentId);
+    formData.append("departmentId", departmentId);
   }
-  
-  const response = await api.post('/data-entry/parse', formData, {
+
+  const response = await api.post("/data-entry/parse", formData, {
     headers: {
-      'Content-Type': 'multipart/form-data'
-    }
+      "Content-Type": "multipart/form-data",
+    },
   });
   return response;
 };
 
 // Enhanced validation functions
-export const validateSingleRecord = async (data: any, type: 'student' | 'teacher') => {
-  const response = await api.post('/data-entry/validate', { data, type });
+export const validateSingleRecord = async (
+  data: any,
+  type: "student" | "teacher"
+) => {
+  const response = await api.post("/data-entry/validate", { data, type });
   return response;
 };
 
-export const validateBatchRecords = async (dataArray: any[], type: 'student' | 'teacher') => {
-  const response = await api.post('/data-entry/validate-batch', { dataArray, type });
+export const validateBatchRecords = async (
+  dataArray: any[],
+  type: "student" | "teacher"
+) => {
+  const response = await api.post("/data-entry/validate-batch", {
+    dataArray,
+    type,
+  });
   return response;
 };
 
 // Bulk import validated data
-export const bulkImportData = async (data: any[], type: 'student' | 'teacher', autoGenerate?: boolean, departmentId?: number) => {
-  const dataType = type === 'student' ? 'students' : 'teachers';
-  const response = await api.post('/data-entry/import', { 
-    validatedData: data, 
+export const bulkImportData = async (
+  data: any[],
+  type: "student" | "teacher",
+  autoGenerate?: boolean,
+  departmentId?: number
+) => {
+  const dataType = type === "student" ? "students" : "teachers";
+  const response = await api.post("/data-entry/import", {
+    validatedData: data,
     dataType,
     autoGenerate: autoGenerate || false,
-    departmentId: departmentId
+    departmentId: departmentId,
   });
   return response.data;
 };
 
 // Student Enrollment APIs
 export const getUnassignedStudents = async (departmentId: string | number) => {
-  const response = await api.get(`/student-enrollment/unassigned/${departmentId}`);
+  const response = await api.get(
+    `/student-enrollment/unassigned/${departmentId}`
+  );
   return response.data;
 };
 
-export const bulkEnrollStudentsToSection = async (studentIds: (string | number)[], sectionId: string | number) => {
-  const response = await api.post('/student-enrollment/bulk-enroll-section', {
+export const bulkEnrollStudentsToSection = async (
+  studentIds: (string | number)[],
+  sectionId: string | number
+) => {
+  const response = await api.post("/student-enrollment/bulk-enroll-section", {
     studentIds,
-    sectionId
-  });
-  return response.data;
-};
-
-export const getStudentsBySection = async (sectionId: string | number, includeBatched: boolean = true) => {
-  const response = await api.get(`/student-enrollment/section/${sectionId}?includeBatched=${includeBatched}`);
-  return response.data;
-};
-
-export const bulkAssignStudentsToBatches = async (assignments: Array<{ studentId: number; batchId: number }>) => {
-  const response = await api.post('/student-enrollment/bulk-assign-batches', {
-    assignments
-  });
-  return response.data;
-};
-
-export const autoDistributeStudentsToBatches = async (sectionId: string | number, batchIds: (string | number)[]) => {
-  const response = await api.post('/student-enrollment/auto-distribute-batches', {
     sectionId,
-    batchIds
   });
   return response.data;
 };
 
-export const removeStudentsFromBatch = async (studentIds: (string | number)[]) => {
-  const response = await api.post('/student-enrollment/remove-from-batch', {
-    studentIds
+export const getStudentsBySection = async (
+  sectionId: string | number,
+  includeBatched: boolean = true
+) => {
+  const response = await api.get(
+    `/student-enrollment/section/${sectionId}?includeBatched=${includeBatched}`
+  );
+  return response.data;
+};
+
+export const bulkAssignStudentsToBatches = async (
+  assignments: Array<{ studentId: number; batchId: number }>
+) => {
+  const response = await api.post("/student-enrollment/bulk-assign-batches", {
+    assignments,
+  });
+  return response.data;
+};
+
+export const autoDistributeStudentsToBatches = async (
+  sectionId: string | number,
+  batchIds: (string | number)[]
+) => {
+  const response = await api.post(
+    "/student-enrollment/auto-distribute-batches",
+    {
+      sectionId,
+      batchIds,
+    }
+  );
+  return response.data;
+};
+
+export const removeStudentsFromBatch = async (
+  studentIds: (string | number)[]
+) => {
+  const response = await api.post("/student-enrollment/remove-from-batch", {
+    studentIds,
   });
   return response.data;
 };
@@ -1258,7 +1333,7 @@ export interface NotificationResponse {
  * Get unread notification count
  */
 export const getUnreadNotificationCount = async (): Promise<number> => {
-  const response = await api.get('/notifications/count');
+  const response = await api.get("/notifications/count");
   return response.data.count;
 };
 
@@ -1266,14 +1341,17 @@ export const getUnreadNotificationCount = async (): Promise<number> => {
  * Get unread notifications
  */
 export const getUnreadNotifications = async (): Promise<Notification[]> => {
-  const response = await api.get('/notifications/unread');
+  const response = await api.get("/notifications/unread");
   return response.data.notifications;
 };
 
 /**
  * Get all notifications with pagination
  */
-export const getAllNotifications = async (page: number = 1, limit: number = 20): Promise<NotificationResponse> => {
+export const getAllNotifications = async (
+  page: number = 1,
+  limit: number = 20
+): Promise<NotificationResponse> => {
   const response = await api.get(`/notifications?page=${page}&limit=${limit}`);
   return response.data;
 };
@@ -1281,7 +1359,9 @@ export const getAllNotifications = async (page: number = 1, limit: number = 20):
 /**
  * Mark a notification as read
  */
-export const markNotificationAsRead = async (notificationId: number): Promise<Notification> => {
+export const markNotificationAsRead = async (
+  notificationId: number
+): Promise<Notification> => {
   const response = await api.put(`/notifications/${notificationId}/read`);
   return response.data.notification;
 };
@@ -1290,14 +1370,16 @@ export const markNotificationAsRead = async (notificationId: number): Promise<No
  * Mark all notifications as read
  */
 export const markAllNotificationsAsRead = async (): Promise<number> => {
-  const response = await api.put('/notifications/mark-all-read');
+  const response = await api.put("/notifications/mark-all-read");
   return response.data.count;
 };
 
 /**
  * Delete a notification
  */
-export const deleteNotification = async (notificationId: number): Promise<void> => {
+export const deleteNotification = async (
+  notificationId: number
+): Promise<void> => {
   await api.delete(`/notifications/${notificationId}`);
 };
 
@@ -1305,7 +1387,7 @@ export const deleteNotification = async (notificationId: number): Promise<void> 
  * Clear all read notifications
  */
 export const clearReadNotifications = async (): Promise<number> => {
-  const response = await api.delete('/notifications/clear-read');
+  const response = await api.delete("/notifications/clear-read");
   return response.data.count;
 };
 

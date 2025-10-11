@@ -55,6 +55,8 @@ import SmartAttendanceDashboard from "./components/teacher/SmartAttendanceDashbo
 import SmartDataEntryPage from "./pages/SmartDataEntryPage";
 import SmartTimetableGenerator from "./pages/SmartTimetableGenerator";
 import TimetableResults from "./pages/TimetableResultsClean";
+import CourseDetailPage from "./pages/CourseDetailPage";
+import EnhancedAttendanceStats from "./pages/EnhancedAttendanceStats";
 
 const getRole = (): string | null => {
   try {
@@ -131,6 +133,7 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({
 
 // Route configurations by role for better organization
 const coordinatorRoutes = [
+<<<<<<< HEAD
   { path: "/coordinator", component: CoordinatorDashboard, exact: true },
   { path: "/students", component: EnhancedStudentManagement },
   { path: "/students/:id", component: StudentProfileDashboard },
@@ -140,41 +143,113 @@ const coordinatorRoutes = [
   { path: "/timetable/generate", component: SmartTimetableGenerator }, // More specific route first
   { path: "/timetable/results", component: TimetableResults }, // Results page
   { path: "/timetable", component: TimetableManagement },
+=======
+  { path: "/coordinator", component: Dashboard, exact: true },
+  { path: "/students", component: EnhancedStudentManagement, exact: false },
+  { path: "/students/:id", component: StudentProfileDashboard, exact: false },
+  { path: "/teachers", component: TeacherManagement, exact: false },
+  { path: "/courses", component: CourseManagement, exact: false },
+  { path: "/departments", component: DepartmentManagement, exact: false },
+  {
+    path: "/timetable/generate",
+    component: SmartTimetableGenerator,
+    exact: false,
+  }, // More specific route first
+  { path: "/timetable/results", component: TimetableResults, exact: false }, // Results page
+  { path: "/timetable", component: TimetableManagement, exact: false },
+>>>>>>> c2c544274d6d360c1d815fdd2cad3f2ef4f63342
   { path: "/attendance", component: AttendancePage, exact: true },
-  { path: "/attendance/reports", component: AttendanceReportsDashboard },
-  { path: "/students/enrollment", component: StudentCourseEnrollment },
-  { path: "/analytics", component: AnalyticsDashboard },
-  { path: "/results", component: EnhancedResultManagement },
-  { path: "/coordinator/student-enrollment", component: StudentEnrollment },
-  { path: "/smart-data-entry", component: SmartDataEntryPage },
+  {
+    path: "/attendance/reports",
+    component: AttendanceReportsDashboard,
+    exact: false,
+  },
+  {
+    path: "/students/enrollment",
+    component: StudentCourseEnrollment,
+    exact: false,
+  },
+  { path: "/analytics", component: AnalyticsDashboard, exact: false },
+  { path: "/results", component: EnhancedResultManagement, exact: false },
+  {
+    path: "/coordinator/student-enrollment",
+    component: StudentEnrollment,
+    exact: false,
+  },
+  { path: "/smart-data-entry", component: SmartDataEntryPage, exact: false },
 ];
 
 const teacherRoutes = [
   { path: "/teacher", component: EnhancedTeacherDashboard, exact: true },
   { path: "/teacher/dashboard", component: TeacherDashboard, exact: true },
   { path: "/my-timetable", component: EnhancedTeacherTimetable, exact: true },
-  { path: "/teacher/timetable", component: EnhancedTeacherTimetable, exact: true },
-  { path: "/attendance/take", component: TakeAttendance },
-  { path: "/teacher/attendance", component: TeacherAttendanceDashboard },
-  { path: "/teacher/attendance/history", component: UnifiedAttendanceHistory },
-  { path: "/teacher/smart-attendance", component: SmartAttendanceDashboard },
+  {
+    path: "/teacher/timetable",
+    component: EnhancedTeacherTimetable,
+    exact: true,
+  },
+  { path: "/attendance/take", component: TakeAttendance, exact: false },
+  {
+    path: "/teacher/attendance",
+    component: TeacherAttendanceDashboard,
+    exact: false,
+  },
+  {
+    path: "/teacher/attendance/history",
+    component: UnifiedAttendanceHistory,
+    exact: false,
+  },
+  {
+    path: "/teacher/smart-attendance",
+    component: SmartAttendanceDashboard,
+    exact: false,
+  },
 ];
-
-import CourseDetailPage from "./pages/CourseDetailPage";
-import EnhancedAttendanceStats from "./pages/EnhancedAttendanceStats";
 
 const studentRoutes = [
   { path: "/student", component: EnhancedStudentDashboard, exact: true },
-  { path: "/attendance/me", component: EnhancedStudentAttendance },
-  { path: "/student/attendance", component: StudentAttendanceView },
-  { path: "/student/attendance/stats", component: EnhancedAttendanceStats },
-  { path: "/student/course/:courseId", component: CourseDetailPage },
-  { path: "/student/face-enrollment", component: StudentFaceEnrollment },
-  { path: "/student/smart-attendance", component: StudentSmartAttendance },
-  { path: "/student/profile", component: EnhancedStudentProfile },
-  { path: "/student/grades", component: EnhancedGradeTracker },
-  { path: "/student/announcements", component: EnhancedAnnouncementSystem },
-  { path: "/student/notifications", component: NotificationCenter },
+  {
+    path: "/attendance/me",
+    component: EnhancedStudentAttendance,
+    exact: false,
+  },
+  {
+    path: "/student/attendance",
+    component: StudentAttendanceView,
+    exact: false,
+  },
+  {
+    path: "/student/attendance/stats",
+    component: EnhancedAttendanceStats,
+    exact: false,
+  },
+  {
+    path: "/student/course/:courseId",
+    component: CourseDetailPage,
+    exact: false,
+  },
+  {
+    path: "/student/face-enrollment",
+    component: StudentFaceEnrollment,
+    exact: false,
+  },
+  {
+    path: "/student/smart-attendance",
+    component: StudentSmartAttendance,
+    exact: false,
+  },
+  { path: "/student/profile", component: EnhancedStudentProfile, exact: false },
+  { path: "/student/grades", component: EnhancedGradeTracker, exact: false },
+  {
+    path: "/student/announcements",
+    component: EnhancedAnnouncementSystem,
+    exact: false,
+  },
+  {
+    path: "/student/notifications",
+    component: NotificationCenter,
+    exact: false,
+  },
 ];
 
 const sharedRoutes = [
@@ -238,30 +313,19 @@ const App: React.FC = () => {
             ))}
 
             {/* Student Routes */}
-            {studentRoutes.map(({ path, component: Component, exact }) => {
-              console.log(
-                "🔍 Registering student route:",
-                path,
-                "exact:",
-                exact
-              );
-              return (
-                <PrivateRoute
-                  key={path}
-                  path={path}
-                  exact={exact}
-                  roles={["student"]}
-                  render={() => {
-                    console.log("✅ Rendering student route:", path);
-                    return (
-                      <Layout>
-                        <Component />
-                      </Layout>
-                    );
-                  }}
-                />
-              );
-            })}
+            {studentRoutes.map(({ path, component: Component, exact }) => (
+              <PrivateRoute
+                key={path}
+                path={path}
+                exact={exact}
+                roles={["student"]}
+                render={() => (
+                  <Layout>
+                    <Component />
+                  </Layout>
+                )}
+              />
+            ))}
 
             {/* Shared Routes */}
             {sharedRoutes.map(({ path, component: Component, roles }) => (
