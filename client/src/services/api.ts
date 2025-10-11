@@ -1,6 +1,6 @@
 import axios from "axios";
 
-// API URL - defaults to port 5001 (server's default port)
+// API URL - defaults to port 5000 (server's default port)
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
 
 // Create axios instance
