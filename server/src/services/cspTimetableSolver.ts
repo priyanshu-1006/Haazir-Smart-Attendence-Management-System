@@ -14,6 +14,9 @@ interface TimetableEntry {
   roomNumber: string;
   sessionType: "theory" | "lab" | "tutorial";
   section: string;
+  departmentId?: number;
+  departmentName?: string;
+  semester?: number;
 }
 
 interface TimetableSolution {
@@ -46,6 +49,9 @@ interface CourseAssignment {
   teacher_name: string;
   classes_per_week: number;
   session_type: "theory" | "lab" | "tutorial";
+  department_id?: number;
+  department_name?: string;
+  semester?: number;
 }
 
 interface TimeConfig {
@@ -240,6 +246,9 @@ class CSPTimetableSolver {
                 teacher_name: session.teacher_name,
                 classes_per_week: session.classes_per_week,
                 session_type: sessionType as "theory" | "lab" | "tutorial",
+                department_id: course.department_id,
+                department_name: course.department_name,
+                semester: course.semester,
               });
             }
           });
@@ -256,6 +265,9 @@ class CSPTimetableSolver {
               | "theory"
               | "lab"
               | "tutorial",
+            department_id: course.department_id,
+            department_name: course.department_name,
+            semester: course.semester,
           });
         }
       });
@@ -446,6 +458,9 @@ class CSPTimetableSolver {
             roomNumber,
             sessionType: course.session_type,
             section: sections[0] || "A",
+            departmentId: course.department_id,
+            departmentName: course.department_name,
+            semester: course.semester,
           };
 
           const daySchedule = schedule.get(day)!;
@@ -573,6 +588,9 @@ class CSPTimetableSolver {
               roomNumber,
               sessionType: course.session_type,
               section: sections[0] || "A",
+              departmentId: course.department_id,
+              departmentName: course.department_name,
+              semester: course.semester,
             };
 
             schedule.get(day)!.push(entry);
@@ -690,6 +708,9 @@ class CSPTimetableSolver {
             roomNumber,
             sessionType: course.session_type,
             section: sections[0] || "A",
+            departmentId: course.department_id,
+            departmentName: course.department_name,
+            semester: course.semester,
           };
 
           daySchedule.push(entry);
