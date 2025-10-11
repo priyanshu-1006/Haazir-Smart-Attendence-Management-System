@@ -102,12 +102,10 @@ export const createTimetableEntry = async (req: Request, res: Response) => {
     res.status(201).json(newEntry);
   } catch (error: any) {
     console.error("Error creating timetable entry:", error);
-    res
-      .status(500)
-      .json({
-        message: "Error creating timetable entry",
-        error: error.message,
-      });
+    res.status(500).json({
+      message: "Error creating timetable entry",
+      error: error.message,
+    });
   }
 };
 
@@ -609,7 +607,10 @@ export const deleteTimetableEntry = async (req: Request, res: Response) => {
 };
 
 // Save timetable view settings for a section
-export const saveTimetableViewSettings = async (req: Request, res: Response) => {
+export const saveTimetableViewSettings = async (
+  req: Request,
+  res: Response
+) => {
   try {
     const { department_id, semester, section_id, grid_settings } = req.body;
     const user_id = (req as any).user?.user_id;
@@ -623,8 +624,8 @@ export const saveTimetableViewSettings = async (req: Request, res: Response) => 
       where: {
         department: department_id.toString(),
         semester: semester.toString(),
-        section: section_id.toString()
-      }
+        section: section_id.toString(),
+      },
     });
 
     if (existing) {
@@ -632,10 +633,10 @@ export const saveTimetableViewSettings = async (req: Request, res: Response) => 
       await existing.update({
         gridSettings: grid_settings,
       });
-      
+
       res.status(200).json({
         message: "Timetable view settings updated successfully",
-        data: existing
+        data: existing,
       });
     } else {
       // Create new settings
@@ -647,25 +648,28 @@ export const saveTimetableViewSettings = async (req: Request, res: Response) => 
         section: section_id.toString(),
         entries: [],
         gridSettings: grid_settings,
-        createdBy: user_id
+        createdBy: user_id,
       });
-      
+
       res.status(201).json({
         message: "Timetable view settings saved successfully",
-        data: newSettings
+        data: newSettings,
       });
     }
   } catch (error: any) {
     console.error("Error saving timetable view settings:", error);
-    res.status(500).json({ 
-      message: "Error saving timetable view settings", 
-      error: error.message 
+    res.status(500).json({
+      message: "Error saving timetable view settings",
+      error: error.message,
     });
   }
 };
 
 // Fetch timetable view settings for a section
-export const fetchTimetableViewSettings = async (req: Request, res: Response) => {
+export const fetchTimetableViewSettings = async (
+  req: Request,
+  res: Response
+) => {
   try {
     const { departmentId, semester, sectionId } = req.params;
 
@@ -673,9 +677,9 @@ export const fetchTimetableViewSettings = async (req: Request, res: Response) =>
       where: {
         department: departmentId.toString(),
         semester: semester.toString(),
-        section: sectionId.toString()
+        section: sectionId.toString(),
       },
-      order: [['updatedAt', 'DESC']]
+      order: [["updatedAt", "DESC"]],
     });
 
     if (settings) {
@@ -686,23 +690,26 @@ export const fetchTimetableViewSettings = async (req: Request, res: Response) =>
     }
   } catch (error: any) {
     console.error("Error fetching timetable view settings:", error);
-    res.status(500).json({ 
-      message: "Error fetching timetable view settings", 
-      error: error.message 
+    res.status(500).json({
+      message: "Error fetching timetable view settings",
+      error: error.message,
     });
   }
 };
 
 // Fetch timetable view settings by section ID only (for students)
-export const fetchTimetableViewSettingsBySection = async (req: Request, res: Response) => {
+export const fetchTimetableViewSettingsBySection = async (
+  req: Request,
+  res: Response
+) => {
   try {
     const { sectionId } = req.params;
 
     const settings = await SavedTimetable.findOne({
       where: {
-        section: sectionId.toString()
+        section: sectionId.toString(),
       },
-      order: [['updatedAt', 'DESC']]
+      order: [["updatedAt", "DESC"]],
     });
 
     if (settings) {
@@ -713,17 +720,17 @@ export const fetchTimetableViewSettingsBySection = async (req: Request, res: Res
     }
   } catch (error: any) {
     console.error("Error fetching timetable view settings by section:", error);
-    res.status(500).json({ 
-      message: "Error fetching timetable view settings by section", 
-      error: error.message 
+    res.status(500).json({
+      message: "Error fetching timetable view settings by section",
+      error: error.message,
     });
   }
 };
 
 // ==================== NEW SMART TIMETABLE GENERATOR METHODS ====================
 
-import { QueryTypes } from 'sequelize';
-import { sequelize } from '../config/database';
+import { QueryTypes } from "sequelize";
+import { sequelize } from "../config/database";
 
 interface TimeSlot {
   slot_id: number;
@@ -739,7 +746,7 @@ interface TimeSlot {
 const query = async (sql: string, values?: any[]) => {
   const results = await sequelize.query(sql, {
     bind: values,
-    type: QueryTypes.SELECT
+    type: QueryTypes.SELECT,
   });
   return { rows: results as any[] };
 };
@@ -747,15 +754,15 @@ const query = async (sql: string, values?: any[]) => {
 // Get all time slots with their current configuration
 export const getTimeSlots = async (req: Request, res: Response) => {
   try {
-    console.log('🕐 Fetching time slots configuration...');
-    
+    console.log("🕐 Fetching time slots configuration...");
+
     const result = await query(
-      'SELECT * FROM time_slots ORDER BY day_order ASC'
+      "SELECT * FROM time_slots ORDER BY day_order ASC"
     );
-    
+
     const timeSlots = result.rows as TimeSlot[];
     console.log(`✅ Found ${timeSlots.length} time slots`);
-    
+
     res.json({
       success: true,
       data: timeSlots,
@@ -763,16 +770,17 @@ export const getTimeSlots = async (req: Request, res: Response) => {
         total_slots: timeSlots.length,
         active_slots: timeSlots.filter((slot) => slot.is_active).length,
         break_slots: timeSlots.filter((slot) => slot.is_break).length,
-        teaching_slots: timeSlots.filter((slot) => slot.is_active && !slot.is_break).length
-      }
+        teaching_slots: timeSlots.filter(
+          (slot) => slot.is_active && !slot.is_break
+        ).length,
+      },
     });
-    
   } catch (error) {
-    console.error('❌ Error fetching time slots:', error);
+    console.error("❌ Error fetching time slots:", error);
     res.status(500).json({
       success: false,
-      error: 'Failed to fetch time slots',
-      details: error instanceof Error ? error.message : 'Unknown error'
+      error: "Failed to fetch time slots",
+      details: error instanceof Error ? error.message : "Unknown error",
     });
   }
 };
@@ -782,35 +790,34 @@ export const updateTimeSlot = async (req: Request, res: Response) => {
   try {
     const { slotId } = req.params;
     const { is_active } = req.body;
-    
+
     console.log(`🔄 Updating time slot ${slotId} - active: ${is_active}`);
-    
+
     const result = await query(
-      'UPDATE time_slots SET is_active = $1, updated_at = CURRENT_TIMESTAMP WHERE slot_id = $2 RETURNING *',
+      "UPDATE time_slots SET is_active = $1, updated_at = CURRENT_TIMESTAMP WHERE slot_id = $2 RETURNING *",
       [is_active, slotId]
     );
-    
+
     if (result.rows.length === 0) {
       return res.status(404).json({
         success: false,
-        error: 'Time slot not found'
+        error: "Time slot not found",
       });
     }
-    
-    console.log('✅ Time slot updated successfully');
-    
+
+    console.log("✅ Time slot updated successfully");
+
     res.json({
       success: true,
       data: result.rows[0],
-      message: `Time slot ${is_active ? 'enabled' : 'disabled'} successfully`
+      message: `Time slot ${is_active ? "enabled" : "disabled"} successfully`,
     });
-    
   } catch (error) {
-    console.error('❌ Error updating time slot:', error);
+    console.error("❌ Error updating time slot:", error);
     res.status(500).json({
       success: false,
-      error: 'Failed to update time slot',
-      details: error instanceof Error ? error.message : 'Unknown error'
+      error: "Failed to update time slot",
+      details: error instanceof Error ? error.message : "Unknown error",
     });
   }
 };
@@ -819,47 +826,55 @@ export const updateTimeSlot = async (req: Request, res: Response) => {
 export const addTimeSlot = async (req: Request, res: Response) => {
   try {
     const { slot_name, start_time, end_time, is_break = false } = req.body;
-    
-    console.log('➕ Adding new time slot:', slot_name);
-    
+
+    console.log("➕ Adding new time slot:", slot_name);
+
     // Get the next day_order
     const orderResult = await query(
-      'SELECT COALESCE(MAX(day_order), 0) + 1 as next_order FROM time_slots'
+      "SELECT COALESCE(MAX(day_order), 0) + 1 as next_order FROM time_slots"
     );
     const nextOrder = (orderResult.rows[0] as any).next_order;
-    
-    const result = await query(`
+
+    const result = await query(
+      `
       INSERT INTO time_slots (slot_name, start_time, end_time, day_order, is_break, is_active)
       VALUES ($1, $2, $3, $4, $5, true)
       RETURNING *
-    `, [slot_name, start_time, end_time, nextOrder, is_break]);
-    
-    console.log('✅ Time slot added successfully');
-    
+    `,
+      [slot_name, start_time, end_time, nextOrder, is_break]
+    );
+
+    console.log("✅ Time slot added successfully");
+
     res.json({
       success: true,
       data: result.rows[0],
-      message: 'Time slot added successfully'
+      message: "Time slot added successfully",
     });
-    
   } catch (error) {
-    console.error('❌ Error adding time slot:', error);
+    console.error("❌ Error adding time slot:", error);
     res.status(500).json({
       success: false,
-      error: 'Failed to add time slot',
-      details: error instanceof Error ? error.message : 'Unknown error'
+      error: "Failed to add time slot",
+      details: error instanceof Error ? error.message : "Unknown error",
     });
   }
 };
 
 // Get courses for a specific department and semester
-export const getCoursesForDepartmentSemester = async (req: Request, res: Response) => {
+export const getCoursesForDepartmentSemester = async (
+  req: Request,
+  res: Response
+) => {
   try {
     const { departmentId, semester } = req.params;
-    
-    console.log(`📚 Fetching courses for department ${departmentId}, semester ${semester}`);
-    
-    const result = await query(`
+
+    console.log(
+      `📚 Fetching courses for department ${departmentId}, semester ${semester}`
+    );
+
+    const result = await query(
+      `
       SELECT 
         c.course_id,
         c.course_name,
@@ -870,25 +885,26 @@ export const getCoursesForDepartmentSemester = async (req: Request, res: Respons
       JOIN departments d ON c.department_id = d.department_id
       WHERE c.department_id = $1 AND c.semester = $2
       ORDER BY c.course_code
-    `, [departmentId, semester]);
-    
+    `,
+      [departmentId, semester]
+    );
+
     const courses = result.rows as any[];
     console.log(`✅ Found ${courses.length} courses`);
-    
+
     res.json({
       success: true,
       data: courses,
       stats: {
-        total_courses: courses.length
-      }
+        total_courses: courses.length,
+      },
     });
-    
   } catch (error) {
-    console.error('❌ Error fetching courses:', error);
+    console.error("❌ Error fetching courses:", error);
     res.status(500).json({
       success: false,
-      error: 'Failed to fetch courses',
-      details: error instanceof Error ? error.message : 'Unknown error'
+      error: "Failed to fetch courses",
+      details: error instanceof Error ? error.message : "Unknown error",
     });
   }
 };
@@ -897,9 +913,11 @@ export const getCoursesForDepartmentSemester = async (req: Request, res: Respons
 export const getAvailableTeachers = async (req: Request, res: Response) => {
   try {
     const { departmentId, courseId } = req.query;
-    
-    console.log(`👨‍🏫 Fetching available teachers for department ${departmentId}, course ${courseId}`);
-    
+
+    console.log(
+      `👨‍🏫 Fetching available teachers for department ${departmentId}, course ${courseId}`
+    );
+
     let queryText = `
       SELECT 
         t.teacher_id,
@@ -912,26 +930,25 @@ export const getAvailableTeachers = async (req: Request, res: Response) => {
       WHERE t.department_id = $1
       ORDER BY t.name
     `;
-    
+
     const result = await query(queryText, [departmentId]);
-    
+
     const teachers = result.rows as any[];
     console.log(`✅ Found ${teachers.length} available teachers`);
-    
+
     res.json({
       success: true,
       data: teachers,
       stats: {
-        total_teachers: teachers.length
-      }
+        total_teachers: teachers.length,
+      },
     });
-    
   } catch (error) {
-    console.error('❌ Error fetching teachers:', error);
+    console.error("❌ Error fetching teachers:", error);
     res.status(500).json({
       success: false,
-      error: 'Failed to fetch teachers',
-      details: error instanceof Error ? error.message : 'Unknown error'
+      error: "Failed to fetch teachers",
+      details: error instanceof Error ? error.message : "Unknown error",
     });
   }
 };
@@ -945,35 +962,48 @@ export const createTimetableRequest = async (req: Request, res: Response) => {
       semester,
       sections,
       academic_year,
-      settings
+      settings,
     } = req.body;
-    
+
     const created_by = (req as any).user?.user_id;
-    
-    console.log('📋 Creating timetable request:', request_name);
-    
-    const result = await query(`
+
+    console.log("📋 Creating timetable request:", request_name);
+
+    const result = await query(
+      `
       INSERT INTO timetable_requests 
       (request_name, department_id, semester, sections, academic_year, settings, created_by, status)
       VALUES ($1, $2, $3, $4, $5, $6, $7, 'draft')
       RETURNING *
-    `, [request_name, department_id, semester, sections, academic_year, JSON.stringify(settings), created_by]);
-    
+    `,
+      [
+        request_name,
+        department_id,
+        semester,
+        sections,
+        academic_year,
+        JSON.stringify(settings),
+        created_by,
+      ]
+    );
+
     const timetableRequest = result.rows[0] as any;
-    console.log('✅ Timetable request created with ID:', timetableRequest.request_id);
-    
+    console.log(
+      "✅ Timetable request created with ID:",
+      timetableRequest.request_id
+    );
+
     res.json({
       success: true,
       data: timetableRequest,
-      message: 'Timetable request created successfully'
+      message: "Timetable request created successfully",
     });
-    
   } catch (error) {
-    console.error('❌ Error creating timetable request:', error);
+    console.error("❌ Error creating timetable request:", error);
     res.status(500).json({
       success: false,
-      error: 'Failed to create timetable request',
-      details: error instanceof Error ? error.message : 'Unknown error'
+      error: "Failed to create timetable request",
+      details: error instanceof Error ? error.message : "Unknown error",
     });
   }
 };
@@ -982,10 +1012,13 @@ export const createTimetableRequest = async (req: Request, res: Response) => {
 export const getTimetableRequests = async (req: Request, res: Response) => {
   try {
     const { departmentId } = req.params;
-    
-    console.log(`📋 Fetching timetable requests for department ${departmentId}`);
-    
-    const result = await query(`
+
+    console.log(
+      `📋 Fetching timetable requests for department ${departmentId}`
+    );
+
+    const result = await query(
+      `
       SELECT 
         tr.*,
         d.name as department_name,
@@ -995,75 +1028,90 @@ export const getTimetableRequests = async (req: Request, res: Response) => {
       JOIN users u ON tr.created_by = u.user_id
       WHERE tr.department_id = $1
       ORDER BY tr.created_at DESC
-    `, [departmentId]);
-    
+    `,
+      [departmentId]
+    );
+
     const requests = result.rows as any[];
     console.log(`✅ Found ${requests.length} timetable requests`);
-    
+
     res.json({
       success: true,
       data: requests,
       stats: {
         total_requests: requests.length,
-        draft: requests.filter((r: any) => r.status === 'draft').length,
-        generated: requests.filter((r: any) => r.status === 'generated').length,
-        active: requests.filter((r: any) => r.status === 'active').length
-      }
+        draft: requests.filter((r: any) => r.status === "draft").length,
+        generated: requests.filter((r: any) => r.status === "generated").length,
+        active: requests.filter((r: any) => r.status === "active").length,
+      },
     });
-    
   } catch (error) {
-    console.error('❌ Error fetching timetable requests:', error);
+    console.error("❌ Error fetching timetable requests:", error);
     res.status(500).json({
       success: false,
-      error: 'Failed to fetch timetable requests',
-      details: error instanceof Error ? error.message : 'Unknown error'
+      error: "Failed to fetch timetable requests",
+      details: error instanceof Error ? error.message : "Unknown error",
     });
   }
 };
 
 // Basic timetable generation (placeholder for now)
 // ==================== AI-POWERED TIMETABLE GENERATION ====================
-import { AITimetableGenerator } from '../ai/aiTimetableGenerator';
-import { TimetableGenerationInput } from '../ai/types';
+import GeminiTimetableService from "../services/geminiTimetableService";
 
 export const generateTimetableAI = async (req: Request, res: Response) => {
   try {
-    const generationInput: TimetableGenerationInput = req.body;
-    
-    console.log('🚀 Starting AI timetable generation');
-    console.log('📊 Input:', {
-      courses: generationInput.courseAssignments?.length || 0,
-      sections: generationInput.courseAssignments?.[0]?.sections?.length || 0,
-      days: generationInput.timeConfiguration?.working_days?.length || 0
+    const generationInput: any = req.body;
+
+    console.log("🚀 Starting Gemini AI timetable generation");
+    console.log("📊 Input:", {
+      courses: generationInput.course_assignments?.length || 0,
+      sections: generationInput.sections?.length || 0,
+      days: generationInput.time_configuration?.workingDays?.length || 0,
     });
-    
-    // Create AI generator instance
-    const generator = new AITimetableGenerator();
-    
-    // Generate timetables using AI algorithms
-    const result = await generator.generateTimetables(generationInput);
-    
-    console.log('✅ AI generation completed:', {
-      success: result.success,
-      solutions: result.solutions.length,
-      time: result.generation_summary.total_generation_time_ms + 'ms'
+
+    // Create Gemini generator instance
+    const generator = new GeminiTimetableService();
+
+    // Generate timetables using Gemini AI
+    const startTime = Date.now();
+    const solutions = await generator.generateTimetables(generationInput);
+    const generationTime = Date.now() - startTime;
+
+    console.log("✅ Gemini generation completed:", {
+      success: solutions.length > 0,
+      solutions: solutions.length,
+      time: generationTime + "ms",
     });
-    
-    res.json(result);
-    
+
+    res.json({
+      success: solutions.length > 0,
+      solutions: solutions,
+      generation_summary: {
+        total_solutions_attempted: solutions.length,
+        successful_solutions: solutions.length,
+        total_generation_time_ms: generationTime,
+        input_summary: {
+          total_courses: generationInput.course_assignments?.length || 0,
+          total_sections: generationInput.sections?.length || 0,
+          available_days:
+            generationInput.time_configuration?.workingDays?.length || 0,
+        },
+      },
+    });
   } catch (error) {
-    console.error('❌ AI timetable generation error:', error);
+    console.error("❌ Gemini timetable generation error:", error);
     res.status(500).json({
       success: false,
-      error: 'Failed to generate timetable',
-      details: error instanceof Error ? error.message : 'Unknown error',
+      error: "Failed to generate timetable",
+      details: error instanceof Error ? error.message : "Unknown error",
       solutions: [],
       generation_summary: {
         total_solutions_attempted: 0,
         successful_solutions: 0,
         total_generation_time_ms: 0,
-        input_summary: {}
-      }
+        input_summary: {},
+      },
     });
   }
 };
@@ -1071,41 +1119,40 @@ export const generateTimetableAI = async (req: Request, res: Response) => {
 export const generateTimetable = async (req: Request, res: Response) => {
   try {
     const { requestId } = req.params;
-    
+
     console.log(`⚡ Starting timetable generation for request ${requestId}`);
-    
+
     // Update request status to generating
     await query(
-      'UPDATE timetable_requests SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE request_id = $2',
-      ['generating', requestId]
+      "UPDATE timetable_requests SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE request_id = $2",
+      ["generating", requestId]
     );
-    
+
     // Placeholder for actual generation algorithm
     // This will be implemented in the next phase
-    
+
     // For now, just update status to generated
     setTimeout(async () => {
       await query(
-        'UPDATE timetable_requests SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE request_id = $2',
-        ['generated', requestId]
+        "UPDATE timetable_requests SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE request_id = $2",
+        ["generated", requestId]
       );
     }, 3000);
-    
-    console.log('✅ Timetable generation started');
-    
+
+    console.log("✅ Timetable generation started");
+
     res.json({
       success: true,
-      message: 'Timetable generation started',
-      status: 'generating',
-      estimated_time: '2-3 minutes'
+      message: "Timetable generation started",
+      status: "generating",
+      estimated_time: "2-3 minutes",
     });
-    
   } catch (error) {
-    console.error('❌ Error generating timetable:', error);
+    console.error("❌ Error generating timetable:", error);
     res.status(500).json({
       success: false,
-      error: 'Failed to start timetable generation',
-      details: error instanceof Error ? error.message : 'Unknown error'
+      error: "Failed to start timetable generation",
+      details: error instanceof Error ? error.message : "Unknown error",
     });
   }
 };
