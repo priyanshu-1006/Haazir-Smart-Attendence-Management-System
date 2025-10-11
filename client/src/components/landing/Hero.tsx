@@ -15,6 +15,7 @@ import {
 
 // Import Lottie animations
 import heroAnimationData from '../../assets/lottie/hero-animation.json';
+import backgroundAnimationData from '../../assets/lottie/background.json';
 
 const Hero: React.FC = () => {
   const { theme } = useTheme();
@@ -48,46 +49,27 @@ const Hero: React.FC = () => {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  // Animated gradient background
-  const gradientStyles = theme === 'dark'
-    ? 'bg-gradient-to-b from-slate-900 via-purple-900 to-slate-900'
-    : 'bg-gradient-to-b from-blue-50 via-indigo-50 to-blue-50';
-
   return (
     <motion.section
       ref={heroRef}
-      className={`relative min-h-screen flex items-center justify-center overflow-hidden pt-20 ${gradientStyles}`}
+      className={`relative min-h-screen flex items-center justify-center overflow-hidden pt-6 ${
+        theme === 'dark' ? '' : 'bg-white'
+      }`}
       style={{ opacity }}
     >
-      {/* Animated Background Particles */}
-      <div className="absolute inset-0 overflow-hidden">
-        {[...Array(20)].map((_, i) => (
-          <motion.div
-            key={i}
-            className={`absolute w-2 h-2 rounded-full ${
-              theme === 'dark' ? 'bg-purple-500/20' : 'bg-indigo-500/20'
-            }`}
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
-            animate={{
-              y: [0, -30, 0],
-              x: [0, Math.random() * 20 - 10, 0],
-              opacity: [0.2, 0.5, 0.2],
-              scale: [1, 1.5, 1],
-            }}
-            transition={{
-              duration: 3 + Math.random() * 2,
-              repeat: Infinity,
-              delay: Math.random() * 2,
-            }}
+      {/* Lottie Background Animation for Hero Section - Only in Dark Mode */}
+      {theme === 'dark' && (
+        <div className="absolute inset-0 z-0 opacity-20 pointer-events-none">
+          <Lottie
+            animationData={backgroundAnimationData}
+            loop
+            className="w-full h-full object-cover"
           />
-        ))}
-      </div>
+        </div>
+      )}
 
       {/* Main Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+  <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           
           {/* Left Content */}
@@ -132,8 +114,8 @@ const Hero: React.FC = () => {
             <p className={`text-xl md:text-2xl mb-8 leading-relaxed ${
               theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
             }`}>
-              Modern, intelligent attendance management system with face recognition, 
-              real-time analytics, and automated reporting.
+              India's most trusted attendance management system with face recognition, 
+              real-time analytics, and automated reporting. Built for Indian educational institutions.
             </p>
 
             {/* Feature Pills */}
@@ -295,7 +277,7 @@ const Hero: React.FC = () => {
 
               {/* Floating Elements */}
               <motion.div
-                className="absolute -top-10 -right-10 w-32 h-32 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full blur-2xl opacity-60"
+                className="absolute -top-10 -right-10 w-32 h-32 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full blur-lg opacity-20"
                 animate={{
                   y: [0, -20, 0],
                   scale: [1, 1.2, 1],
@@ -307,7 +289,7 @@ const Hero: React.FC = () => {
                 }}
               />
               <motion.div
-                className="absolute -bottom-10 -left-10 w-40 h-40 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-full blur-2xl opacity-60"
+                className="absolute -bottom-10 -left-10 w-40 h-40 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-full blur-lg opacity-15"
                 animate={{
                   y: [0, 20, 0],
                   scale: [1, 1.1, 1],

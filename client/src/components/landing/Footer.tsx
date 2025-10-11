@@ -20,28 +20,28 @@ const Footer: React.FC = () => {
 
   const footerLinks = {
     product: [
-      { label: 'Features', href: '#features' },
-      { label: 'Pricing', href: '#pricing' },
+      { label: 'Features', href: '/features' },
+      { label: 'Pricing', href: '/pricing' },
       { label: 'Demo', href: '#demo' },
-      { label: 'API', href: '/api' }
+      { label: 'API Documentation', href: '/api' }
     ],
     company: [
       { label: 'About Us', href: '/about' },
-      { label: 'Careers', href: '/careers' },
-      { label: 'Blog', href: '/blog' },
-      { label: 'Press Kit', href: '/press' }
+      { label: 'Indian Offices', href: '/offices' },
+      { label: 'Success Stories', href: '/stories' },
+      { label: 'Careers in India', href: '/careers' }
     ],
     support: [
       { label: 'Help Center', href: '/help' },
-      { label: 'Documentation', href: '/docs' },
+      { label: 'Hindi Support', href: '/help-hindi' },
       { label: 'Contact Us', href: '/contact' },
-      { label: 'Status', href: '/status' }
+      { label: 'WhatsApp Support', href: '/whatsapp' }
     ],
     legal: [
       { label: 'Privacy Policy', href: '/privacy' },
       { label: 'Terms of Service', href: '/terms' },
-      { label: 'Cookie Policy', href: '/cookies' },
-      { label: 'GDPR', href: '/gdpr' }
+      { label: 'DPDP Compliance', href: '/dpdp' },
+      { label: 'Refund Policy', href: '/refund' }
     ]
   };
 

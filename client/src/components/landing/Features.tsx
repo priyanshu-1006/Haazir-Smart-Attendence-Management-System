@@ -36,63 +36,63 @@ const Features: React.FC = () => {
   const features: Feature[] = [
     {
       icon: CheckCircle2,
-      title: "Smart Attendance",
-      description: "AI-powered face recognition for instant, accurate attendance tracking. No manual entries needed.",
+      title: "AI-Powered Attendance",
+      description: "Face recognition technology built for Indian classrooms. Works with diverse lighting and crowd conditions.",
       lottieData: attendanceCheckData,
       gradient: "from-blue-500 to-cyan-500",
-      highlights: ["98% accuracy", "Face recognition", "Real-time tracking"]
+      highlights: ["99.7% accuracy", "Works in Indian conditions", "Instant marking"]
     },
     {
       icon: BarChart3,
-      title: "Advanced Analytics",
-      description: "Comprehensive insights with real-time dashboards, trends, and predictive analytics.",
+      title: "Indian Education Analytics",
+      description: "Dashboards designed for Indian academic calendars, exam patterns, and institutional requirements.",
       lottieData: analyticsChartData,
       gradient: "from-purple-500 to-pink-500",
-      highlights: ["Live dashboards", "Trend analysis", "Custom reports"]
+      highlights: ["CBSE/State board support", "Semester tracking", "Parent notifications"]
     },
     {
       icon: Users,
-      title: "Multi-Role Management",
-      description: "Seamlessly manage students, teachers, and administrators with role-based access control.",
+      title: "Multi-Campus Management",
+      description: "Manage multiple branches, departments, and courses. Perfect for universities and coaching chains.",
       lottieData: multiUserData,
       gradient: "from-orange-500 to-red-500",
-      highlights: ["Role-based access", "Bulk operations", "Team management"]
+      highlights: ["Branch management", "Bulk student import", "Department wise access"]
     },
     {
       icon: FileText,
-      title: "Automated Reports",
-      description: "Generate detailed attendance reports automatically. Export in multiple formats instantly.",
+      title: "Government Compliant Reports",
+      description: "Generate reports in formats required by UGC, AICTE, and state education boards.",
       lottieData: reportAutoData,
       gradient: "from-green-500 to-emerald-500",
-      highlights: ["Auto-generation", "Multiple formats", "Scheduled reports"]
+      highlights: ["UGC format", "AICTE compliance", "State board ready"]
     },
     {
       icon: Shield,
-      title: "Secure & Compliant",
-      description: "Enterprise-grade security with encryption, GDPR compliance, and data privacy protection.",
+      title: "Data Localization",
+      description: "All student data stored in India with compliance to local data protection laws.",
       gradient: "from-indigo-500 to-purple-500",
-      highlights: ["End-to-end encryption", "GDPR compliant", "Secure backups"]
+      highlights: ["India-based servers", "DPDP Act compliant", "Local support"]
     },
     {
       icon: Zap,
-      title: "Lightning Fast",
-      description: "Optimized performance for instant attendance marking. Works smoothly even with thousands of users.",
+      title: "Works Offline",
+      description: "Attendance marking works even with poor internet. Auto-syncs when connection is restored.",
       gradient: "from-yellow-500 to-orange-500",
-      highlights: ["< 2s load time", "Real-time sync", "Cloud-powered"]
+      highlights: ["Offline capable", "Auto-sync", "Low bandwidth optimized"]
     },
     {
       icon: Clock,
-      title: "Time Management",
-      description: "Smart scheduling and timetable integration. Never miss a class or session.",
+      title: "Indian Academic Calendar",
+      description: "Built-in support for Indian holidays, exam schedules, and academic year patterns.",
       gradient: "from-teal-500 to-cyan-500",
-      highlights: ["Auto-scheduling", "Calendar sync", "Reminders"]
+      highlights: ["Festival holidays", "Exam integration", "Academic year support"]
     },
     {
       icon: TrendingUp,
-      title: "Growth Tracking",
-      description: "Monitor attendance patterns and student engagement over time with actionable insights.",
+      title: "75% Attendance Tracking",
+      description: "Automated alerts for students approaching 75% attendance threshold as per Indian regulations.",
       gradient: "from-pink-500 to-rose-500",
-      highlights: ["Pattern detection", "Engagement metrics", "Improvement tips"]
+      highlights: ["75% alerts", "Parent notifications", "Early warnings"]
     }
   ];
 

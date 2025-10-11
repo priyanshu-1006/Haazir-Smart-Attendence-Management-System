@@ -197,6 +197,7 @@ const App: React.FC = () => {
           <Switch>
             {/* Public Routes */}
             <Route path="/" exact component={LandingPageNew} />
+            <Route path="/landing" exact component={LandingPageNew} />
             <Route path="/landing-old" exact component={LandingPage} />
             <Route path="/pricing" exact component={PricingPage} />
             <Route path="/features" exact component={FeaturesPage} />

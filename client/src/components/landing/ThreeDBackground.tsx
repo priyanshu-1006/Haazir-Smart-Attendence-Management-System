@@ -17,16 +17,26 @@ const ThreeDBackground = memo(() => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    let width = window.innerWidth;
-    let height = window.innerHeight;
-    canvas.width = width;
-    canvas.height = height;
+
+  // HiDPI/Retina fix
+  let width = window.innerWidth;
+  let height = window.innerHeight;
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = width * dpr;
+  canvas.height = height * dpr;
+  canvas.style.width = width + 'px';
+  canvas.style.height = height + 'px';
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
     const resizeCanvas = () => {
       width = window.innerWidth;
       height = window.innerHeight;
-      canvas.width = width;
-      canvas.height = height;
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      canvas.style.width = width + 'px';
+      canvas.style.height = height + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
     window.addEventListener('resize', resizeCanvas);
 
@@ -65,8 +75,9 @@ const ThreeDBackground = memo(() => {
     const animate = () => {
       // Use themeRef.current to get latest theme without re-initializing
       const currentTheme = themeRef.current;
-      ctx.fillStyle = currentTheme === 'dark' ? 'rgba(15, 23, 42, 0.1)' : 'rgba(255, 255, 255, 0.1)';
-      ctx.fillRect(0, 0, width, height);
+  // Increase alpha for less ghosting
+  ctx.fillStyle = currentTheme === 'dark' ? 'rgba(15, 23, 42, 0.5)' : 'rgba(255, 255, 255, 0.7)';
+  ctx.fillRect(0, 0, width, height);
       const color = currentTheme === 'dark' ? '#8b5cf6' : '#6366f1';
       particles.forEach(p => { p.update(); p.draw(ctx, color); });
       animationId = requestAnimationFrame(animate);

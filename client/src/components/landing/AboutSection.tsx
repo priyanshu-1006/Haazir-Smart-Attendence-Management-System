@@ -11,34 +11,34 @@ const AboutSection: React.FC = () => {
   const { theme } = useTheme();
 
   const stats = [
-    { label: 'Active Users', value: '50K+', icon: <Users className="w-6 h-6" /> },
-    { label: 'Institutions', value: '500+', icon: <Award className="w-6 h-6" /> },
-    { label: 'Countries', value: '25+', icon: <Heart className="w-6 h-6" /> },
+    { label: 'Active Students', value: '2L+', icon: <Users className="w-6 h-6" /> },
+    { label: 'Indian Institutions', value: '750+', icon: <Award className="w-6 h-6" /> },
+    { label: 'States Covered', value: '28+', icon: <Heart className="w-6 h-6" /> },
     { label: 'Uptime', value: '99.9%', icon: <Zap className="w-6 h-6" /> },
   ];
 
   const values = [
     {
-      title: 'Innovation First',
-      description: 'We constantly push boundaries with cutting-edge AI and machine learning',
+      title: 'Made for India',
+      description: 'Built specifically for Indian educational institutions and their unique needs',
       icon: <Zap className="w-8 h-8" />,
-      color: 'from-purple-500 to-blue-500',
+      color: 'from-orange-500 to-red-500',
     },
     {
       title: 'Student-Centric',
-      description: 'Every feature is designed with students and educators in mind',
+      description: 'Designed for Indian students, teachers, and administrative staff',
       icon: <Users className="w-8 h-8" />,
       color: 'from-blue-500 to-cyan-500',
     },
     {
-      title: 'Privacy & Security',
-      description: 'Your data is protected with bank-grade encryption and security',
+      title: 'Data Security',
+      description: 'Compliant with Indian data protection laws and international standards',
       icon: <Award className="w-8 h-8" />,
       color: 'from-cyan-500 to-green-500',
     },
     {
-      title: 'Reliability',
-      description: '99.9% uptime guarantee with 24/7 support for peace of mind',
+      title: 'Local Support',
+      description: 'Dedicated Indian support team available in Hindi and English',
       icon: <Heart className="w-8 h-8" />,
       color: 'from-green-500 to-purple-500',
     },

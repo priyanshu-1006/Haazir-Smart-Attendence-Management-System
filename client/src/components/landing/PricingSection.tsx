@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Check, X, Sparkles } from 'lucide-react';
 import Lottie from 'lottie-react';
 import { useTheme } from '../../hooks/useTheme';
+import { formatCurrency, indianPricingTiers } from '../../utils/currency';
 
 // Import Lottie animations
 import securityShieldData from '../../assets/lottie/security-shield-icon.json';
@@ -27,9 +28,9 @@ const PricingSection: React.FC = () => {
   const pricingTiers: PricingTier[] = [
     {
       name: 'Starter',
-      price: isAnnual ? '$299' : '$29',
+      price: isAnnual ? formatCurrency(indianPricingTiers.starter.yearly) : formatCurrency(indianPricingTiers.starter.monthly),
       period: isAnnual ? '/year' : '/month',
-      description: 'Perfect for small institutions getting started',
+      description: 'Perfect for small schools and coaching centers getting started',
       lottieData: securityShieldData,
       buttonText: 'Start Free Trial',
       features: [
@@ -47,9 +48,9 @@ const PricingSection: React.FC = () => {
     },
     {
       name: 'Professional',
-      price: isAnnual ? '$899' : '$89',
+      price: isAnnual ? formatCurrency(indianPricingTiers.professional.yearly) : formatCurrency(indianPricingTiers.professional.monthly),
       period: isAnnual ? '/year' : '/month',
-      description: 'For growing institutions with advanced needs',
+      description: 'For growing institutions and universities with advanced needs',
       lottieData: analyticsData,
       buttonText: 'Get Started',
       highlighted: true,
@@ -70,7 +71,7 @@ const PricingSection: React.FC = () => {
       name: 'Enterprise',
       price: 'Custom',
       period: '',
-      description: 'For large institutions with custom requirements',
+      description: 'For large universities and educational institutions with custom requirements',
       lottieData: multiUserData,
       buttonText: 'Contact Sales',
       features: [
@@ -130,7 +131,7 @@ const PricingSection: React.FC = () => {
             Choose Your Perfect Plan
           </h2>
           <p className={`text-lg md:text-xl ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} max-w-2xl mx-auto`}>
-            Start free and scale as you grow. No hidden fees, cancel anytime.
+            Affordable pricing for Indian educational institutions. Start free and scale as you grow.
           </p>
 
           {/* Annual/Monthly Toggle */}
@@ -159,7 +160,7 @@ const PricingSection: React.FC = () => {
                 animate={{ scale: 1 }}
                 className="text-xs font-semibold text-green-500 bg-green-500/10 px-2 py-1 rounded-full"
               >
-                Save 15%
+                Save ₹4,800
               </motion.span>
             )}
           </div>
@@ -171,20 +172,20 @@ const PricingSection: React.FC = () => {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-8"
+          className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 md:gap-8"
         >
           {pricingTiers.map((tier, index) => (
             <motion.div
               key={tier.name}
               variants={cardVariants}
               whileHover={{ y: -10 }}
-              className={`relative rounded-2xl p-8 ${
+              className={`relative rounded-2xl p-6 md:p-8 ${
                 tier.highlighted
-                  ? 'bg-gradient-to-br from-purple-500 to-blue-500 text-white shadow-2xl shadow-purple-500/30 scale-105'
+                  ? 'bg-gradient-to-br from-purple-500 to-blue-500 text-white shadow-2xl shadow-purple-500/30 md:scale-105'
                   : theme === 'dark'
                   ? 'bg-gray-800/50 backdrop-blur-xl border border-gray-700'
                   : 'bg-white border border-gray-200'
-              }`}
+              } ${tier.highlighted ? 'ring-4 ring-purple-500/20' : ''}`}
             >
               {tier.highlighted && (
                 <motion.div
@@ -312,10 +313,10 @@ const PricingSection: React.FC = () => {
           }`}
         >
           <h3 className={`text-2xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-            Have Questions?
+            Need Help Choosing the Right Plan?
           </h3>
           <p className={`mb-6 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-            Our team is here to help you choose the right plan for your institution.
+            Our team understands Indian educational institutions and can help you find the perfect solution.
           </p>
           <motion.button
             whileHover={{ scale: 1.05 }}
@@ -326,7 +327,7 @@ const PricingSection: React.FC = () => {
                 : 'bg-purple-600 text-white hover:bg-purple-700'
             }`}
           >
-            Contact Sales
+            Schedule Free Consultation
           </motion.button>
         </motion.div>
       </div>

@@ -50,44 +50,44 @@ const Stats: React.FC = () => {
         const stats: StatItem[] = [
           {
             lottieAnimation: userCountAnimation,
-            value: 50000, // Will be populated from API
+            value: 200000, // 2 lakh students across India
             suffix: '+',
-            label: 'Active Users',
+            label: 'Active Students',
             gradient: 'from-blue-500 to-cyan-500'
           },
           {
             lottieAnimation: buildingIconAnimation,
-            value: 150, // Will be populated from API
+            value: 750, // Indian educational institutions
             suffix: '+',
-            label: 'Institutions',
+            label: 'Indian Institutions',
             gradient: 'from-purple-500 to-pink-500'
           },
           {
             lottieAnimation: checkmarkCircleAnimation,
-            value: 1000000, // Will be populated from API
+            value: 50000000, // 5 crore attendance records
             suffix: '+',
             label: 'Attendance Records',
             gradient: 'from-green-500 to-emerald-500'
           },
           {
             lottieAnimation: trendingUpAnimation,
-            value: 98, // Will be populated from API
+            value: 99.7, // High accuracy rate
             suffix: '%',
             label: 'Accuracy Rate',
             gradient: 'from-orange-500 to-amber-500'
           },
           {
             lottieAnimation: starRatingAnimation,
-            value: 99, // Will be populated from API
-            suffix: '%',
-            label: 'Customer Satisfaction',
+            value: 4.9, // Customer rating out of 5
+            suffix: '/5',
+            label: 'Customer Rating',
             gradient: 'from-pink-500 to-rose-500'
           },
           {
             lottieAnimation: globeIconAnimation,
-            value: 25, // Will be populated from API
+            value: 28, // Indian states and UTs covered
             suffix: '+',
-            label: 'Countries Served',
+            label: 'Indian States',
             gradient: 'from-indigo-500 to-blue-500'
           }
         ];        setStatsData(stats);
