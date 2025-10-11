@@ -186,7 +186,7 @@ export const fetchRosterForSchedule = async (
   // Backend returns eligibleStudents, map it to roster for consistency
   return {
     ...resp.data,
-    roster: resp.data.eligibleStudents || []
+    roster: resp.data.eligibleStudents || [],
   };
 };
 
