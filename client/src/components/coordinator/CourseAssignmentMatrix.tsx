@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   User,
   BookOpen,
@@ -22,6 +22,8 @@ interface CourseSession {
   course_name?: string;
   course_code?: string;
   semester?: number; // Add semester field to track which semester this course belongs to
+  department_id?: number; // Add department field for multi-department support
+  department_name?: string; // Add department name for display
   session_type: "theory" | "lab" | "tutorial";
   classes_per_week: number; // Number of classes per week
   teacher_id?: number;
@@ -32,7 +34,7 @@ interface CourseSession {
 }
 
 interface CourseAssignmentMatrixProps {
-  departmentId: number;
+  departmentIds: number[]; // Changed from single departmentId to array
   semesters: number[]; // Changed from single semester to array of semesters
   sections: string[];
   onAssignmentsChange: (assignments: CourseSession[]) => void;
@@ -40,7 +42,7 @@ interface CourseAssignmentMatrixProps {
 }
 
 const CourseAssignmentMatrix: React.FC<CourseAssignmentMatrixProps> = ({
-  departmentId,
+  departmentIds, // Changed parameter name
   semesters, // Changed from semester to semesters
   sections,
   onAssignmentsChange,
@@ -62,24 +64,54 @@ const CourseAssignmentMatrix: React.FC<CourseAssignmentMatrixProps> = ({
     null
   );
 
+  // Use refs to track previous values and prevent redundant loads
+  const prevDepartmentIdsRef = useRef<string>("");
+  const prevSemestersRef = useRef<string>("");
+  const isLoadingRef = useRef(false);
+
   // Load courses and teachers
   useEffect(() => {
     const loadData = async () => {
+      // Create stable string representations for comparison
+      const deptIdsStr = JSON.stringify(departmentIds.sort());
+      const semestersStr = JSON.stringify(semesters.sort());
+
+      // Skip if already loading or if data hasn't changed
+      if (
+        isLoadingRef.current ||
+        (deptIdsStr === prevDepartmentIdsRef.current &&
+          semestersStr === prevSemestersRef.current)
+      ) {
+        return;
+      }
+
+      // Mark as loading
+      isLoadingRef.current = true;
+      prevDepartmentIdsRef.current = deptIdsStr;
+      prevSemestersRef.current = semestersStr;
+
       try {
         setLoading(true);
         setError(null);
 
-        // Load courses for ALL selected semesters
+        // Load courses for ALL selected departments and semesters
         const allCourses: Course[] = [];
-        for (const sem of semesters) {
-          const coursesResponse =
-            await smartTimetableService.getCoursesForDepartmentSemester(
-              departmentId,
-              sem
-            );
+        for (const deptId of departmentIds) {
+          for (const sem of semesters) {
+            const coursesResponse =
+              await smartTimetableService.getCoursesForDepartmentSemester(
+                deptId,
+                sem
+              );
 
-          if (coursesResponse.success && coursesResponse.data) {
-            allCourses.push(...coursesResponse.data);
+            if (coursesResponse.success && coursesResponse.data) {
+              // Add department_id to each course for tracking
+              const coursesWithDept = coursesResponse.data.map((c) => ({
+                ...c,
+                department_id: deptId,
+              }));
+              allCourses.push(...coursesWithDept);
+            }
           }
         }
 
@@ -94,6 +126,8 @@ const CourseAssignmentMatrix: React.FC<CourseAssignmentMatrixProps> = ({
             course_name: course.course_name,
             course_code: course.course_code,
             semester: course.semester, // Add semester from course data
+            department_id: course.department_id, // Add department tracking
+            department_name: course.department_name, // Add department name for display
             session_type: "theory",
             classes_per_week: 3, // Default for theory
             conflicts: [],
@@ -101,31 +135,40 @@ const CourseAssignmentMatrix: React.FC<CourseAssignmentMatrixProps> = ({
         });
         setAssignments(initialAssignments);
 
-        // Load available teachers
-        const teachersResponse =
-          await smartTimetableService.getAvailableTeachers({
-            departmentId,
-          });
+        // Load available teachers from ALL departments
+        const allTeachers: Teacher[] = [];
+        for (const deptId of departmentIds) {
+          const teachersResponse =
+            await smartTimetableService.getAvailableTeachers({
+              departmentId: deptId,
+            });
 
-        if (teachersResponse.success && teachersResponse.data) {
-          setTeachers(teachersResponse.data);
+          if (teachersResponse.success && teachersResponse.data) {
+            allTeachers.push(...teachersResponse.data);
+          }
         }
+        // Remove duplicate teachers (same teacher_id)
+        const uniqueTeachers = Array.from(
+          new Map(allTeachers.map((t) => [t.teacher_id, t])).values()
+        );
+        setTeachers(uniqueTeachers);
       } catch (err: any) {
         console.error("Error loading course assignment data:", err);
         setError(err.message || "Failed to load data");
       } finally {
         setLoading(false);
+        isLoadingRef.current = false; // Reset loading flag
       }
     };
 
-    if (departmentId && semesters && semesters.length > 0) {
+    if (departmentIds.length > 0 && semesters && semesters.length > 0) {
       loadData();
     }
-  }, [departmentId, semesters]);
+  }, [departmentIds, semesters]);
 
   // Update parent component when assignments change
   useEffect(() => {
-    // Log assignment summary for debugging
+    // Log assignment summary for debugging (only when assignments actually change)
     const assignmentSummary = {
       total: assignments.length,
       theory: assignments.filter((a) => a.session_type === "theory").length,
@@ -150,7 +193,7 @@ const CourseAssignmentMatrix: React.FC<CourseAssignmentMatrixProps> = ({
     // Check validation
     const isValid = validateAssignments();
     onValidationChange(isValid);
-  }, [assignments, onAssignmentsChange, onValidationChange]);
+  }, [assignments]); // FIXED: Removed callback functions from dependencies
 
   // Validate assignments
   const validateAssignments = (): boolean => {
@@ -200,13 +243,15 @@ const CourseAssignmentMatrix: React.FC<CourseAssignmentMatrixProps> = ({
       course_name: course.course_name,
       course_code: course.course_code,
       semester: course.semester, // CRITICAL FIX: Include semester field so labs aren't filtered out
+      department_id: course.department_id,
+      department_name: course.department_name, // Include department name for display
       session_type: "lab",
       classes_per_week: 1,
       conflicts: [],
     };
 
     console.log(
-      `➕ Adding lab session for ${course.course_code} (Semester ${course.semester})`
+      `➕ Adding lab session for ${course.course_code} (Semester ${course.semester}) - ${course.department_name}`
     );
     setAssignments((prev) => [...prev, newSession]);
   };
@@ -267,7 +312,7 @@ const CourseAssignmentMatrix: React.FC<CourseAssignmentMatrixProps> = ({
             course_id: firstSession.course_id,
             course_code: firstSession.course_code || "",
             course_name: firstSession.course_name || "",
-            department_id: departmentId,
+            department_id: firstSession.department_id || departmentIds[0], // Use department from session or first dept
             semester: firstSession.semester || course?.semester || 1, // Use semester from session or course
             sections: sections,
             sessions: {
@@ -532,9 +577,19 @@ const CourseAssignmentMatrix: React.FC<CourseAssignmentMatrixProps> = ({
                         <h4 className="text-lg font-medium text-gray-900">
                           {course.course_code} - {course.course_name}
                         </h4>
-                        <p className="text-sm text-gray-600">
-                          Semester {course.semester}
-                        </p>
+                        <div className="flex items-center gap-3 mt-1">
+                          <p className="text-sm text-gray-600">
+                            Semester {course.semester}
+                          </p>
+                          {course.department_name && (
+                            <>
+                              <span className="text-gray-400">•</span>
+                              <p className="text-sm font-medium text-blue-600">
+                                {course.department_name}
+                              </p>
+                            </>
+                          )}
+                        </div>
                       </div>
                       <button
                         onClick={() => addSession(course.course_id)}

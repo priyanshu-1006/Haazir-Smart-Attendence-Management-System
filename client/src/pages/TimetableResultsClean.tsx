@@ -35,6 +35,8 @@ interface TimetableEntry {
   sessionType: "theory" | "lab" | "tutorial";
   section: string;
   semester?: number; // Add optional semester field
+  department_id?: number; // Add department ID for filtering
+  department_name?: string; // Add department name for display
 }
 
 interface TimetableSolution {
@@ -76,6 +78,12 @@ const TimetableResults: React.FC = () => {
   ]);
   const [selectedSemester, setSelectedSemester] = useState<number>(1);
   const [availableSemesters, setAvailableSemesters] = useState<number[]>([1]);
+  const [selectedDepartmentId, setSelectedDepartmentId] = useState<
+    number | null
+  >(null);
+  const [availableDepartments, setAvailableDepartments] = useState<
+    Array<{ id: number; name: string }>
+  >([]);
 
   // Export/Save state
   const [isExporting, setIsExporting] = useState(false);
@@ -116,12 +124,38 @@ const TimetableResults: React.FC = () => {
       // Extract available sections and semesters from the generated data
       const sections = new Set<string>();
       const semesters = new Set<number>();
+      const departments = new Map<number, string>();
+
+      console.log(
+        "🔍 Extracting data from timetable entries:",
+        state.solutions[0]?.timetable_entries?.length,
+        "entries"
+      );
+      console.log(
+        "🔍 Sample entry:",
+        state.solutions[0]?.timetable_entries?.[0]
+      );
+
       state.solutions[0]?.timetable_entries?.forEach((entry: any) => {
         if (entry.section) sections.add(entry.section);
         if (entry.semester) semesters.add(entry.semester);
+        if (entry.department_id && entry.department_name) {
+          console.log(
+            `🏢 Found department: ${entry.department_id} - ${entry.department_name}`
+          );
+          departments.set(entry.department_id, entry.department_name);
+        } else if (entry.department_id || entry.department_name) {
+          console.warn("⚠️ Partial department data:", {
+            dept_id: entry.department_id,
+            dept_name: entry.department_name,
+          });
+        }
       });
       const sectionArray = Array.from(sections).sort();
       const semesterArray = Array.from(semesters).sort((a, b) => a - b);
+      const departmentArray = Array.from(departments.entries())
+        .map(([id, name]) => ({ id, name }))
+        .sort((a, b) => a.name.localeCompare(b.name));
 
       if (sectionArray.length > 0) {
         setAvailableSections(sectionArray);
@@ -131,8 +165,13 @@ const TimetableResults: React.FC = () => {
         setAvailableSemesters(semesterArray);
         setSelectedSemester(semesterArray[0]);
       }
+      if (departmentArray.length > 0) {
+        setAvailableDepartments(departmentArray);
+        setSelectedDepartmentId(departmentArray[0].id);
+      }
       console.log("📋 Available sections:", sectionArray);
       console.log("📚 Available semesters:", semesterArray);
+      console.log("🏢 Available departments:", departmentArray);
     } else {
       console.log("⚠️ No valid solutions found in state, loading mock data");
       console.log("State details:", {
@@ -769,6 +808,25 @@ const TimetableResults: React.FC = () => {
                 </button>
                 <div className="w-px h-6 bg-white bg-opacity-30"></div>
                 <Filter className="w-5 h-5 text-blue-200" />
+                {availableDepartments.length > 0 && (
+                  <select
+                    value={selectedDepartmentId || ""}
+                    onChange={(e) =>
+                      setSelectedDepartmentId(Number(e.target.value))
+                    }
+                    className="bg-white bg-opacity-20 text-white border border-white border-opacity-30 rounded-lg px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50"
+                  >
+                    {availableDepartments.map((dept) => (
+                      <option
+                        key={dept.id}
+                        value={dept.id}
+                        className="text-gray-900"
+                      >
+                        {dept.name}
+                      </option>
+                    ))}
+                  </select>
+                )}
                 <select
                   value={selectedSemester}
                   onChange={(e) => setSelectedSemester(Number(e.target.value))}
@@ -859,7 +917,10 @@ const TimetableResults: React.FC = () => {
                           e.day === day &&
                           e.timeSlot === timeSlot &&
                           selectedSections.includes(e.section) &&
-                          (e.semester === selectedSemester || !e.semester)
+                          (e.semester === selectedSemester || !e.semester) &&
+                          (!selectedDepartmentId ||
+                            e.department_id === selectedDepartmentId ||
+                            !e.department_id)
                         );
                       }
                     );

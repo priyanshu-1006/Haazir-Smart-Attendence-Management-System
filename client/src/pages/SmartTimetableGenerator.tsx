@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useHistory } from "react-router-dom";
 import {
   Calendar,
@@ -12,7 +12,10 @@ import {
   AlertTriangle,
   Zap,
 } from "lucide-react";
-import { fetchAllDepartments } from "../services/api";
+import {
+  fetchAllDepartments,
+  fetchSectionsByDepartment,
+} from "../services/api";
 import CourseAssignmentMatrix from "../components/coordinator/CourseAssignmentMatrix";
 import ManualTimeConfiguration from "../components/coordinator/ManualTimeConfiguration";
 import smartTimetableService from "../services/smartTimetableService";
@@ -33,6 +36,13 @@ interface Department {
   department_id: number;
   name: string;
   code: string;
+}
+
+interface Section {
+  section_id: number;
+  department_id: number;
+  section_name: string;
+  description?: string;
 }
 
 interface TimetableSettings {
@@ -57,16 +67,21 @@ interface CourseSession {
   special_requirements?: string;
   conflicts?: string[];
   semester?: number; // Add semester field to track which semester this course belongs to
+  department_id?: number; // Add department field for multi-department support
+  department_name?: string; // Add department name for display
 }
 
 const SmartTimetableGenerator: React.FC = () => {
   const history = useHistory();
   const [currentStep, setCurrentStep] = useState(1);
   const [departments, setDepartments] = useState<Department[]>([]);
-  const [selectedDepartment, setSelectedDepartment] =
-    useState<Department | null>(null);
+  const [selectedDepartments, setSelectedDepartments] = useState<Department[]>(
+    []
+  );
   const [selectedSemesters, setSelectedSemesters] = useState<number[]>([]);
+  const [availableSections, setAvailableSections] = useState<Section[]>([]); // Available sections from DB
   const [selectedSections, setSelectedSections] = useState<string[]>([]);
+  const [loadingSections, setLoadingSections] = useState(false); // Loading state for sections
   const [timeConfig, setTimeConfig] = useState<TimeConfig | null>(null);
   const [courseAssignments, setCourseAssignments] = useState<CourseSession[]>(
     []
@@ -127,9 +142,53 @@ const SmartTimetableGenerator: React.FC = () => {
     },
   ];
 
+  // Memoize department IDs to prevent infinite re-renders
+  const departmentIds = useMemo(
+    () => selectedDepartments.map((d) => d.department_id),
+    [selectedDepartments]
+  );
+
   useEffect(() => {
     loadDepartments();
   }, []);
+
+  // Load sections when departments are selected
+  useEffect(() => {
+    const loadSections = async () => {
+      if (selectedDepartments.length === 0) {
+        setAvailableSections([]);
+        setSelectedSections([]);
+        return;
+      }
+
+      try {
+        setLoadingSections(true);
+        const allSections: Section[] = [];
+
+        // Fetch sections from all selected departments
+        for (const dept of selectedDepartments) {
+          const response = await fetchSectionsByDepartment(dept.department_id);
+          console.log(`Sections for ${dept.name}:`, response);
+
+          if (Array.isArray(response)) {
+            allSections.push(...response);
+          }
+        }
+
+        // Keep ALL sections (do NOT remove duplicates)
+        // Different departments can have sections with same name (e.g., CS Section A ≠ EE Section A)
+        setAvailableSections(allSections);
+        console.log("Available sections loaded:", allSections);
+      } catch (error: any) {
+        console.error("Error loading sections:", error);
+        setError(`Failed to load sections: ${error.message}`);
+      } finally {
+        setLoadingSections(false);
+      }
+    };
+
+    loadSections();
+  }, [selectedDepartments]);
 
   const loadDepartments = async () => {
     try {
@@ -187,7 +246,7 @@ const SmartTimetableGenerator: React.FC = () => {
       case 1:
         return timeConfig !== null && timeConfig.workingDays.length > 0;
       case 2:
-        return selectedDepartment !== null && selectedSemesters.length > 0;
+        return selectedDepartments.length > 0 && selectedSemesters.length > 0;
       case 3:
         return (
           selectedSections.length > 0 &&
@@ -211,7 +270,8 @@ const SmartTimetableGenerator: React.FC = () => {
           return "Please select at least one working day";
         return null;
       case 2:
-        if (!selectedDepartment) return "Please select a department";
+        if (selectedDepartments.length === 0)
+          return "Please select at least one department";
         if (selectedSemesters.length === 0)
           return "Please select at least one semester";
         return null;
@@ -234,37 +294,58 @@ const SmartTimetableGenerator: React.FC = () => {
   };
 
   const generateTimetable = async () => {
-    if (!selectedDepartment || selectedSemesters.length === 0) return;
+    if (selectedDepartments.length === 0 || selectedSemesters.length === 0)
+      return;
 
     setGenerating(true);
     setError(null);
 
     try {
       console.log("🚀 Preparing AI timetable generation request...");
+      console.log(
+        `📚 Selected Departments: ${selectedDepartments
+          .map((d) => d.name)
+          .join(", ")}`
+      );
 
       // Group course assignments by course to match backend expected format
       const courseGroupMap = new Map<number, any>();
-      
+
       courseAssignments.forEach((assignment) => {
         if (!courseGroupMap.has(assignment.course_id)) {
           courseGroupMap.set(assignment.course_id, {
             course_id: assignment.course_id,
             course_code: assignment.course_code || "",
             course_name: assignment.course_name || "",
-            department_id: selectedDepartment.department_id,
+            department_id: assignment.department_id, // Use the course's actual department
             semester: assignment.semester || selectedSemesters[0],
             sections: selectedSections,
             sessions: {
-              theory: { teacher_id: 0, teacher_name: "", classes_per_week: 0, duration_minutes: 60 },
-              lab: { teacher_id: 0, teacher_name: "", classes_per_week: 0, duration_minutes: 60 },
-              tutorial: { teacher_id: 0, teacher_name: "", classes_per_week: 0, duration_minutes: 60 },
+              theory: {
+                teacher_id: 0,
+                teacher_name: "",
+                classes_per_week: 0,
+                duration_minutes: 60,
+              },
+              lab: {
+                teacher_id: 0,
+                teacher_name: "",
+                classes_per_week: 0,
+                duration_minutes: 60,
+              },
+              tutorial: {
+                teacher_id: 0,
+                teacher_name: "",
+                classes_per_week: 0,
+                duration_minutes: 60,
+              },
             },
           });
         }
 
         const courseData = courseGroupMap.get(assignment.course_id);
         const sessionType = assignment.session_type;
-        
+
         courseData.sessions[sessionType] = {
           teacher_id: assignment.teacher_id || 0,
           teacher_name: assignment.teacher_name || "",
@@ -286,7 +367,13 @@ const SmartTimetableGenerator: React.FC = () => {
             start: timeConfig?.lunchBreak?.startTime || "12:00",
             end: timeConfig?.lunchBreak?.endTime || "13:00",
           },
-          working_days: timeConfig?.workingDays || ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+          working_days: timeConfig?.workingDays || [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+          ],
         },
         preferences: {
           hard_constraints: {
@@ -299,14 +386,20 @@ const SmartTimetableGenerator: React.FC = () => {
           soft_constraints: {
             minimize_student_gaps: { enabled: true, weight: 70 },
             balance_teacher_workload: { enabled: true, weight: 80 },
-            prefer_morning_theory: { enabled: timetableSettings.morning_theory_preference, weight: 60 },
-            avoid_back_to_back_labs: { enabled: timetableSettings.avoid_back_to_back_labs, weight: 90 },
+            prefer_morning_theory: {
+              enabled: timetableSettings.morning_theory_preference,
+              weight: 60,
+            },
+            avoid_back_to_back_labs: {
+              enabled: timetableSettings.avoid_back_to_back_labs,
+              weight: 90,
+            },
             minimize_daily_transitions: { enabled: true, weight: 50 },
           },
         },
         metadata: {
           request_id: Date.now(),
-          department_name: selectedDepartment.name,
+          department_names: selectedDepartments.map((d) => d.name).join(", "), // Changed to comma-separated list
           semester: selectedSemesters[0],
           academic_year: new Date().getFullYear().toString(),
           created_by: "coordinator",
@@ -322,17 +415,22 @@ const SmartTimetableGenerator: React.FC = () => {
 
       // Call backend API for AI generation
       console.log("🤖 Calling backend AI timetable generator...");
-      const response = await fetch("http://localhost:5000/api/timetable/generator/generate-ai", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify(aiGenerationInput),
-      });
+      const response = await fetch(
+        "http://localhost:5000/api/timetable/generator/generate-ai",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify(aiGenerationInput),
+        }
+      );
 
       if (!response.ok) {
-        throw new Error(`Backend error: ${response.status} ${response.statusText}`);
+        throw new Error(
+          `Backend error: ${response.status} ${response.statusText}`
+        );
       }
 
       const result = await response.json();
@@ -343,7 +441,11 @@ const SmartTimetableGenerator: React.FC = () => {
         time: result.generation_summary?.total_generation_time_ms + "ms",
       });
 
-      if (!result.success || !result.solutions || result.solutions.length === 0) {
+      if (
+        !result.success ||
+        !result.solutions ||
+        result.solutions.length === 0
+      ) {
         throw new Error("No solutions generated by AI");
       }
 
@@ -352,15 +454,18 @@ const SmartTimetableGenerator: React.FC = () => {
         id: solution.id,
         name: solution.name,
         score: solution.quality.overall_score,
-        optimization: solution.name.toLowerCase().includes("teacher") ? "teacher-focused"
-          : solution.name.toLowerCase().includes("student") ? "student-focused"
+        optimization: solution.name.toLowerCase().includes("teacher")
+          ? "teacher-focused"
+          : solution.name.toLowerCase().includes("student")
+          ? "student-focused"
           : "balanced",
         conflicts: solution.quality.hard_constraint_violations || 0,
         quality: {
           overall_score: solution.quality.overall_score,
           teacher_satisfaction: solution.quality.teacher_workload_score || 90,
           student_satisfaction: solution.quality.student_gap_score || 90,
-          resource_utilization: solution.quality.resource_utilization_score || 95,
+          resource_utilization:
+            solution.quality.resource_utilization_score || 95,
         },
         timetable_entries: solution.schedule.map((entry: any) => ({
           day: entry.time_slot_id.split("_")[0],
@@ -369,16 +474,23 @@ const SmartTimetableGenerator: React.FC = () => {
           courseName: entry.session_id.split("_")[1] || "Course",
           teacherName: entry.session_id.split("_")[2] || "Teacher",
           roomNumber: entry.room_id || "TBD",
-          sessionType: entry.session_id.includes("Lab") ? "lab" 
-            : entry.session_id.includes("Tutorial") ? "tutorial" 
+          sessionType: entry.session_id.includes("Lab")
+            ? "lab"
+            : entry.session_id.includes("Tutorial")
+            ? "tutorial"
             : "theory",
           section: entry.session_id.split("_")[3] || "A",
           semester: parseInt(entry.session_id.split("_")[4]) || 1,
         })),
-        generation_time: (result.generation_summary.total_generation_time_ms / 1000).toFixed(1) + "s",
+        generation_time:
+          (result.generation_summary.total_generation_time_ms / 1000).toFixed(
+            1
+          ) + "s",
         metadata: {
           total_classes: solution.schedule.length,
-          teachers_involved: new Set(solution.schedule.map((s: any) => s.session_id.split("_")[2])).size,
+          teachers_involved: new Set(
+            solution.schedule.map((s: any) => s.session_id.split("_")[2])
+          ).size,
           rooms_used: 6,
           conflicts_resolved: solution.quality.hard_constraint_violations || 0,
         },
@@ -392,15 +504,20 @@ const SmartTimetableGenerator: React.FC = () => {
         inputData: aiGenerationInput,
         generatedBy: "backend-ai-algorithms",
         generationSummary: {
-          total_generation_time_ms: result.generation_summary.total_generation_time_ms,
+          total_generation_time_ms:
+            result.generation_summary.total_generation_time_ms,
           solutions_generated: transformedSolutions.length,
-          best_score: Math.max(...transformedSolutions.map((s: any) => s.score)),
+          best_score: Math.max(
+            ...transformedSolutions.map((s: any) => s.score)
+          ),
         },
       });
     } catch (error: any) {
       console.error("❌ AI Timetable generation error:", error);
-      setError(error.message || "Timetable generation failed. Please try again.");
-      
+      setError(
+        error.message || "Timetable generation failed. Please try again."
+      );
+
       // Fallback to client-side if backend fails
       console.log("⚠️ Falling back to client-side generation...");
       generateTimetableClientSide();
@@ -412,9 +529,12 @@ const SmartTimetableGenerator: React.FC = () => {
   // Fallback client-side generation
   const generateTimetableClientSide = () => {
     console.log("🔄 Using client-side fallback generation...");
+    console.log(
+      `📚 Departments: ${selectedDepartments.map((d) => d.name).join(", ")}`
+    );
     // Keep the existing mock generation as fallback
     const generationInput = {
-      department_id: selectedDepartment?.department_id,
+      department_ids: selectedDepartments.map((d) => d.department_id), // Changed to array
       semesters: selectedSemesters,
       sections: selectedSections,
       course_assignments: courseAssignments.map((assignment) => ({
@@ -426,10 +546,12 @@ const SmartTimetableGenerator: React.FC = () => {
         teacher_id: assignment.teacher_id,
         teacher_name: assignment.teacher_name,
         semester: assignment.semester,
+        department_id: assignment.department_id, // Include department info
+        department_name: assignment.department_name, // Include department name
       })),
       time_configuration: timeConfig,
     };
-    
+
     const mockSolutions = generateMockSolutions(generationInput);
     history.push("/timetable/results", {
       solutions: mockSolutions,
@@ -606,6 +728,25 @@ const SmartTimetableGenerator: React.FC = () => {
             continue;
           }
 
+          // NEW CONSTRAINT: For theory classes, prevent same course on same day
+          // This spreads theory classes across the week for better learning
+          if (course.session_type === "theory") {
+            const sameCourseOnThisDay = entries.some(
+              (e) =>
+                e.courseCode === course.course_code &&
+                e.day === days[dayIndex] &&
+                e.sessionType === "theory"
+            );
+
+            if (sameCourseOnThisDay) {
+              console.log(
+                `⏭️ Skipping ${course.course_code} on ${days[dayIndex]} - already scheduled this day`
+              );
+              slotCounter++;
+              continue;
+            }
+          }
+
           // CRITICAL: Check for teacher conflicts across ALL sections
           // A teacher cannot teach multiple sections at the same time!
           const teacherConflict = existingEntries.some(
@@ -639,6 +780,8 @@ const SmartTimetableGenerator: React.FC = () => {
             sessionType: course.session_type, // CRITICAL: Preserve session type (theory/lab/tutorial)
             section: sectionId,
             semester: semester, // Add semester field
+            department_id: course.department_id, // Add department ID for filtering
+            department_name: course.department_name, // Add department name for display
           };
 
           entries.push(entry);
@@ -896,11 +1039,28 @@ const SmartTimetableGenerator: React.FC = () => {
                 {departments.map((dept) => (
                   <div
                     key={dept.department_id}
-                    onClick={() => setSelectedDepartment(dept)}
+                    onClick={() => {
+                      // Toggle department selection
+                      if (
+                        selectedDepartments.some(
+                          (d) => d.department_id === dept.department_id
+                        )
+                      ) {
+                        setSelectedDepartments(
+                          selectedDepartments.filter(
+                            (d) => d.department_id !== dept.department_id
+                          )
+                        );
+                      } else {
+                        setSelectedDepartments([...selectedDepartments, dept]);
+                      }
+                    }}
                     className={`
                       border-2 rounded-lg p-4 cursor-pointer transition-all duration-200
                       ${
-                        selectedDepartment?.department_id === dept.department_id
+                        selectedDepartments.some(
+                          (d) => d.department_id === dept.department_id
+                        )
                           ? "border-blue-500 bg-blue-50 ring-2 ring-blue-200"
                           : "border-gray-200 bg-white hover:border-blue-300 hover:shadow-md"
                       }
@@ -919,29 +1079,30 @@ const SmartTimetableGenerator: React.FC = () => {
                         className={`
                         w-6 h-6 rounded-full border-2 flex items-center justify-center
                         ${
-                          selectedDepartment?.department_id ===
-                          dept.department_id
+                          selectedDepartments.some(
+                            (d) => d.department_id === dept.department_id
+                          )
                             ? "bg-blue-500 border-blue-500"
                             : "border-gray-300"
                         }
                       `}
                       >
-                        {selectedDepartment?.department_id ===
-                          dept.department_id && (
-                          <CheckCircle className="w-4 h-4 text-white" />
-                        )}
+                        {selectedDepartments.some(
+                          (d) => d.department_id === dept.department_id
+                        ) && <CheckCircle className="w-4 h-4 text-white" />}
                       </div>
                     </div>
                   </div>
                 ))}
               </div>
 
-              {selectedDepartment && (
+              {selectedDepartments.length > 0 && (
                 <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
                   <div className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-green-600 mr-2" />
                     <span className="text-green-800 font-medium">
-                      Selected: {selectedDepartment.name}
+                      Selected ({selectedDepartments.length}):{" "}
+                      {selectedDepartments.map((d) => d.name).join(", ")}
                     </span>
                   </div>
                 </div>
@@ -949,7 +1110,7 @@ const SmartTimetableGenerator: React.FC = () => {
             </div>
 
             {/* Semester Selection */}
-            {selectedDepartment && (
+            {selectedDepartments.length > 0 && (
               <div className="bg-white rounded-lg border border-gray-200 p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">
                   Select Semesters
@@ -997,44 +1158,85 @@ const SmartTimetableGenerator: React.FC = () => {
                 Select Sections
               </h3>
 
-              <div className="grid grid-cols-6 md:grid-cols-12 gap-3">
-                {[
-                  "A",
-                  "B",
-                  "C",
-                  "D",
-                  "E",
-                  "F",
-                  "G",
-                  "H",
-                  "I",
-                  "J",
-                  "K",
-                  "L",
-                ].map((section) => (
-                  <button
-                    key={section}
-                    onClick={() => toggleSection(section)}
-                    className={`
-                      px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200
-                      ${
-                        selectedSections.includes(section)
-                          ? "bg-blue-600 text-white"
-                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                      }
-                    `}
-                  >
-                    {section}
-                  </button>
-                ))}
-              </div>
-
-              {selectedSections.length > 0 && (
-                <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                  <span className="text-blue-800 text-sm">
-                    Selected Sections: {selectedSections.join(", ")}
-                  </span>
+              {loadingSections ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+                  <p className="mt-4 text-gray-600">Loading sections...</p>
                 </div>
+              ) : availableSections.length === 0 ? (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
+                  <AlertTriangle className="w-12 h-12 text-yellow-500 mx-auto mb-3" />
+                  <p className="text-gray-700">
+                    No sections found for the selected department(s).
+                  </p>
+                  <p className="text-sm text-gray-600 mt-2">
+                    Please ensure sections are created in the database for the
+                    selected departments.
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <p className="text-gray-600 mb-4 text-sm">
+                    Select sections from the available departments. Sections are
+                    organized by department below.
+                  </p>
+
+                  {/* Group sections by department for better visualization */}
+                  {selectedDepartments.map((dept) => {
+                    const deptSections = availableSections.filter(
+                      (s) => s.department_id === dept.department_id
+                    );
+
+                    if (deptSections.length === 0) return null;
+
+                    return (
+                      <div key={dept.department_id} className="mb-6">
+                        <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
+                          <div className="w-2 h-2 rounded-full bg-blue-500 mr-2"></div>
+                          {dept.name} - {dept.code}
+                        </h4>
+                        <div className="grid grid-cols-6 md:grid-cols-12 gap-3">
+                          {deptSections.map((section) => (
+                            <button
+                              key={section.section_id}
+                              onClick={() =>
+                                toggleSection(section.section_name)
+                              }
+                              className={`
+                                px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200
+                                ${
+                                  selectedSections.includes(
+                                    section.section_name
+                                  )
+                                    ? "bg-blue-600 text-white shadow-md"
+                                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                                }
+                              `}
+                              title={`${dept.code} - Section ${
+                                section.section_name
+                              }${
+                                section.description
+                                  ? ": " + section.description
+                                  : ""
+                              }`}
+                            >
+                              {section.section_name}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })}
+
+                  {selectedSections.length > 0 && (
+                    <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                      <span className="text-blue-800 text-sm font-medium">
+                        Selected Sections ({selectedSections.length}):{" "}
+                        {selectedSections.join(", ")}
+                      </span>
+                    </div>
+                  )}
+                </>
               )}
             </div>
 
@@ -1217,11 +1419,12 @@ const SmartTimetableGenerator: React.FC = () => {
                       <label className="block text-xs font-medium text-blue-700 mb-1">
                         Max Solutions to Generate
                       </label>
-                      <select className="w-full px-2 py-1 text-sm border border-blue-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500">
+                      <select
+                        className="w-full px-2 py-1 text-sm border border-blue-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        defaultValue="5"
+                      >
                         <option value="3">3 Solutions</option>
-                        <option value="5" selected>
-                          5 Solutions
-                        </option>
+                        <option value="5">5 Solutions</option>
                         <option value="10">10 Solutions</option>
                       </select>
                     </div>
@@ -1230,11 +1433,12 @@ const SmartTimetableGenerator: React.FC = () => {
                       <label className="block text-xs font-medium text-blue-700 mb-1">
                         Generation Timeout
                       </label>
-                      <select className="w-full px-2 py-1 text-sm border border-blue-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500">
+                      <select
+                        className="w-full px-2 py-1 text-sm border border-blue-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        defaultValue="10"
+                      >
                         <option value="5">5 minutes</option>
-                        <option value="10" selected>
-                          10 minutes
-                        </option>
+                        <option value="10">10 minutes</option>
                         <option value="15">15 minutes</option>
                       </select>
                     </div>
@@ -1243,11 +1447,12 @@ const SmartTimetableGenerator: React.FC = () => {
                       <label className="block text-xs font-medium text-blue-700 mb-1">
                         Quality Threshold
                       </label>
-                      <select className="w-full px-2 py-1 text-sm border border-blue-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500">
+                      <select
+                        className="w-full px-2 py-1 text-sm border border-blue-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        defaultValue="80"
+                      >
                         <option value="70">70%</option>
-                        <option value="80" selected>
-                          80%
-                        </option>
+                        <option value="80">80%</option>
                         <option value="90">90%</option>
                       </select>
                     </div>
@@ -1259,7 +1464,7 @@ const SmartTimetableGenerator: React.FC = () => {
         );
 
       case 4:
-        return selectedDepartment &&
+        return selectedDepartments.length > 0 &&
           selectedSemesters.length > 0 &&
           selectedSections.length > 0 ? (
           <div className="bg-white rounded-lg border border-gray-200 p-6">
@@ -1272,7 +1477,7 @@ const SmartTimetableGenerator: React.FC = () => {
               week for each session type.
             </p>
             <CourseAssignmentMatrix
-              departmentId={selectedDepartment.department_id}
+              departmentIds={departmentIds}
               semesters={selectedSemesters} // Pass all selected semesters
               sections={selectedSections}
               onAssignmentsChange={setCourseAssignments}
@@ -1307,10 +1512,10 @@ const SmartTimetableGenerator: React.FC = () => {
                   </h4>
                   <div>
                     <span className="font-medium text-gray-700">
-                      Department:
+                      Departments ({selectedDepartments.length}):
                     </span>
                     <span className="ml-2 text-gray-900">
-                      {selectedDepartment?.name}
+                      {selectedDepartments.map((d) => d.name).join(", ")}
                     </span>
                   </div>
                   <div>
@@ -1484,7 +1689,10 @@ const SmartTimetableGenerator: React.FC = () => {
                     setError(null);
 
                     const response = await fetch(
-                      `${process.env.REACT_APP_API_URL || 'http://localhost:5000/api'}/ai-generate-test`,
+                      `${
+                        process.env.REACT_APP_API_URL ||
+                        "http://localhost:5000/api"
+                      }/ai-generate-test`,
                       {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
@@ -1492,7 +1700,9 @@ const SmartTimetableGenerator: React.FC = () => {
                           test: true,
                           courses: courseAssignments.length,
                           sections: selectedSections.length,
-                          department: selectedDepartment?.name,
+                          departments: selectedDepartments
+                            .map((d) => d.name)
+                            .join(", "),
                         }),
                       }
                     );

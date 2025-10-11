@@ -107,7 +107,10 @@ export const createCourse = async (req: Request, res: Response) => {
     if (error instanceof UniqueConstraintError) {
       return res
         .status(409)
-        .json({ message: "Course code must be unique", error: error.message });
+        .json({
+          message: "Course code already exists in this department",
+          error: error.message,
+        });
     }
     if (error instanceof ValidationError) {
       return res
@@ -173,7 +176,10 @@ export const updateCourse = async (req: Request, res: Response) => {
     if (error instanceof UniqueConstraintError) {
       return res
         .status(409)
-        .json({ message: "Course code must be unique", error: error.message });
+        .json({
+          message: "Course code already exists in this department",
+          error: error.message,
+        });
     }
     if (error instanceof ValidationError) {
       return res

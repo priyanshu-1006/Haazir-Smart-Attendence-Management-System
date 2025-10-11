@@ -70,7 +70,7 @@ Course.init(
     course_code: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
+      unique: false, // Changed: Allow same course code in different departments
       validate: {
         notEmpty: true,
         len: [2, 20],
@@ -108,7 +108,8 @@ Course.init(
     indexes: [
       {
         unique: true,
-        fields: ["course_code"],
+        fields: ["course_code", "department_id"], // Composite unique: Same course can exist in different departments
+        name: "unique_course_per_department",
       },
     ],
   }
