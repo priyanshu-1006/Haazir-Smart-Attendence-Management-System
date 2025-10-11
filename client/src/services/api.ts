@@ -180,10 +180,14 @@ export const fetchRosterForSchedule = async (
   scheduleId: number | string,
   date?: string
 ) => {
-  const resp = await api.get(`/timetable/${scheduleId}/students`, {
+  const resp = await api.get(`/attendance/timetable/${scheduleId}/students`, {
     params: date ? { date } : {},
   });
-  return resp.data; // { date, schedule_id, roster: [{student_id, name, roll_number, status}] }
+  // Backend returns eligibleStudents, map it to roster for consistency
+  return {
+    ...resp.data,
+    roster: resp.data.eligibleStudents || []
+  };
 };
 
 // Coordinator API
