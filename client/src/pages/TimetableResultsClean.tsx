@@ -688,7 +688,7 @@ const TimetableResults: React.FC = () => {
                 setSelectedSolution(solution);
                 setShowExportModal(true);
               }}
-              className="flex items-center px-3 py-1.5 text-sm text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+              className="flex items-center justify-center min-w-[100px] px-4 py-2 text-sm font-medium text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
             >
               <Download className="w-4 h-4 mr-1" />
               Export
@@ -699,7 +699,7 @@ const TimetableResults: React.FC = () => {
                 setSelectedSolution(solution);
                 setShowSaveModal(true);
               }}
-              className="flex items-center px-3 py-1.5 text-sm text-blue-600 border border-blue-300 rounded-md hover:bg-blue-50 transition-colors"
+              className="flex items-center justify-center min-w-[100px] px-4 py-2 text-sm font-medium text-blue-600 border border-blue-300 rounded-lg hover:bg-blue-50 transition-colors"
             >
               <Save className="w-4 h-4 mr-1" />
               Save
@@ -707,7 +707,7 @@ const TimetableResults: React.FC = () => {
           </div>
           <button
             onClick={() => setSelectedSolution(solution)}
-            className={`flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+            className={`flex items-center justify-center min-w-[130px] px-5 py-2 rounded-lg text-sm font-medium transition-colors ${
               isSelected
                 ? "bg-blue-600 text-white"
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -794,14 +794,14 @@ const TimetableResults: React.FC = () => {
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => setShowExportModal(true)}
-                  className="flex items-center px-3 py-1.5 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg text-white text-sm hover:bg-opacity-30 transition-colors"
+                  className="flex items-center justify-center min-w-[100px] px-4 py-2 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg text-white text-sm font-medium hover:bg-opacity-30 transition-colors"
                 >
                   <Download className="w-4 h-4 mr-1" />
                   Export
                 </button>
                 <button
                   onClick={() => setShowSaveModal(true)}
-                  className="flex items-center px-3 py-1.5 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg text-white text-sm hover:bg-opacity-30 transition-colors"
+                  className="flex items-center justify-center min-w-[100px] px-4 py-2 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg text-white text-sm font-medium hover:bg-opacity-30 transition-colors"
                 >
                   <Save className="w-4 h-4 mr-1" />
                   Save
@@ -1066,7 +1066,7 @@ const TimetableResults: React.FC = () => {
             <div className="flex items-center space-x-3">
               <button
                 onClick={handleLoadSaved}
-                className="inline-flex items-center px-4 py-2 border border-green-300 rounded-md text-sm font-medium text-green-700 bg-green-50 hover:bg-green-100"
+                className="inline-flex items-center justify-center min-w-[140px] px-6 py-2.5 border border-green-300 rounded-lg text-sm font-medium text-green-700 bg-green-50 hover:bg-green-100 transition-colors"
               >
                 <FolderOpen className="w-4 h-4 mr-2" />
                 Load Saved
@@ -1074,7 +1074,7 @@ const TimetableResults: React.FC = () => {
               <button
                 onClick={() => setShowExportModal(true)}
                 disabled={!selectedSolution}
-                className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="inline-flex items-center justify-center min-w-[140px] px-6 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 <Download className="w-4 h-4 mr-2" />
                 Export
@@ -1082,14 +1082,10 @@ const TimetableResults: React.FC = () => {
               <button
                 onClick={() => setShowSaveModal(true)}
                 disabled={!selectedSolution}
-                className="inline-flex items-center px-4 py-2 border border-blue-300 rounded-md text-sm font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="inline-flex items-center justify-center min-w-[140px] px-6 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 <Save className="w-4 h-4 mr-2" />
                 Save
-              </button>
-              <button className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700">
-                <Save className="w-4 h-4 mr-2" />
-                Save Selected
               </button>
             </div>
           </div>
@@ -1379,14 +1375,14 @@ const TimetableResults: React.FC = () => {
             <div className="flex justify-end space-x-3 mt-6">
               <button
                 onClick={() => setShowExportModal(false)}
-                className="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50"
+                className="min-w-[100px] px-6 py-2.5 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 font-medium transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleExport}
                 disabled={isExporting}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                className="min-w-[140px] px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center font-medium transition-colors"
               >
                 {isExporting ? (
                   <>
@@ -1496,7 +1492,7 @@ const TimetableResults: React.FC = () => {
             <div className="flex justify-end space-x-3 mt-6">
               <button
                 onClick={() => setShowSaveModal(false)}
-                className="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50"
+                className="min-w-[100px] px-6 py-2.5 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 font-medium transition-colors"
               >
                 Cancel
               </button>
@@ -1507,7 +1503,7 @@ const TimetableResults: React.FC = () => {
                   !saveMetadata.institutionName ||
                   !saveMetadata.academicYear
                 }
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                className="min-w-[160px] px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center font-medium transition-colors"
               >
                 {isSaving ? (
                   <>
@@ -1611,7 +1607,7 @@ const TimetableResults: React.FC = () => {
                           )}
                         </div>
                       </div>
-                      <button className="ml-4 px-3 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 flex items-center">
+                      <button className="ml-4 min-w-[100px] px-5 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 flex items-center justify-center transition-colors">
                         <Upload className="w-4 h-4 mr-1" />
                         Load
                       </button>
@@ -1624,7 +1620,7 @@ const TimetableResults: React.FC = () => {
             <div className="flex justify-end mt-6">
               <button
                 onClick={() => setShowLoadModal(false)}
-                className="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50"
+                className="min-w-[100px] px-6 py-2.5 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 font-medium transition-colors"
               >
                 Close
               </button>

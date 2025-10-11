@@ -12,33 +12,12 @@ import {
 } from "../../services/api";
 import Lottie from "lottie-react";
 import { Pie, Bar } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  ArcElement,
-  Tooltip,
-  Legend,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-} from "chart.js";
 
 // Lottie animations
 import TeachingAnimation from "../../assets/lottie/Teaching.json";
 import BuildingIcon from "../../assets/lottie/building-icon.json";
 import CourseIcon from "../../assets/lottie/Courses.json";
 import AnalyticsIcon from "../../assets/lottie/analytics-icon.json";
-
-// Register Chart.js components
-ChartJS.register(
-  ArcElement,
-  Tooltip,
-  Legend,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title
-);
 
 const TeacherManagement: React.FC = () => {
   const [teachers, setTeachers] = useState<any[]>([]);
@@ -344,7 +323,7 @@ const TeacherManagement: React.FC = () => {
       {!loading && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {/* Total Teachers Card */}
-          <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all transform hover:scale-105 animate-slideInUp">
+          <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-500 text-sm font-medium mb-1">Total Teachers</p>
@@ -358,7 +337,7 @@ const TeacherManagement: React.FC = () => {
           </div>
 
           {/* Departments Card */}
-          <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all transform hover:scale-105 animate-slideInUp" style={{ animationDelay: "0.1s" }}>
+          <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-500 text-sm font-medium mb-1">Departments</p>
@@ -372,7 +351,7 @@ const TeacherManagement: React.FC = () => {
           </div>
 
           {/* Total Courses Card */}
-          <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all transform hover:scale-105 animate-slideInUp" style={{ animationDelay: "0.2s" }}>
+          <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-500 text-sm font-medium mb-1">Total Courses</p>
@@ -386,7 +365,7 @@ const TeacherManagement: React.FC = () => {
           </div>
 
           {/* Average Teachers per Department */}
-          <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all transform hover:scale-105 animate-slideInUp" style={{ animationDelay: "0.3s" }}>
+          <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-500 text-sm font-medium mb-1">Avg per Dept</p>
@@ -405,14 +384,14 @@ const TeacherManagement: React.FC = () => {
 
       {/* Charts Section */}
       {!loading && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
           {/* Teacher Distribution Pie Chart */}
-          <div className="bg-white rounded-xl shadow-lg p-6 animate-slideInLeft">
+          <div className="bg-white rounded-xl shadow-lg p-6">
             <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
               <span className="text-2xl mr-2">📊</span>
               Teacher Distribution by Department
             </h3>
-            <div className="h-64 flex items-center justify-center">
+            <div className="relative w-full" style={{ height: '300px' }}>
               <Pie
                 data={departmentChartData}
                 options={{
@@ -420,12 +399,26 @@ const TeacherManagement: React.FC = () => {
                   maintainAspectRatio: false,
                   plugins: {
                     legend: {
-                      position: "bottom",
+                      position: "bottom" as const,
                       labels: {
                         padding: 15,
                         font: { size: 11 },
+                        usePointStyle: true,
+                        boxWidth: 8,
                       },
                     },
+                    tooltip: {
+                      enabled: true,
+                      callbacks: {
+                        label: function(context: any) {
+                          const label = context.label || '';
+                          const value = context.parsed || 0;
+                          const total = context.dataset.data.reduce((a: number, b: number) => a + b, 0);
+                          const percentage = ((value / total) * 100).toFixed(1);
+                          return `${label}: ${value} (${percentage}%)`;
+                        }
+                      }
+                    }
                   },
                 }}
               />
@@ -433,12 +426,12 @@ const TeacherManagement: React.FC = () => {
           </div>
 
           {/* Course Assignment Bar Chart */}
-          <div className="bg-white rounded-xl shadow-lg p-6 animate-slideInRight">
+          <div className="bg-white rounded-xl shadow-lg p-6">
             <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
               <span className="text-2xl mr-2">📈</span>
               Course Assignments Overview
             </h3>
-            <div className="h-64">
+            <div className="relative w-full" style={{ height: '300px' }}>
               <Bar
                 data={courseAssignmentData}
                 options={{
@@ -446,12 +439,37 @@ const TeacherManagement: React.FC = () => {
                   maintainAspectRatio: false,
                   plugins: {
                     legend: { display: false },
+                    tooltip: {
+                      enabled: true,
+                      backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                      padding: 12,
+                      titleFont: { size: 13, weight: 'bold' },
+                      bodyFont: { size: 12 },
+                      borderColor: '#8B5CF6',
+                      borderWidth: 1,
+                    }
                   },
                   scales: {
                     y: {
                       beginAtZero: true,
-                      ticks: { stepSize: 1 },
+                      ticks: { 
+                        stepSize: 1,
+                        font: { size: 11 }
+                      },
+                      grid: {
+                        color: 'rgba(0, 0, 0, 0.05)',
+                      }
                     },
+                    x: {
+                      ticks: {
+                        font: { size: 10 },
+                        maxRotation: 45,
+                        minRotation: 45
+                      },
+                      grid: {
+                        display: false
+                      }
+                    }
                   },
                 }}
               />

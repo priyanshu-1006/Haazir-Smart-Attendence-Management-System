@@ -540,11 +540,7 @@ const CourseAssignmentMatrix: React.FC<CourseAssignmentMatrixProps> = ({
 
       {/* Course Assignments - Grouped by Semester */}
       <div
-        className="space-y-6 max-h-[calc(100vh-400px)] overflow-y-auto pr-2 border border-gray-200 rounded-lg p-4 bg-gray-50"
-        style={{
-          scrollbarWidth: "thin",
-          scrollbarColor: "#94a3b8 #e2e8f0",
-        }}
+        className="space-y-6 border border-gray-200 rounded-lg p-4 bg-gray-50"
       >
         {semesters.map((sem) => {
           const semesterCourses = courses.filter((c) => c.semester === sem);

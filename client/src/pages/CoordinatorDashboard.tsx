@@ -454,7 +454,7 @@ const CoordinatorDashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 animate-fadeIn">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 ">
       {/* Header - Enhanced Responsive */}
       <header className="bg-white/90 backdrop-blur-md shadow-lg border-b border-gray-200 sticky top-0 z-50 transition-all duration-300">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
@@ -533,7 +533,7 @@ const CoordinatorDashboard: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 md:gap-6 mb-6 sm:mb-8">
           {/* Students Card - Animation Delay 1 */}
           <div
-            className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 text-white shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 cursor-pointer group relative overflow-hidden animate-slideInUp"
+            className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 text-white shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 cursor-pointer group relative overflow-hidden "
             style={{ animationDelay: "0.1s" }}
           >
             <div className="absolute inset-0 bg-gradient-to-br from-white/0 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -565,7 +565,7 @@ const CoordinatorDashboard: React.FC = () => {
 
           {/* Teachers Card - Animation Delay 2 */}
           <div
-            className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 text-white shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 cursor-pointer group relative overflow-hidden animate-slideInUp"
+            className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 text-white shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 cursor-pointer group relative overflow-hidden "
             style={{ animationDelay: "0.2s" }}
           >
             <div className="absolute inset-0 bg-gradient-to-br from-white/0 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -597,7 +597,7 @@ const CoordinatorDashboard: React.FC = () => {
 
           {/* Courses Card - Animation Delay 3 */}
           <div
-            className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 text-white shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 cursor-pointer group relative overflow-hidden animate-slideInUp"
+            className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 text-white shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 cursor-pointer group relative overflow-hidden "
             style={{ animationDelay: "0.3s" }}
           >
             <div className="absolute inset-0 bg-gradient-to-br from-white/0 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -626,7 +626,7 @@ const CoordinatorDashboard: React.FC = () => {
 
           {/* Attendance Card - Animation Delay 4 */}
           <div
-            className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 text-white shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 cursor-pointer group relative overflow-hidden animate-slideInUp"
+            className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 text-white shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 cursor-pointer group relative overflow-hidden "
             style={{ animationDelay: "0.4s" }}
           >
             <div className="absolute inset-0 bg-gradient-to-br from-white/0 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -657,7 +657,7 @@ const CoordinatorDashboard: React.FC = () => {
         {/* Recent Activity & Alerts Section - Mobile Responsive */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6 mb-6 sm:mb-8">
           {/* Recent Activity Feed - Mobile Optimized */}
-          <div className="lg:col-span-2 bg-white rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 p-4 sm:p-5 md:p-6 animate-slideInLeft">
+          <div className="lg:col-span-2 bg-white rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 p-4 sm:p-5 md:p-6 a">
             <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center">
               <span className="text-xl sm:text-2xl mr-2">📋</span>
               <span>Recent Activity</span>
@@ -670,7 +670,7 @@ const CoordinatorDashboard: React.FC = () => {
                 {recentActivities.map((activity, index) => (
                   <div
                     key={activity.id}
-                    className="flex items-start space-x-2 sm:space-x-3 p-3 sm:p-4 bg-gradient-to-r from-gray-50 to-gray-100 hover:from-blue-50 hover:to-indigo-50 rounded-lg sm:rounded-xl transition-all duration-200 cursor-pointer hover:shadow-md transform hover:-translate-y-1 animate-fadeIn"
+                    className="flex items-start space-x-2 sm:space-x-3 p-3 sm:p-4 bg-gradient-to-r from-gray-50 to-gray-100 hover:from-blue-50 hover:to-indigo-50 rounded-lg sm:rounded-xl transition-all duration-200 cursor-pointer hover:shadow-md transform hover:-translate-y-1 "
                     style={{ animationDelay: `${index * 0.1}s` }}
                   >
                     {activity.lottieAnimation ? (
@@ -700,7 +700,7 @@ const CoordinatorDashboard: React.FC = () => {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-8 sm:py-12 text-gray-400 animate-fadeIn">
+              <div className="text-center py-8 sm:py-12 text-gray-400 ">
                 <div className="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-3">
                   <Lottie animationData={CheckmarkIcon} loop={true} />
                 </div>
@@ -715,7 +715,7 @@ const CoordinatorDashboard: React.FC = () => {
           </div>
 
           {/* Quick Stats - Mobile Optimized */}
-          <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 p-4 sm:p-5 md:p-6 animate-slideInRight">
+          <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 p-4 sm:p-5 md:p-6 ">
             <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center">
               <span className="text-xl sm:text-2xl mr-2">⚡</span>
               Quick Stats
@@ -771,7 +771,7 @@ const CoordinatorDashboard: React.FC = () => {
 
         {/* Analytics & Charts Section - Modern Animated Graphs */}
         <h2
-          className="text-2xl font-bold text-gray-800 mb-6 flex items-center animate-fadeIn"
+          className="text-2xl font-bold text-gray-800 mb-6 flex items-center "
           style={{ animationDelay: "0.6s" }}
         >
           <span className="text-3xl mr-3">📊</span>
@@ -780,7 +780,7 @@ const CoordinatorDashboard: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5 md:gap-6 mb-6 sm:mb-8">
           {/* Attendance Trend Line Chart */}
           <div
-            className="bg-white rounded-2xl shadow-xl p-4 sm:p-5 md:p-6 hover:shadow-2xl transition-all duration-300 border-t-4 border-blue-500 animate-slideInUp"
+            className="bg-white rounded-2xl shadow-xl p-4 sm:p-5 md:p-6 hover:shadow-2xl transition-all duration-300 border-t-4 border-blue-500 "
             style={{ animationDelay: "0.7s" }}
           >
             <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center">
@@ -800,7 +800,7 @@ const CoordinatorDashboard: React.FC = () => {
 
           {/* Department Distribution Doughnut Chart */}
           <div
-            className="bg-white rounded-2xl shadow-xl p-4 sm:p-5 md:p-6 hover:shadow-2xl transition-all duration-300 border-t-4 border-green-500 animate-slideInUp"
+            className="bg-white rounded-2xl shadow-xl p-4 sm:p-5 md:p-6 hover:shadow-2xl transition-all duration-300 border-t-4 border-green-500 "
             style={{ animationDelay: "0.8s" }}
           >
             <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center">
@@ -819,7 +819,7 @@ const CoordinatorDashboard: React.FC = () => {
 
           {/* Monthly Enrollment Bar Chart */}
           <div
-            className="bg-white rounded-2xl shadow-xl p-4 sm:p-5 md:p-6 hover:shadow-2xl transition-all duration-300 border-t-4 border-purple-500 animate-slideInUp lg:col-span-2 xl:col-span-1"
+            className="bg-white rounded-2xl shadow-xl p-4 sm:p-5 md:p-6 hover:shadow-2xl transition-all duration-300 border-t-4 border-purple-500 p lg:col-span-2 xl:col-span-1"
             style={{ animationDelay: "0.9s" }}
           >
             <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center">

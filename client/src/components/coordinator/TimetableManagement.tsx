@@ -1843,8 +1843,21 @@ const TimetableManagement: React.FC = () => {
         .ring-3 {
           --tw-ring-width: 3px;
         }
+        /* Sticky column shadow effect */
+        .sticky-col-shadow {
+          box-shadow: 4px 0 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        /* Prevent sticky header flicker */
+        thead th.sticky {
+          position: sticky;
+          top: 0;
+        }
+        tbody td.sticky {
+          position: sticky;
+          left: 0;
+        }
         @media (max-width: 768px) {
-          .table-fixed {
+          .table-auto {
             table-layout: auto;
           }
         }
@@ -1868,32 +1881,31 @@ const TimetableManagement: React.FC = () => {
               </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex items-center gap-2">
+            {/* Action Buttons - Standardized Sizing */}
+            <div className="flex items-center gap-3">
               <button
                 onClick={() => (window.location.href = "/timetable/generate")}
-                className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-4 py-2 rounded-lg font-medium shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2"
+                className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 flex items-center gap-2 min-w-[160px] justify-center"
               >
-                <span className="text-lg">🤖</span>
+                <span className="text-xl">🤖</span>
                 AI Generator
               </button>
+              <button
+                onClick={() => {
+                  if (!currentDepartment || !currentSemester || !currentSection) {
+                    setError(
+                      "Please select department, semester, and section before adding classes"
+                    );
+                    return;
+                  }
+                  setAddOpen(true);
+                }}
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 flex items-center gap-2 min-w-[160px] justify-center"
+              >
+                <span className="text-xl">+</span>
+                Add Class
+              </button>
             </div>
-
-            <button
-              onClick={() => {
-                if (!currentDepartment || !currentSemester || !currentSection) {
-                  setError(
-                    "Please select department, semester, and section before adding classes"
-                  );
-                  return;
-                }
-                setAddOpen(true);
-              }}
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 flex items-center gap-2"
-            >
-              <span className="text-xl">+</span>
-              Add Class
-            </button>
           </div>
         </div>
       </div>
@@ -2426,12 +2438,12 @@ const TimetableManagement: React.FC = () => {
 
           <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-blue-200 scrollbar-track-gray-100 scroll-smooth">
             <table
-              className="min-w-full table-fixed"
-              style={{ minWidth: "1200px" }}
+              className="min-w-full table-auto"
+              style={{ minWidth: "max(100%, 1200px)" }}
             >
               <thead>
                 <tr className="bg-gradient-to-r from-blue-50 via-purple-50 to-indigo-50">
-                  <th className="w-32 sm:w-36 md:w-40 p-4 text-left font-bold text-gray-800 border-b-2 border-blue-200 sticky left-0 bg-gradient-to-r from-blue-50 via-purple-50 to-indigo-50 z-10">
+                  <th className="w-32 sm:w-36 md:w-40 p-4 text-left font-bold text-gray-800 border-b-2 border-blue-200 sticky left-0 bg-gradient-to-r from-blue-50 via-purple-50 to-indigo-50 z-20 shadow-lg">
                     <div className="flex items-center gap-2 md:gap-3">
                       <div className="w-6 h-6 md:w-8 md:h-8 bg-blue-500 rounded-lg flex items-center justify-center">
                         <span className="text-white font-bold text-xs md:text-sm">
@@ -2497,7 +2509,7 @@ const TimetableManagement: React.FC = () => {
                 </tr>
                 {/* Enhanced Time slot headers row */}
                 <tr className="bg-gradient-to-r from-gray-50 to-gray-100">
-                  <th className="w-32 sm:w-36 md:w-40 p-4 text-left font-bold text-gray-800 border-b-2 border-gray-300 sticky left-0 bg-gradient-to-r from-gray-50 to-gray-100 z-10">
+                  <th className="w-32 sm:w-36 md:w-40 p-4 text-left font-bold text-gray-800 border-b-2 border-gray-300 sticky left-0 bg-gradient-to-r from-gray-50 to-gray-100 z-20 shadow-lg">
                     <div className="flex items-center gap-2 md:gap-3">
                       <div className="w-6 h-6 md:w-8 md:h-8 bg-purple-500 rounded-lg flex items-center justify-center">
                         <span className="text-white font-bold text-xs md:text-sm">
@@ -2602,7 +2614,7 @@ const TimetableManagement: React.FC = () => {
                         } border-b border-gray-100`}
                       >
                         {/* Enhanced Day name column */}
-                        <td className="w-32 sm:w-36 md:w-40 p-3 md:p-4 font-medium whitespace-nowrap border-b border-gray-100 sticky left-0 bg-inherit z-10">
+                        <td className="w-32 sm:w-36 md:w-40 p-3 md:p-4 font-medium whitespace-nowrap border-b border-gray-100 sticky left-0 z-10 shadow-[4px_0_6px_-1px_rgba(0,0,0,0.1)]" style={{ backgroundColor: dayIndex % 2 === 0 ? '#FAFAFA' : '#FFFFFF' }}>
                           <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-3 md:px-4 py-2 md:py-3 rounded-xl text-xs md:text-sm font-bold shadow-lg hover:shadow-xl transition-all duration-200 transform group-hover:scale-105">
                             <div className="flex items-center gap-2 md:gap-3">
                               <div className="w-6 h-6 md:w-8 md:h-8 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">

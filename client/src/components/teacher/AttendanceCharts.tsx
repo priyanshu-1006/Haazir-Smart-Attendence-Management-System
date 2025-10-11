@@ -1,34 +1,6 @@
 import React from 'react';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  BarElement,
-  ArcElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler
-} from 'chart.js';
 import { Line, Bar, Pie, Doughnut } from 'react-chartjs-2';
-import { motion } from 'framer-motion';
 import { TrendingUp, BarChart3, PieChart, Activity } from 'lucide-react';
-
-// Register Chart.js components
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  BarElement,
-  ArcElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler
-);
 
 interface UnifiedAttendanceRecord {
   id: number;
@@ -397,12 +369,7 @@ const AttendanceCharts: React.FC<AttendanceChartsProps> = ({ records, theme = 'l
       {/* Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Line Chart - Attendance Trend */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500"
-        >
+        <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
           <div className="flex items-center mb-4">
             <TrendingUp className="w-6 h-6 text-blue-500 mr-2" />
             <h3 className="text-lg font-semibold text-gray-900">Attendance Trend</h3>
@@ -410,15 +377,10 @@ const AttendanceCharts: React.FC<AttendanceChartsProps> = ({ records, theme = 'l
           <div style={{ height: '300px' }}>
             <Line data={lineChartData} options={lineChartOptions} />
           </div>
-        </motion.div>
+        </div>
 
         {/* Bar Chart - Present vs Absent */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500"
-        >
+        <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500">
           <div className="flex items-center mb-4">
             <BarChart3 className="w-6 h-6 text-green-500 mr-2" />
             <h3 className="text-lg font-semibold text-gray-900">Daily Comparison</h3>
@@ -426,15 +388,10 @@ const AttendanceCharts: React.FC<AttendanceChartsProps> = ({ records, theme = 'l
           <div style={{ height: '300px' }}>
             <Bar data={barChartData} options={barChartOptions} />
           </div>
-        </motion.div>
+        </div>
 
         {/* Pie Chart - Status Distribution */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-red-500"
-        >
+        <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-red-500">
           <div className="flex items-center mb-4">
             <PieChart className="w-6 h-6 text-red-500 mr-2" />
             <h3 className="text-lg font-semibold text-gray-900">Status Split</h3>
@@ -442,15 +399,10 @@ const AttendanceCharts: React.FC<AttendanceChartsProps> = ({ records, theme = 'l
           <div style={{ height: '300px' }}>
             <Pie data={pieChartData} options={pieChartOptions} />
           </div>
-        </motion.div>
+        </div>
 
         {/* Doughnut Chart - Method Distribution */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500"
-        >
+        <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500">
           <div className="flex items-center mb-4">
             <Activity className="w-6 h-6 text-purple-500 mr-2" />
             <h3 className="text-lg font-semibold text-gray-900">Method Split</h3>
@@ -458,16 +410,11 @@ const AttendanceCharts: React.FC<AttendanceChartsProps> = ({ records, theme = 'l
           <div style={{ height: '300px' }}>
             <Doughnut data={doughnutChartData} options={doughnutChartOptions} />
           </div>
-        </motion.div>
+        </div>
       </div>
 
       {/* Full Width Stacked Bar Chart */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
-        className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-indigo-500"
-      >
+      <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-indigo-500">
         <div className="flex items-center mb-4">
           <BarChart3 className="w-6 h-6 text-indigo-500 mr-2" />
           <h3 className="text-lg font-semibold text-gray-900">Method Timeline Comparison</h3>
@@ -475,7 +422,7 @@ const AttendanceCharts: React.FC<AttendanceChartsProps> = ({ records, theme = 'l
         <div style={{ height: '350px' }}>
           <Bar data={stackedBarChartData} options={stackedBarChartOptions} />
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 };

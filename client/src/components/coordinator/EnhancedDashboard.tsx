@@ -26,7 +26,7 @@ const KPICard: React.FC<KPICardProps> = ({
   trend, 
   description 
 }) => (
-  <div className={`${color} rounded-xl p-6 text-white relative overflow-hidden group hover:shadow-xl transition-all duration-300 hover:scale-105`}>
+  <div className={`${color} rounded-xl p-6 text-white relative overflow-hidden`}>
     <div className="flex items-start justify-between">
       <div className="flex-1">
         <p className="text-white/80 text-sm font-medium mb-1">{title}</p>
@@ -45,13 +45,13 @@ const KPICard: React.FC<KPICardProps> = ({
           </div>
         )}
       </div>
-      <div className="text-4xl opacity-80 group-hover:scale-110 transition-transform duration-300">
+      <div className="text-4xl opacity-80">
         {icon}
       </div>
     </div>
     
     {/* Decorative background pattern */}
-    <div className="absolute -right-4 -top-4 w-24 h-24 rounded-full bg-white/10 group-hover:bg-white/20 transition-colors duration-300"></div>
+    <div className="absolute -right-4 -top-4 w-24 h-24 rounded-full bg-white/10"></div>
   </div>
 );
 
@@ -135,7 +135,7 @@ const RecentActivityCard: React.FC<RecentActivityProps> = ({
     <div className="space-y-3">
       {items.length > 0 ? (
         items.map((item) => (
-          <div key={item.id} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50 transition-colors">
+          <div key={item.id} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50">
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-semibold text-sm">
               {item.avatar || item.name.charAt(0).toUpperCase()}
             </div>
@@ -186,7 +186,7 @@ const DepartmentStats: React.FC<DepartmentStatsProps> = ({ departments }) => {
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div 
-                    className="bg-gradient-to-r from-blue-400 to-blue-600 h-2 rounded-full transition-all duration-500"
+                    className="bg-gradient-to-r from-blue-400 to-blue-600 h-2 rounded-full"
                     style={{ width: `${percentage}%` }}
                   ></div>
                 </div>
@@ -335,7 +335,7 @@ const EnhancedDashboard: React.FC = () => {
             <SystemHealthBadge health={health} />
             <button 
               onClick={loadDashboardData}
-              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 text-sm font-medium"
+              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium"
             >
               🔄 Refresh
             </button>
