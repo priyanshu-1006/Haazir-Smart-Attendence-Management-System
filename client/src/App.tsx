@@ -21,7 +21,15 @@ import TeacherManagement from "./components/coordinator/TeacherManagement";
 import CourseManagement from "./components/coordinator/CourseManagement";
 
 import TimetableManagement from "./components/coordinator/TimetableManagement";
+import AnalyticsDashboard from "./components/coordinator/AnalyticsDashboard";
+import AttendancePage from "./components/coordinator/AttendancePage";
+import BatchBifurcation from "./components/coordinator/BatchBifurcation";
+import EnhancedResultManagement from "./components/coordinator/EnhancedResultManagement";
 import EnhancedTeacherDashboard from "./pages/EnhancedTeacherDashboard";
+import SmartTimetableGenerator from "./pages/SmartTimetableGenerator";
+import TimetableResultsClean from "./pages/TimetableResultsClean";
+import EnhancedTeacherTimetable from "./pages/EnhancedTeacherTimetable";
+import CourseDetailPage from "./pages/CourseDetailPage";
 
 import EnhancedStudentDashboard from "./pages/EnhancedStudentDashboard";
 import Profile from "./pages/Profile";
@@ -129,17 +137,29 @@ const coordinatorRoutes = [
   { path: "/coordinator/teachers", component: TeacherManagement },
   { path: "/coordinator/courses", component: CourseManagement },
   { path: "/coordinator/timetable", component: TimetableManagement },
+  { path: "/coordinator/analytics", component: AnalyticsDashboard },
+  { path: "/coordinator/attendance", component: AttendancePage },
+  { 
+    path: "/coordinator/batch-bifurcation", 
+    component: () => <BatchBifurcation sectionId="1" sectionName="Default Section" />
+  },
+  { path: "/coordinator/results", component: EnhancedResultManagement },
+  { path: "/coordinator/smart-timetable", component: SmartTimetableGenerator },
+  { path: "/coordinator/timetable-results", component: TimetableResultsClean },
 ];
 
 const teacherRoutes = [
   { path: "/teacher", component: EnhancedTeacherDashboard, exact: true },
+  { path: "/teacher/timetable", component: EnhancedTeacherTimetable },
   { path: "/attendance/take", component: TakeAttendance },
   { path: "/teacher/attendance", component: TeacherAttendanceDashboard },
   { path: "/teacher/attendance/history", component: UnifiedAttendanceHistory },
+  { path: "/teacher/attendance/calendar", component: AttendanceHistoryCalendar },
   { path: "/teacher/smart-attendance", component: SmartAttendanceDashboard },
+  { path: "/teacher/course/:courseId", component: CourseDetailPage },
+  { path: "/teacher/profile", component: Profile },
+  { path: "/teacher/notifications", component: NotificationCenter },
 ];
-
-import CourseDetailPage from "./pages/CourseDetailPage";
 
 
 const studentRoutes = [
