@@ -440,6 +440,8 @@ const EnhancedStudentDashboard: React.FC = () => {
               <div className="p-3 bg-white/20 rounded-full">
                 <svg
                   className="w-8 h-8"
+                  width="32"
+                  height="32"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -468,6 +470,8 @@ const EnhancedStudentDashboard: React.FC = () => {
               <div className="p-3 bg-white/20 rounded-full">
                 <svg
                   className="w-8 h-8"
+                  width="32"
+                  height="32"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -496,6 +500,8 @@ const EnhancedStudentDashboard: React.FC = () => {
               <div className="p-3 bg-white/20 rounded-full">
                 <svg
                   className="w-8 h-8"
+                  width="32"
+                  height="32"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -524,6 +530,8 @@ const EnhancedStudentDashboard: React.FC = () => {
               <div className="p-3 bg-white/20 rounded-full">
                 <svg
                   className="w-8 h-8"
+                  width="32"
+                  height="32"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -552,6 +560,8 @@ const EnhancedStudentDashboard: React.FC = () => {
               <div className="p-3 bg-white/20 rounded-full">
                 <svg
                   className="w-8 h-8"
+                  width="32"
+                  height="32"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
