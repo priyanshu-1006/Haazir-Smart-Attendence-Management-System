@@ -42,6 +42,8 @@ import StudentAttendanceView from "./components/student/StudentAttendanceView";
 import AttendanceHistoryCalendar from "./components/teacher/AttendanceHistoryCalendar";
 import UnifiedAttendanceHistory from "./components/teacher/UnifiedAttendanceHistory";
 import SmartAttendanceDashboard from "./components/teacher/SmartAttendanceDashboard";
+import StudentSmartAttendance from "./pages/StudentSmartAttendance";
+import StudentFaceEnrollment from "./pages/StudentFaceEnrollment";
 
 
 const getRole = (): string | null => {
@@ -144,9 +146,9 @@ const studentRoutes = [
   { path: "/student", component: EnhancedStudentDashboard, exact: true },
   { path: "/attendance/me", component: EnhancedStudentAttendance },
   { path: "/student/attendance", component: StudentAttendanceView },
-  
+  { path: "/student/smart-attendance", component: StudentSmartAttendance },
+  { path: "/student/face-enrollment", component: StudentFaceEnrollment },
   { path: "/student/course/:courseId", component: CourseDetailPage },
-  
   { path: "/student/profile", component: EnhancedStudentProfile },
   { path: "/student/grades", component: EnhancedGradeTracker },
   { path: "/student/announcements", component: EnhancedAnnouncementSystem },
