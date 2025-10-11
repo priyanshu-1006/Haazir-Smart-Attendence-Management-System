@@ -7,52 +7,53 @@ import {
 } from "react-router-dom";
 import ErrorBoundary from "./components/common/ErrorBoundary";
 import { ToastProvider } from "./components/common/Toast";
-
+import LandingPage from "./pages/LandingPage";
+import LandingPageNew from "./pages/LandingPageNew";
+import PricingPage from "./pages/PricingPage";
+import FeaturesPage from "./pages/FeaturesPage";
+import AboutPage from "./pages/AboutPage";
+import ContactPage from "./pages/ContactPage";
 import Login from "./pages/Login";
-
+import EnhancedLogin from "./pages/EnhancedLogin";
 import Layout from "./components/common/Layout";
-
-import CoordinatorDashboard from "./pages/CoordinatorDashboard";
-import DepartmentManagement from "./components/coordinator/DepartmentManagement";
-import StudentEnrollment from "./components/coordinator/StudentEnrollment";
-import SmartDataEntry from "./components/coordinator/SmartDataEntry";
+import Dashboard from "./components/coordinator/Dashboard";
 import StudentManagement from "./components/coordinator/StudentManagement";
+import EnhancedStudentManagement from "./components/coordinator/EnhancedStudentManagement";
+import StudentProfileDashboard from "./components/coordinator/StudentProfileDashboard";
 import TeacherManagement from "./components/coordinator/TeacherManagement";
 import CourseManagement from "./components/coordinator/CourseManagement";
-
 import TimetableManagement from "./components/coordinator/TimetableManagement";
-import AnalyticsDashboard from "./components/coordinator/AnalyticsDashboard";
+import DepartmentManagement from "./components/coordinator/DepartmentManagement";
 import AttendancePage from "./components/coordinator/AttendancePage";
-import BatchBifurcation from "./components/coordinator/BatchBifurcation";
-import EnhancedResultManagement from "./components/coordinator/EnhancedResultManagement";
+import AnalyticsDashboard from "./components/coordinator/AnalyticsDashboard";
+import StudentEnrollment from "./components/coordinator/StudentEnrollment";
+import TeacherDashboard from "./pages/TeacherDashboard";
 import EnhancedTeacherDashboard from "./pages/EnhancedTeacherDashboard";
-import SmartTimetableGenerator from "./pages/SmartTimetableGenerator";
-import TimetableResultsClean from "./pages/TimetableResultsClean";
 import EnhancedTeacherTimetable from "./pages/EnhancedTeacherTimetable";
-import CourseDetailPage from "./pages/CourseDetailPage";
-
 import EnhancedStudentDashboard from "./pages/EnhancedStudentDashboard";
 import Profile from "./pages/Profile";
-
+import StudentProfile from "./pages/StudentProfile";
 import EnhancedStudentProfile from "./pages/EnhancedStudentProfile";
-
+import MyTimetable from "./pages/MyTimetable";
 import EnhancedMyTimetable from "./pages/EnhancedMyTimetable";
 import NotificationCenter from "./pages/NotificationCenter";
 import TakeAttendance from "./components/teacher/TakeAttendance";
 import EnhancedStudentAttendance from "./pages/EnhancedStudentAttendance";
 import EnhancedGradeTracker from "./components/student/EnhancedGradeTracker";
-
+import StudentSmartAttendance from "./pages/StudentSmartAttendance";
+import StudentFaceEnrollment from "./pages/StudentFaceEnrollment";
 import EnhancedAnnouncementSystem from "./components/student/EnhancedAnnouncementSystem";
-
+import EnhancedResultManagement from "./components/coordinator/EnhancedResultManagement";
 import TeacherAttendanceDashboard from "./components/teacher/TeacherAttendanceDashboard";
-
+import StudentCourseEnrollment from "./components/coordinator/StudentCourseEnrollment";
+import AttendanceReportsDashboard from "./components/coordinator/AttendanceReportsDashboard";
 import StudentAttendanceView from "./components/student/StudentAttendanceView";
 import AttendanceHistoryCalendar from "./components/teacher/AttendanceHistoryCalendar";
 import UnifiedAttendanceHistory from "./components/teacher/UnifiedAttendanceHistory";
 import SmartAttendanceDashboard from "./components/teacher/SmartAttendanceDashboard";
-import StudentSmartAttendance from "./pages/StudentSmartAttendance";
-import StudentFaceEnrollment from "./pages/StudentFaceEnrollment";
-
+import SmartDataEntryPage from "./pages/SmartDataEntryPage";
+import SmartTimetableGenerator from "./pages/SmartTimetableGenerator";
+import TimetableResults from "./pages/TimetableResultsClean";
 
 const getRole = (): string | null => {
   try {
@@ -129,46 +130,46 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({
 
 // Route configurations by role for better organization
 const coordinatorRoutes = [
-  { path: "/coordinator", component: CoordinatorDashboard, exact: true },
+  { path: "/coordinator", component: Dashboard, exact: true },
+  { path: "/students", component: EnhancedStudentManagement },
+  { path: "/students/:id", component: StudentProfileDashboard },
+  { path: "/teachers", component: TeacherManagement },
+  { path: "/courses", component: CourseManagement },
   { path: "/departments", component: DepartmentManagement },
+  { path: "/timetable/generate", component: SmartTimetableGenerator }, // More specific route first
+  { path: "/timetable/results", component: TimetableResults }, // Results page
+  { path: "/timetable", component: TimetableManagement },
+  { path: "/attendance", component: AttendancePage, exact: true },
+  { path: "/attendance/reports", component: AttendanceReportsDashboard },
+  { path: "/students/enrollment", component: StudentCourseEnrollment },
+  { path: "/analytics", component: AnalyticsDashboard },
+  { path: "/results", component: EnhancedResultManagement },
   { path: "/coordinator/student-enrollment", component: StudentEnrollment },
-  { path: "/coordinator/smart-data-entry", component: SmartDataEntry },
-  { path: "/coordinator/students", component: StudentManagement },
-  { path: "/coordinator/teachers", component: TeacherManagement },
-  { path: "/coordinator/courses", component: CourseManagement },
-  { path: "/coordinator/timetable", component: TimetableManagement },
-  { path: "/coordinator/analytics", component: AnalyticsDashboard },
-  { path: "/coordinator/attendance", component: AttendancePage },
-  { 
-    path: "/coordinator/batch-bifurcation", 
-    component: () => <BatchBifurcation sectionId="1" sectionName="Default Section" />
-  },
-  { path: "/coordinator/results", component: EnhancedResultManagement },
-  { path: "/coordinator/smart-timetable", component: SmartTimetableGenerator },
-  { path: "/coordinator/timetable-results", component: TimetableResultsClean },
+  { path: "/smart-data-entry", component: SmartDataEntryPage },
 ];
 
 const teacherRoutes = [
   { path: "/teacher", component: EnhancedTeacherDashboard, exact: true },
-  { path: "/teacher/timetable", component: EnhancedTeacherTimetable },
+  { path: "/teacher/dashboard", component: TeacherDashboard, exact: true },
+  { path: "/my-timetable", component: EnhancedTeacherTimetable, exact: true },
+  { path: "/teacher/timetable", component: EnhancedTeacherTimetable, exact: true },
   { path: "/attendance/take", component: TakeAttendance },
   { path: "/teacher/attendance", component: TeacherAttendanceDashboard },
   { path: "/teacher/attendance/history", component: UnifiedAttendanceHistory },
-  { path: "/teacher/attendance/calendar", component: AttendanceHistoryCalendar },
   { path: "/teacher/smart-attendance", component: SmartAttendanceDashboard },
-  { path: "/teacher/course/:courseId", component: CourseDetailPage },
-  { path: "/teacher/profile", component: Profile },
-  { path: "/teacher/notifications", component: NotificationCenter },
 ];
 
+import CourseDetailPage from "./pages/CourseDetailPage";
+import EnhancedAttendanceStats from "./pages/EnhancedAttendanceStats";
 
 const studentRoutes = [
   { path: "/student", component: EnhancedStudentDashboard, exact: true },
   { path: "/attendance/me", component: EnhancedStudentAttendance },
   { path: "/student/attendance", component: StudentAttendanceView },
-  { path: "/student/smart-attendance", component: StudentSmartAttendance },
-  { path: "/student/face-enrollment", component: StudentFaceEnrollment },
+  { path: "/student/attendance/stats", component: EnhancedAttendanceStats },
   { path: "/student/course/:courseId", component: CourseDetailPage },
+  { path: "/student/face-enrollment", component: StudentFaceEnrollment },
+  { path: "/student/smart-attendance", component: StudentSmartAttendance },
   { path: "/student/profile", component: EnhancedStudentProfile },
   { path: "/student/grades", component: EnhancedGradeTracker },
   { path: "/student/announcements", component: EnhancedAnnouncementSystem },
@@ -194,11 +195,14 @@ const App: React.FC = () => {
       <ToastProvider>
         <Router>
           <Switch>
-            {/* Root route - redirect to login */}
-            <Route exact path="/" render={() => <Redirect to="/login" />} />
-            
             {/* Public Routes */}
-            <Route path="/login" component={Login} />
+            <Route path="/" exact component={LandingPageNew} />
+            <Route path="/landing-old" exact component={LandingPage} />
+            <Route path="/pricing" exact component={PricingPage} />
+            <Route path="/features" exact component={FeaturesPage} />
+            <Route path="/about" exact component={AboutPage} />
+            <Route path="/contact" exact component={ContactPage} />
+            <Route path="/login" component={EnhancedLogin} />
             <Route path="/login-old" component={Login} />
 
             {/* Coordinator Routes */}
