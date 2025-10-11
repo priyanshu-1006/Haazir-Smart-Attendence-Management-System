@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
-import { getDashboardStats } from '../services/api';
-import Lottie from 'lottie-react';
+import React, { useState, useEffect, useCallback } from "react";
+import { useHistory } from "react-router-dom";
+import { getDashboardStats } from "../services/api";
+import Lottie from "lottie-react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -13,10 +13,10 @@ import {
   Title,
   Tooltip,
   Legend,
-  Filler
-} from 'chart.js';
-import { Line, Doughnut, Bar } from 'react-chartjs-2';
-import '../styles/coordinatorDashboard.css';
+  Filler,
+} from "chart.js";
+import { Line, Doughnut, Bar } from "react-chartjs-2";
+import "../styles/coordinatorDashboard.css";
 
 // Register Chart.js components
 ChartJS.register(
@@ -33,14 +33,14 @@ ChartJS.register(
 );
 
 // Import Lottie animations
-import StudentAnimation from '../assets/lottie/STUDENT.json';
-import TeacherAnimation from '../assets/lottie/Teaching.json';
-import CourseAnimation from '../assets/lottie/Courses.json';
-import AttendanceAnimation from '../assets/lottie/Attendance-icon.json';
+import StudentAnimation from "../assets/lottie/STUDENT.json";
+import TeacherAnimation from "../assets/lottie/Teaching.json";
+import CourseAnimation from "../assets/lottie/Courses.json";
+import AttendanceAnimation from "../assets/lottie/Attendance-icon.json";
 // Import Activity Feed Lottie animations
-import MultiUserIcon from '../assets/lottie/multi-user-icon.json';
-import CheckmarkIcon from '../assets/lottie/checkmark-circle.json';
-import BuildingIcon from '../assets/lottie/building-icon.json';
+import MultiUserIcon from "../assets/lottie/multi-user-icon.json";
+import CheckmarkIcon from "../assets/lottie/checkmark-circle.json";
+import BuildingIcon from "../assets/lottie/building-icon.json";
 
 interface User {
   user_id: number;
@@ -61,7 +61,7 @@ interface DashboardStats {
 
 interface Activity {
   id: number;
-  type: 'student' | 'teacher' | 'course' | 'attendance';
+  type: "student" | "teacher" | "course" | "attendance";
   title: string;
   description: string;
   timestamp: string;
@@ -79,44 +79,31 @@ const CoordinatorDashboard: React.FC = () => {
     activeUsers: 0,
     todayAttendance: 0,
     recentStudents: 0,
-    recentTeachers: 0
+    recentTeachers: 0,
   });
   const [loading, setLoading] = useState(true);
   const [recentActivities, setRecentActivities] = useState<Activity[]>([]);
   const [showQuickActions, setShowQuickActions] = useState(false);
   const history = useHistory();
 
-  useEffect(() => {
-    // Get user info from token
-    const token = localStorage.getItem('token');
-    if (!token) {
-      history.push('/');
-      return;
-    }
+  // Debug: Log every render
+  console.log(
+    "🎨 CoordinatorDashboard rendering. User:",
+    user,
+    "Stats:",
+    stats
+  );
 
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      setUser({
-        user_id: payload.userId,
-        email: payload.email,
-        role: payload.role
-      });
-      
-      // Fetch dashboard stats
-      fetchDashboardData();
-    } catch (error) {
-      console.error('Invalid token');
-      localStorage.removeItem('token');
-      history.push('/');
-    }
-  }, [history]);
-
-  const fetchDashboardData = async () => {
+  // Define fetchDashboardData with useCallback to prevent re-creation
+  const fetchDashboardData = useCallback(async () => {
+    console.log("📡 Fetching dashboard data...");
     try {
       setLoading(true);
       const data = await getDashboardStats();
-      
-      setStats({
+
+      console.log("📊 Dashboard data received:", data);
+
+      const newStats = {
         students: data.overview?.totalStudents || 0,
         teachers: data.overview?.totalTeachers || 0,
         courses: data.overview?.totalCourses || 0,
@@ -124,74 +111,116 @@ const CoordinatorDashboard: React.FC = () => {
         activeUsers: data.overview?.activeUsers || 0,
         todayAttendance: 87, // Mock data for now
         recentStudents: data.recentActivity?.recentStudents?.length || 0,
-        recentTeachers: data.recentActivity?.recentTeachers?.length || 0
-      });
+        recentTeachers: data.recentActivity?.recentTeachers?.length || 0,
+      };
+
+      setStats(newStats);
+
+      console.log("✅ Stats updated:", newStats);
 
       // Generate recent activities
       const activities: Activity[] = [];
-      
+
       if (data.recentActivity?.recentStudents) {
-        data.recentActivity.recentStudents.slice(0, 3).forEach((student: any) => {
-          activities.push({
-            id: student.id,
-            type: 'student',
-            title: 'New Student Registered',
-            description: `${student.name} (${student.rollNumber || 'N/A'}) - ${student.department || 'N/A'}`,
-            timestamp: new Date(student.createdAt).toLocaleString(),
-            icon: '👤',
-            lottieAnimation: MultiUserIcon
+        data.recentActivity.recentStudents
+          .slice(0, 3)
+          .forEach((student: any) => {
+            activities.push({
+              id: student.id,
+              type: "student",
+              title: "New Student Registered",
+              description: `${student.name} (${
+                student.rollNumber || "N/A"
+              }) - ${student.department || "N/A"}`,
+              timestamp: new Date(student.createdAt).toLocaleString(),
+              icon: "👤",
+              lottieAnimation: MultiUserIcon,
+            });
           });
-        });
       }
 
       if (data.recentActivity?.recentTeachers) {
-        data.recentActivity.recentTeachers.slice(0, 2).forEach((teacher: any) => {
-          activities.push({
-            id: teacher.id,
-            type: 'teacher',
-            title: 'New Teacher Added',
-            description: `${teacher.name} - ${teacher.department || 'N/A'}`,
-            timestamp: new Date(teacher.createdAt).toLocaleString(),
-            icon: '👨‍🏫',
-            lottieAnimation: TeacherAnimation
+        data.recentActivity.recentTeachers
+          .slice(0, 2)
+          .forEach((teacher: any) => {
+            activities.push({
+              id: teacher.id,
+              type: "teacher",
+              title: "New Teacher Added",
+              description: `${teacher.name} - ${teacher.department || "N/A"}`,
+              timestamp: new Date(teacher.createdAt).toLocaleString(),
+              icon: "👨‍🏫",
+              lottieAnimation: TeacherAnimation,
+            });
           });
-        });
       }
 
       setRecentActivities(activities.slice(0, 5));
       setLoading(false);
+      console.log("✅ Dashboard data fetch complete. Loading set to false.");
     } catch (error) {
-      console.error('Error fetching dashboard data:', error);
+      console.error("❌ Error fetching dashboard data:", error);
       setLoading(false);
     }
-  };
+  }, []); // useCallback with empty deps - function never changes
+
+  useEffect(() => {
+    console.log("🔄 CoordinatorDashboard useEffect triggered");
+
+    // Get user info from token
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.log("❌ No token found, redirecting to login");
+      history.push("/");
+      return;
+    }
+
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      const userData = {
+        user_id: payload.userId,
+        email: payload.email,
+        role: payload.role,
+      };
+
+      console.log("👤 Setting user:", userData);
+      setUser(userData);
+
+      // Fetch dashboard stats
+      fetchDashboardData();
+    } catch (error) {
+      console.error("❌ Invalid token:", error);
+      localStorage.removeItem("token");
+      history.push("/");
+    }
+  }, [fetchDashboardData, history]); // Add dependencies
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    history.push('/');
+    localStorage.removeItem("token");
+    history.push("/");
   };
 
   // Chart Data Configurations
   // 1. Attendance Trend Line Chart (Last 7 Days)
   const attendanceTrendData = {
-    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+    labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
     datasets: [
       {
-        label: 'Attendance %',
+        label: "Attendance %",
         data: [85, 88, 82, 90, 87, 84, 89],
         fill: true,
         backgroundColor: (context: any) => {
           const ctx = context.chart.ctx;
           const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-          gradient.addColorStop(0, 'rgba(59, 130, 246, 0.5)');
-          gradient.addColorStop(1, 'rgba(59, 130, 246, 0.0)');
+          gradient.addColorStop(0, "rgba(59, 130, 246, 0.5)");
+          gradient.addColorStop(1, "rgba(59, 130, 246, 0.0)");
           return gradient;
         },
-        borderColor: 'rgb(59, 130, 246)',
+        borderColor: "rgb(59, 130, 246)",
         borderWidth: 3,
         tension: 0.4,
-        pointBackgroundColor: 'rgb(59, 130, 246)',
-        pointBorderColor: '#fff',
+        pointBackgroundColor: "rgb(59, 130, 246)",
+        pointBorderColor: "#fff",
         pointBorderWidth: 2,
         pointRadius: 5,
         pointHoverRadius: 7,
@@ -207,11 +236,11 @@ const CoordinatorDashboard: React.FC = () => {
         display: false,
       },
       tooltip: {
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        backgroundColor: "rgba(0, 0, 0, 0.8)",
         padding: 12,
-        titleColor: '#fff',
-        bodyColor: '#fff',
-        borderColor: 'rgb(59, 130, 246)',
+        titleColor: "#fff",
+        bodyColor: "#fff",
+        borderColor: "rgb(59, 130, 246)",
         borderWidth: 1,
         displayColors: false,
         callbacks: {
@@ -224,11 +253,11 @@ const CoordinatorDashboard: React.FC = () => {
         beginAtZero: true,
         max: 100,
         grid: {
-          color: 'rgba(0, 0, 0, 0.05)',
+          color: "rgba(0, 0, 0, 0.05)",
           drawBorder: false,
         },
         ticks: {
-          callback: (value: any) => value + '%',
+          callback: (value: any) => value + "%",
           font: {
             size: 11,
           },
@@ -247,29 +276,35 @@ const CoordinatorDashboard: React.FC = () => {
     },
     animation: {
       duration: 2000,
-      easing: 'easeInOutQuart' as const,
+      easing: "easeInOutQuart" as const,
     },
   };
 
   // 2. Department Distribution Doughnut Chart
   const departmentData = {
-    labels: ['Computer Science', 'Mathematics', 'Physics', 'Chemistry', 'Biology'],
+    labels: [
+      "Computer Science",
+      "Mathematics",
+      "Physics",
+      "Chemistry",
+      "Biology",
+    ],
     datasets: [
       {
         data: [35, 25, 15, 15, 10],
         backgroundColor: [
-          'rgba(59, 130, 246, 0.8)',
-          'rgba(16, 185, 129, 0.8)',
-          'rgba(168, 85, 247, 0.8)',
-          'rgba(251, 146, 60, 0.8)',
-          'rgba(236, 72, 153, 0.8)',
+          "rgba(59, 130, 246, 0.8)",
+          "rgba(16, 185, 129, 0.8)",
+          "rgba(168, 85, 247, 0.8)",
+          "rgba(251, 146, 60, 0.8)",
+          "rgba(236, 72, 153, 0.8)",
         ],
         borderColor: [
-          'rgb(59, 130, 246)',
-          'rgb(16, 185, 129)',
-          'rgb(168, 85, 247)',
-          'rgb(251, 146, 60)',
-          'rgb(236, 72, 153)',
+          "rgb(59, 130, 246)",
+          "rgb(16, 185, 129)",
+          "rgb(168, 85, 247)",
+          "rgb(251, 146, 60)",
+          "rgb(236, 72, 153)",
         ],
         borderWidth: 2,
         hoverOffset: 15,
@@ -282,25 +317,25 @@ const CoordinatorDashboard: React.FC = () => {
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        position: 'bottom' as const,
+        position: "bottom" as const,
         labels: {
           padding: 15,
           font: {
             size: 11,
           },
           usePointStyle: true,
-          pointStyle: 'circle',
+          pointStyle: "circle",
         },
       },
       tooltip: {
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        backgroundColor: "rgba(0, 0, 0, 0.8)",
         padding: 12,
-        titleColor: '#fff',
-        bodyColor: '#fff',
+        titleColor: "#fff",
+        bodyColor: "#fff",
         borderWidth: 1,
         callbacks: {
           label: (context: any) => {
-            const label = context.label || '';
+            const label = context.label || "";
             const value = context.parsed || 0;
             return `${label}: ${value}%`;
           },
@@ -311,40 +346,40 @@ const CoordinatorDashboard: React.FC = () => {
       animateRotate: true,
       animateScale: true,
       duration: 2000,
-      easing: 'easeInOutQuart' as const,
+      easing: "easeInOutQuart" as const,
     },
   };
 
   // 3. Monthly Enrollment Bar Chart
   const enrollmentData = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
     datasets: [
       {
-        label: 'Students',
+        label: "Students",
         data: [45, 52, 48, 61, 58, 67],
         backgroundColor: (context: any) => {
           const ctx = context.chart.ctx;
           const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-          gradient.addColorStop(0, 'rgba(59, 130, 246, 0.8)');
-          gradient.addColorStop(1, 'rgba(59, 130, 246, 0.2)');
+          gradient.addColorStop(0, "rgba(59, 130, 246, 0.8)");
+          gradient.addColorStop(1, "rgba(59, 130, 246, 0.2)");
           return gradient;
         },
-        borderColor: 'rgb(59, 130, 246)',
+        borderColor: "rgb(59, 130, 246)",
         borderWidth: 2,
         borderRadius: 8,
         borderSkipped: false,
       },
       {
-        label: 'Teachers',
+        label: "Teachers",
         data: [8, 10, 9, 12, 11, 13],
         backgroundColor: (context: any) => {
           const ctx = context.chart.ctx;
           const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-          gradient.addColorStop(0, 'rgba(16, 185, 129, 0.8)');
-          gradient.addColorStop(1, 'rgba(16, 185, 129, 0.2)');
+          gradient.addColorStop(0, "rgba(16, 185, 129, 0.8)");
+          gradient.addColorStop(1, "rgba(16, 185, 129, 0.2)");
           return gradient;
         },
-        borderColor: 'rgb(16, 185, 129)',
+        borderColor: "rgb(16, 185, 129)",
         borderWidth: 2,
         borderRadius: 8,
         borderSkipped: false,
@@ -357,21 +392,21 @@ const CoordinatorDashboard: React.FC = () => {
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        position: 'top' as const,
+        position: "top" as const,
         labels: {
           padding: 15,
           font: {
             size: 11,
           },
           usePointStyle: true,
-          pointStyle: 'circle',
+          pointStyle: "circle",
         },
       },
       tooltip: {
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        backgroundColor: "rgba(0, 0, 0, 0.8)",
         padding: 12,
-        titleColor: '#fff',
-        bodyColor: '#fff',
+        titleColor: "#fff",
+        bodyColor: "#fff",
         borderWidth: 1,
       },
     },
@@ -379,7 +414,7 @@ const CoordinatorDashboard: React.FC = () => {
       y: {
         beginAtZero: true,
         grid: {
-          color: 'rgba(0, 0, 0, 0.05)',
+          color: "rgba(0, 0, 0, 0.05)",
           drawBorder: false,
         },
         ticks: {
@@ -401,7 +436,7 @@ const CoordinatorDashboard: React.FC = () => {
     },
     animation: {
       duration: 2000,
-      easing: 'easeInOutQuart' as const,
+      easing: "easeInOutQuart" as const,
     },
   };
 
@@ -410,7 +445,9 @@ const CoordinatorDashboard: React.FC = () => {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
         <div className="bg-white rounded-2xl shadow-xl p-8 flex flex-col items-center">
           <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
-          <p className="text-lg font-semibold text-gray-800">Loading Dashboard...</p>
+          <p className="text-lg font-semibold text-gray-800">
+            Loading Dashboard...
+          </p>
         </div>
       </div>
     );
@@ -429,10 +466,13 @@ const CoordinatorDashboard: React.FC = () => {
               </h1>
               <p className="text-xs sm:text-sm text-gray-600 flex items-center mt-1 truncate">
                 <span className="mr-1 sm:mr-2">👋</span>
-                Welcome back, <span className="font-medium ml-1 truncate max-w-[150px] sm:max-w-none">{user.email}</span>
+                Welcome back,{" "}
+                <span className="font-medium ml-1 truncate max-w-[150px] sm:max-w-none">
+                  {user.email}
+                </span>
               </p>
             </div>
-            
+
             {/* Action Buttons - Mobile Responsive */}
             <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
               <button
@@ -441,10 +481,24 @@ const CoordinatorDashboard: React.FC = () => {
                 className="flex-1 sm:flex-none inline-flex items-center justify-center px-3 sm:px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105 active:scale-95"
                 aria-label="Refresh dashboard data"
               >
-                <svg className={`w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 ${loading ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                <svg
+                  className={`w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 ${
+                    loading ? "animate-spin" : ""
+                  }`}
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                  />
                 </svg>
-                <span className="hidden sm:inline">{loading ? 'Refreshing...' : 'Refresh'}</span>
+                <span className="hidden sm:inline">
+                  {loading ? "Refreshing..." : "Refresh"}
+                </span>
                 <span className="sm:hidden">🔄</span>
               </button>
               <button
@@ -452,8 +506,18 @@ const CoordinatorDashboard: React.FC = () => {
                 className="flex-1 sm:flex-none inline-flex items-center justify-center px-3 sm:px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105 active:scale-95"
                 aria-label="Logout from dashboard"
               >
-                <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                <svg
+                  className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                  />
                 </svg>
                 <span className="hidden sm:inline">Logout</span>
                 <span className="sm:hidden">🚪</span>
@@ -468,20 +532,30 @@ const CoordinatorDashboard: React.FC = () => {
         {/* Stats Cards - Enhanced with Gradients and Animations */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 md:gap-6 mb-6 sm:mb-8">
           {/* Students Card - Animation Delay 1 */}
-          <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 text-white shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 cursor-pointer group relative overflow-hidden animate-slideInUp" style={{animationDelay: '0.1s'}}>
+          <div
+            className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 text-white shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 cursor-pointer group relative overflow-hidden animate-slideInUp"
+            style={{ animationDelay: "0.1s" }}
+          >
             <div className="absolute inset-0 bg-gradient-to-br from-white/0 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             <div className="flex items-start justify-between relative z-10">
               <div className="flex-1">
-                <p className="text-blue-100 text-xs sm:text-sm font-medium mb-1">Total Students</p>
-                <p className="text-3xl sm:text-4xl font-bold mb-2">{stats.students}</p>
+                <p className="text-blue-100 text-xs sm:text-sm font-medium mb-1">
+                  Total Students
+                </p>
+                <p className="text-3xl sm:text-4xl font-bold mb-2">
+                  {stats.students}
+                </p>
                 {(stats.recentStudents || 0) > 0 && (
                   <div className="flex items-center mt-2">
                     <span className="text-[10px] sm:text-xs bg-white/20 px-2 py-1 rounded-full flex items-center backdrop-blur-sm">
-                      <span className="mr-1">↗️</span> +{stats.recentStudents} new this week
+                      <span className="mr-1">↗️</span> +{stats.recentStudents}{" "}
+                      new this week
                     </span>
                   </div>
                 )}
-                <p className="text-blue-100 text-[10px] sm:text-xs mt-2">Active enrollments</p>
+                <p className="text-blue-100 text-[10px] sm:text-xs mt-2">
+                  Active enrollments
+                </p>
               </div>
               <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 opacity-90 group-hover:scale-110 transition-all duration-300">
                 <Lottie animationData={StudentAnimation} loop={true} />
@@ -490,20 +564,30 @@ const CoordinatorDashboard: React.FC = () => {
           </div>
 
           {/* Teachers Card - Animation Delay 2 */}
-          <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 text-white shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 cursor-pointer group relative overflow-hidden animate-slideInUp" style={{animationDelay: '0.2s'}}>
+          <div
+            className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 text-white shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 cursor-pointer group relative overflow-hidden animate-slideInUp"
+            style={{ animationDelay: "0.2s" }}
+          >
             <div className="absolute inset-0 bg-gradient-to-br from-white/0 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             <div className="flex items-start justify-between relative z-10">
               <div className="flex-1">
-                <p className="text-green-100 text-xs sm:text-sm font-medium mb-1">Total Teachers</p>
-                <p className="text-3xl sm:text-4xl font-bold mb-2">{stats.teachers}</p>
+                <p className="text-green-100 text-xs sm:text-sm font-medium mb-1">
+                  Total Teachers
+                </p>
+                <p className="text-3xl sm:text-4xl font-bold mb-2">
+                  {stats.teachers}
+                </p>
                 {(stats.recentTeachers || 0) > 0 && (
                   <div className="flex items-center mt-2">
                     <span className="text-[10px] sm:text-xs bg-white/20 px-2 py-1 rounded-full flex items-center backdrop-blur-sm">
-                      <span className="mr-1">↗️</span> +{stats.recentTeachers} new
+                      <span className="mr-1">↗️</span> +{stats.recentTeachers}{" "}
+                      new
                     </span>
                   </div>
                 )}
-                <p className="text-green-100 text-[10px] sm:text-xs mt-2">{stats.activeUsers || 0} active today</p>
+                <p className="text-green-100 text-[10px] sm:text-xs mt-2">
+                  {stats.activeUsers || 0} active today
+                </p>
               </div>
               <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 opacity-90 group-hover:scale-110 transition-all duration-300">
                 <Lottie animationData={TeacherAnimation} loop={true} />
@@ -512,18 +596,27 @@ const CoordinatorDashboard: React.FC = () => {
           </div>
 
           {/* Courses Card - Animation Delay 3 */}
-          <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 text-white shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 cursor-pointer group relative overflow-hidden animate-slideInUp" style={{animationDelay: '0.3s'}}>
+          <div
+            className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 text-white shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 cursor-pointer group relative overflow-hidden animate-slideInUp"
+            style={{ animationDelay: "0.3s" }}
+          >
             <div className="absolute inset-0 bg-gradient-to-br from-white/0 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             <div className="flex items-start justify-between relative z-10">
               <div className="flex-1">
-                <p className="text-purple-100 text-xs sm:text-sm font-medium mb-1">Active Courses</p>
-                <p className="text-3xl sm:text-4xl font-bold mb-2">{stats.courses}</p>
+                <p className="text-purple-100 text-xs sm:text-sm font-medium mb-1">
+                  Active Courses
+                </p>
+                <p className="text-3xl sm:text-4xl font-bold mb-2">
+                  {stats.courses}
+                </p>
                 <div className="flex items-center mt-2">
                   <span className="text-[10px] sm:text-xs bg-white/20 px-2 py-1 rounded-full flex items-center backdrop-blur-sm">
                     📚 This semester
                   </span>
                 </div>
-                <p className="text-purple-100 text-[10px] sm:text-xs mt-2">Across {stats.departments} departments</p>
+                <p className="text-purple-100 text-[10px] sm:text-xs mt-2">
+                  Across {stats.departments} departments
+                </p>
               </div>
               <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 opacity-90 group-hover:scale-110 transition-all duration-300">
                 <Lottie animationData={CourseAnimation} loop={true} />
@@ -532,18 +625,27 @@ const CoordinatorDashboard: React.FC = () => {
           </div>
 
           {/* Attendance Card - Animation Delay 4 */}
-          <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 text-white shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 cursor-pointer group relative overflow-hidden animate-slideInUp" style={{animationDelay: '0.4s'}}>
+          <div
+            className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 text-white shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 cursor-pointer group relative overflow-hidden animate-slideInUp"
+            style={{ animationDelay: "0.4s" }}
+          >
             <div className="absolute inset-0 bg-gradient-to-br from-white/0 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             <div className="flex items-start justify-between relative z-10">
               <div className="flex-1">
-                <p className="text-orange-100 text-xs sm:text-sm font-medium mb-1">Avg Attendance</p>
-                <p className="text-3xl sm:text-4xl font-bold mb-2">{stats.todayAttendance}%</p>
+                <p className="text-orange-100 text-xs sm:text-sm font-medium mb-1">
+                  Avg Attendance
+                </p>
+                <p className="text-3xl sm:text-4xl font-bold mb-2">
+                  {stats.todayAttendance}%
+                </p>
                 <div className="flex items-center mt-2">
                   <span className="text-[10px] sm:text-xs bg-white/20 px-2 py-1 rounded-full flex items-center backdrop-blur-sm">
                     <span className="mr-1">↗️</span> +2.3% this week
                   </span>
                 </div>
-                <p className="text-orange-100 text-[10px] sm:text-xs mt-2">Institution-wide</p>
+                <p className="text-orange-100 text-[10px] sm:text-xs mt-2">
+                  Institution-wide
+                </p>
               </div>
               <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 opacity-90 group-hover:scale-110 transition-all duration-300">
                 <Lottie animationData={AttendanceAnimation} loop={true} />
@@ -559,7 +661,9 @@ const CoordinatorDashboard: React.FC = () => {
             <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center">
               <span className="text-xl sm:text-2xl mr-2">📋</span>
               <span>Recent Activity</span>
-              <span className="ml-auto text-xs text-gray-500 font-normal hidden sm:inline">{recentActivities.length} items</span>
+              <span className="ml-auto text-xs text-gray-500 font-normal hidden sm:inline">
+                {recentActivities.length} items
+              </span>
             </h3>
             {recentActivities.length > 0 ? (
               <div className="space-y-2 sm:space-y-3 max-h-[400px] sm:max-h-[500px] overflow-y-auto custom-scrollbar">
@@ -567,19 +671,30 @@ const CoordinatorDashboard: React.FC = () => {
                   <div
                     key={activity.id}
                     className="flex items-start space-x-2 sm:space-x-3 p-3 sm:p-4 bg-gradient-to-r from-gray-50 to-gray-100 hover:from-blue-50 hover:to-indigo-50 rounded-lg sm:rounded-xl transition-all duration-200 cursor-pointer hover:shadow-md transform hover:-translate-y-1 animate-fadeIn"
-                    style={{animationDelay: `${index * 0.1}s`}}
+                    style={{ animationDelay: `${index * 0.1}s` }}
                   >
                     {activity.lottieAnimation ? (
                       <div className="w-10 h-10 sm:w-12 sm:h-12 flex-shrink-0">
-                        <Lottie animationData={activity.lottieAnimation} loop={true} />
+                        <Lottie
+                          animationData={activity.lottieAnimation}
+                          loop={true}
+                        />
                       </div>
                     ) : (
-                      <div className="text-2xl sm:text-3xl flex-shrink-0">{activity.icon}</div>
+                      <div className="text-2xl sm:text-3xl flex-shrink-0">
+                        {activity.icon}
+                      </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs sm:text-sm font-semibold text-gray-900 truncate">{activity.title}</p>
-                      <p className="text-xs sm:text-sm text-gray-600 line-clamp-2">{activity.description}</p>
-                      <p className="text-[10px] sm:text-xs text-gray-400 mt-1">{activity.timestamp}</p>
+                      <p className="text-xs sm:text-sm font-semibold text-gray-900 truncate">
+                        {activity.title}
+                      </p>
+                      <p className="text-xs sm:text-sm text-gray-600 line-clamp-2">
+                        {activity.description}
+                      </p>
+                      <p className="text-[10px] sm:text-xs text-gray-400 mt-1">
+                        {activity.timestamp}
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -589,8 +704,12 @@ const CoordinatorDashboard: React.FC = () => {
                 <div className="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-3">
                   <Lottie animationData={CheckmarkIcon} loop={true} />
                 </div>
-                <p className="text-xs sm:text-sm font-medium">No recent activity</p>
-                <p className="text-xs text-gray-300 mt-1">Activities will appear here</p>
+                <p className="text-xs sm:text-sm font-medium">
+                  No recent activity
+                </p>
+                <p className="text-xs text-gray-300 mt-1">
+                  Activities will appear here
+                </p>
               </div>
             )}
           </div>
@@ -607,8 +726,12 @@ const CoordinatorDashboard: React.FC = () => {
                 <div className="flex items-center">
                   <span className="text-2xl mr-3">✅</span>
                   <div>
-                    <h4 className="font-semibold text-green-800 text-sm">System Healthy</h4>
-                    <p className="text-xs text-green-700 mt-1">All services operational</p>
+                    <h4 className="font-semibold text-green-800 text-sm">
+                      System Healthy
+                    </h4>
+                    <p className="text-xs text-green-700 mt-1">
+                      All services operational
+                    </p>
                   </div>
                 </div>
               </div>
@@ -618,8 +741,12 @@ const CoordinatorDashboard: React.FC = () => {
                 <div className="flex items-center">
                   <span className="text-2xl mr-3">📅</span>
                   <div>
-                    <h4 className="font-semibold text-blue-800 text-sm">Classes Today</h4>
-                    <p className="text-xs text-blue-700 mt-1">28 classes scheduled</p>
+                    <h4 className="font-semibold text-blue-800 text-sm">
+                      Classes Today
+                    </h4>
+                    <p className="text-xs text-blue-700 mt-1">
+                      28 classes scheduled
+                    </p>
                   </div>
                 </div>
               </div>
@@ -629,8 +756,12 @@ const CoordinatorDashboard: React.FC = () => {
                 <div className="flex items-center">
                   <span className="text-2xl mr-3">👤</span>
                   <div>
-                    <h4 className="font-semibold text-purple-800 text-sm">Active Now</h4>
-                    <p className="text-xs text-purple-700 mt-1">{stats.activeUsers} users online</p>
+                    <h4 className="font-semibold text-purple-800 text-sm">
+                      Active Now
+                    </h4>
+                    <p className="text-xs text-purple-700 mt-1">
+                      {stats.activeUsers} users online
+                    </p>
                   </div>
                 </div>
               </div>
@@ -639,19 +770,28 @@ const CoordinatorDashboard: React.FC = () => {
         </div>
 
         {/* Analytics & Charts Section - Modern Animated Graphs */}
-        <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center animate-fadeIn" style={{animationDelay: '0.6s'}}>
+        <h2
+          className="text-2xl font-bold text-gray-800 mb-6 flex items-center animate-fadeIn"
+          style={{ animationDelay: "0.6s" }}
+        >
           <span className="text-3xl mr-3">📊</span>
           Analytics Dashboard
         </h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5 md:gap-6 mb-6 sm:mb-8">
           {/* Attendance Trend Line Chart */}
-          <div className="bg-white rounded-2xl shadow-xl p-4 sm:p-5 md:p-6 hover:shadow-2xl transition-all duration-300 border-t-4 border-blue-500 animate-slideInUp" style={{animationDelay: '0.7s'}}>
+          <div
+            className="bg-white rounded-2xl shadow-xl p-4 sm:p-5 md:p-6 hover:shadow-2xl transition-all duration-300 border-t-4 border-blue-500 animate-slideInUp"
+            style={{ animationDelay: "0.7s" }}
+          >
             <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center">
               <span className="text-xl sm:text-2xl mr-2">📈</span>
               <span className="text-sm sm:text-base">Attendance Trends</span>
             </h3>
             <div className="h-[250px] sm:h-[280px] md:h-[300px]">
-              <Line data={attendanceTrendData} options={attendanceTrendOptions} />
+              <Line
+                data={attendanceTrendData}
+                options={attendanceTrendOptions}
+              />
             </div>
             <p className="text-xs sm:text-sm text-gray-600 mt-3 sm:mt-4 text-center">
               Weekly attendance performance overview
@@ -659,10 +799,15 @@ const CoordinatorDashboard: React.FC = () => {
           </div>
 
           {/* Department Distribution Doughnut Chart */}
-          <div className="bg-white rounded-2xl shadow-xl p-4 sm:p-5 md:p-6 hover:shadow-2xl transition-all duration-300 border-t-4 border-green-500 animate-slideInUp" style={{animationDelay: '0.8s'}}>
+          <div
+            className="bg-white rounded-2xl shadow-xl p-4 sm:p-5 md:p-6 hover:shadow-2xl transition-all duration-300 border-t-4 border-green-500 animate-slideInUp"
+            style={{ animationDelay: "0.8s" }}
+          >
             <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center">
               <span className="text-xl sm:text-2xl mr-2">🎯</span>
-              <span className="text-sm sm:text-base">Department Distribution</span>
+              <span className="text-sm sm:text-base">
+                Department Distribution
+              </span>
             </h3>
             <div className="h-[250px] sm:h-[280px] md:h-[300px]">
               <Doughnut data={departmentData} options={departmentOptions} />
@@ -673,7 +818,10 @@ const CoordinatorDashboard: React.FC = () => {
           </div>
 
           {/* Monthly Enrollment Bar Chart */}
-          <div className="bg-white rounded-2xl shadow-xl p-4 sm:p-5 md:p-6 hover:shadow-2xl transition-all duration-300 border-t-4 border-purple-500 animate-slideInUp lg:col-span-2 xl:col-span-1" style={{animationDelay: '0.9s'}}>
+          <div
+            className="bg-white rounded-2xl shadow-xl p-4 sm:p-5 md:p-6 hover:shadow-2xl transition-all duration-300 border-t-4 border-purple-500 animate-slideInUp lg:col-span-2 xl:col-span-1"
+            style={{ animationDelay: "0.9s" }}
+          >
             <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center">
               <span className="text-xl sm:text-2xl mr-2">📊</span>
               <span className="text-sm sm:text-base">Monthly Enrollment</span>
@@ -706,14 +854,14 @@ const CoordinatorDashboard: React.FC = () => {
               <button className="w-full text-left px-4 py-3 bg-gradient-to-r from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 text-blue-700 rounded-xl border border-blue-200 transition-all duration-200 hover:translate-x-1">
                 <span className="text-lg mr-2">�</span> View All Students
               </button>
-              <button 
-                onClick={() => history.push('/coordinator/student-enrollment')}
+              <button
+                onClick={() => history.push("/coordinator/student-enrollment")}
                 className="w-full text-left px-4 py-3 bg-gradient-to-r from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 text-blue-700 rounded-xl border border-blue-200 transition-all duration-200 hover:translate-x-1"
               >
                 <span className="text-lg mr-2">🎓</span> Student Enrollment
               </button>
-              <button 
-                onClick={() => history.push('/coordinator/smart-data-entry')}
+              <button
+                onClick={() => history.push("/coordinator/smart-data-entry")}
                 className="w-full text-left px-4 py-3 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white rounded-xl border border-transparent shadow-md transition-all duration-200 hover:translate-x-1 font-semibold"
               >
                 <span className="text-lg mr-2">✨</span> Smart Data Entry
@@ -766,32 +914,32 @@ const CoordinatorDashboard: React.FC = () => {
               Department Management
             </h3>
             <div className="space-y-2">
-              <button 
-                onClick={() => history.push('/departments')}
+              <button
+                onClick={() => history.push("/departments")}
                 className="w-full text-left px-4 py-3 bg-gradient-to-r from-orange-50 to-orange-100 hover:from-orange-100 hover:to-orange-200 text-orange-700 rounded-xl border border-orange-200 transition-all duration-200 hover:translate-x-1"
               >
                 <span className="text-lg mr-2">➕</span> Add Department
               </button>
-              <button 
-                onClick={() => history.push('/departments')}
+              <button
+                onClick={() => history.push("/departments")}
                 className="w-full text-left px-4 py-3 bg-gradient-to-r from-orange-50 to-orange-100 hover:from-orange-100 hover:to-orange-200 text-orange-700 rounded-xl border border-orange-200 transition-all duration-200 hover:translate-x-1"
               >
                 <span className="text-lg mr-2">📋</span> View Departments
               </button>
-              <button 
-                onClick={() => history.push('/departments')}
+              <button
+                onClick={() => history.push("/departments")}
                 className="w-full text-left px-4 py-3 bg-gradient-to-r from-orange-50 to-orange-100 hover:from-orange-100 hover:to-orange-200 text-orange-700 rounded-xl border border-orange-200 transition-all duration-200 hover:translate-x-1"
               >
                 <span className="text-lg mr-2">📚</span> Manage Semesters
               </button>
-              <button 
-                onClick={() => history.push('/departments')}
+              <button
+                onClick={() => history.push("/departments")}
                 className="w-full text-left px-4 py-3 bg-gradient-to-r from-orange-50 to-orange-100 hover:from-orange-100 hover:to-orange-200 text-orange-700 rounded-xl border border-orange-200 transition-all duration-200 hover:translate-x-1"
               >
                 <span className="text-lg mr-2">👥</span> Manage Sections
               </button>
-              <button 
-                onClick={() => history.push('/coordinator/student-enrollment')}
+              <button
+                onClick={() => history.push("/coordinator/student-enrollment")}
                 className="w-full text-left px-4 py-3 bg-gradient-to-r from-orange-50 to-orange-100 hover:from-orange-100 hover:to-orange-200 text-orange-700 rounded-xl border border-orange-200 transition-all duration-200 hover:translate-x-1"
               >
                 <span className="text-lg mr-2">🎯</span> Enroll to Sections
@@ -848,7 +996,9 @@ const CoordinatorDashboard: React.FC = () => {
             <div className="flex items-center p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200">
               <div className="w-4 h-4 bg-green-500 rounded-full mr-3 animate-pulse"></div>
               <div>
-                <p className="text-sm font-semibold text-gray-900">Backend API</p>
+                <p className="text-sm font-semibold text-gray-900">
+                  Backend API
+                </p>
                 <p className="text-xs text-green-600">Online • 99.9% uptime</p>
               </div>
             </div>
@@ -862,7 +1012,9 @@ const CoordinatorDashboard: React.FC = () => {
             <div className="flex items-center p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200">
               <div className="w-4 h-4 bg-green-500 rounded-full mr-3 animate-pulse"></div>
               <div>
-                <p className="text-sm font-semibold text-gray-900">Authentication</p>
+                <p className="text-sm font-semibold text-gray-900">
+                  Authentication
+                </p>
                 <p className="text-xs text-green-600">Active • JWT Secured</p>
               </div>
             </div>
