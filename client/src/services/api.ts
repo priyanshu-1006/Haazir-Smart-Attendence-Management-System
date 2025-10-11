@@ -1,6 +1,6 @@
 import axios from "axios";
 
-// API URL - defaults to port 5001 (server's default port)
+// API URL - defaults to port 5000 (server's default port)
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
 
 // Create axios instance
@@ -193,7 +193,7 @@ export const fetchAllStudents = async () => {
 };
 
 export const fetchAllTeachers = async () => {
-  const response = await api.get("/teachers_new");
+  const response = await api.get("/teachers");
   return response.data;
 };
 
@@ -299,7 +299,7 @@ export const deleteStudent = async (studentId: string) => {
 };
 
 export const deleteTeacher = async (teacherId: number) => {
-  const response = await api.delete(`/teachers_new/${teacherId}`);
+  const response = await api.delete(`/teachers/${teacherId}`);
   return response.data;
 };
 
@@ -325,7 +325,7 @@ export const updateTeacherProfile = async (
   teacherId: number | string,
   data: { name?: string; department_id?: number | string }
 ) => {
-  const response = await api.put(`/teachers_new/${teacherId}`, data);
+  const response = await api.put(`/teachers/${teacherId}`, data);
   return response.data;
 };
 
@@ -654,7 +654,7 @@ export const getStudentTimetable = fetchStudentTimetable;
 
 // Teacher-Course Management APIs
 export const getTeacherCourses = async (teacherId: string | number) => {
-  const response = await api.get(`/teachers_new/${teacherId}/courses`);
+  const response = await api.get(`/teachers/${teacherId}/courses`);
   return response.data;
 };
 
@@ -666,7 +666,7 @@ export const assignCoursesToTeacher = async (
     teacherId,
     courseIds,
   });
-  const response = await api.post(`/teachers_new/${teacherId}/courses`, {
+  const response = await api.post(`/teachers/${teacherId}/courses`, {
     courseIds,
   });
   return response.data;
@@ -677,13 +677,13 @@ export const removeCourseFromTeacher = async (
   courseId: string | number
 ) => {
   const response = await api.delete(
-    `/teachers_new/${teacherId}/courses/${courseId}`
+    `/teachers/${teacherId}/courses/${courseId}`
   );
   return response.data;
 };
 
 export const fetchTeachersByCourse = async (courseId: string | number) => {
-  const response = await api.get(`/teachers_new/course/${courseId}`);
+  const response = await api.get(`/teachers/course/${courseId}`);
   return response.data;
 };
 

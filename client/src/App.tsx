@@ -17,6 +17,7 @@ import Login from "./pages/Login";
 import EnhancedLogin from "./pages/EnhancedLogin";
 import Layout from "./components/common/Layout";
 import Dashboard from "./components/coordinator/Dashboard";
+import CoordinatorDashboard from "./pages/CoordinatorDashboard";
 import StudentManagement from "./components/coordinator/StudentManagement";
 import EnhancedStudentManagement from "./components/coordinator/EnhancedStudentManagement";
 import StudentProfileDashboard from "./components/coordinator/StudentProfileDashboard";
@@ -130,7 +131,7 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({
 
 // Route configurations by role for better organization
 const coordinatorRoutes = [
-  { path: "/coordinator", component: Dashboard, exact: true },
+  { path: "/coordinator", component: CoordinatorDashboard, exact: true },
   { path: "/students", component: EnhancedStudentManagement },
   { path: "/students/:id", component: StudentProfileDashboard },
   { path: "/teachers", component: TeacherManagement },
