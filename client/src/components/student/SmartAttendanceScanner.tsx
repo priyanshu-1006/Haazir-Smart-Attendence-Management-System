@@ -1,6 +1,5 @@
-
 import React, { useState, useRef, useEffect } from "react";
-import * as faceapi from "face-api.js";
+import * as faceapi from "@vladmandic/face-api";
 import * as tf from "@tensorflow/tfjs";
 import "@tensorflow/tfjs-backend-webgl";
 import {
@@ -42,7 +41,8 @@ const SmartAttendanceScanner: React.FC<SmartAttendanceScannerProps> = ({
     const checkFaceEnrollment = async () => {
       try {
         const token = localStorage.getItem("token");
-        const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+        const API_URL =
+          process.env.REACT_APP_API_URL || "http://localhost:5000/api";
         const response = await fetch(
           `${API_URL}/smart-attendance/student/${studentId}/faces`,
           {
@@ -109,17 +109,19 @@ const SmartAttendanceScanner: React.FC<SmartAttendanceScannerProps> = ({
         // Initialize TensorFlow.js backend first
         await tf.ready();
         console.log("TensorFlow.js backend initialized");
-        
-        // Load face-api models
+
+        // Load improved face-api models with better options
         const MODEL_URL = process.env.PUBLIC_URL + "/models";
         await Promise.all([
           faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
           faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
           faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
         ]);
-        
+
         setModelsLoaded(true);
-        console.log("Face-api models loaded successfully");
+        console.log(
+          "@vladmandic/face-api models loaded successfully - Better accuracy enabled!"
+        );
       } catch (err) {
         console.error("Error loading face-api models:", err);
         setError("Failed to load face detection models");
@@ -320,18 +322,16 @@ const SmartAttendanceScanner: React.FC<SmartAttendanceScannerProps> = ({
 
     try {
       const token = localStorage.getItem("token");
-      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-      const response = await fetch(
-        `${API_URL}/smart-attendance/validate-qr`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ qrToken }),
-        }
-      );
+      const API_URL =
+        process.env.REACT_APP_API_URL || "http://localhost:5000/api";
+      const response = await fetch(`${API_URL}/smart-attendance/validate-qr`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ qrToken }),
+      });
 
       const data = await response.json();
 
@@ -390,9 +390,15 @@ const SmartAttendanceScanner: React.FC<SmartAttendanceScannerProps> = ({
         img.onload = resolve;
       });
 
-      // Detect face and get descriptor
+      // Detect face and get descriptor with improved options
       const detection = await faceapi
-        .detectSingleFace(img, new faceapi.TinyFaceDetectorOptions())
+        .detectSingleFace(
+          img,
+          new faceapi.TinyFaceDetectorOptions({
+            inputSize: 416, // Increased from default 224 for better accuracy
+            scoreThreshold: 0.5, // Balanced threshold
+          })
+        )
         .withFaceLandmarks()
         .withFaceDescriptor();
 
@@ -406,25 +412,23 @@ const SmartAttendanceScanner: React.FC<SmartAttendanceScannerProps> = ({
 
       // Send to backend for verification
       const token = localStorage.getItem("token");
-      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-      const response = await fetch(
-        `${API_URL}/smart-attendance/verify-face`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            sessionId: sessionData.sessionId,
-            studentId: studentId,
-            faceDescriptor: Array.from(detection.descriptor),
-            faceImageBase64: imageSrc,
-            locationLat: location.lat,
-            locationLng: location.lng,
-          }),
-        }
-      );
+      const API_URL =
+        process.env.REACT_APP_API_URL || "http://localhost:5000/api";
+      const response = await fetch(`${API_URL}/smart-attendance/verify-face`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          sessionId: sessionData.sessionId,
+          studentId: studentId,
+          faceDescriptor: Array.from(detection.descriptor),
+          faceImageBase64: imageSrc,
+          locationLat: location.lat,
+          locationLng: location.lng,
+        }),
+      });
 
       const data = await response.json();
 
