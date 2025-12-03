@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import * as faceapi from "face-api.js";
+import * as faceapi from "@vladmandic/face-api";
 import * as tf from "@tensorflow/tfjs";
 import "@tensorflow/tfjs-backend-webgl";
 import Webcam from "react-webcam";
@@ -43,17 +43,17 @@ const ClassPhotoCapture: React.FC<ClassPhotoCaptureProps> = ({
         // Initialize TensorFlow.js backend first
         await tf.ready();
         console.log("TensorFlow.js backend initialized");
-        
-        // Load face-api models
+
+        // Load improved face-api models
         const MODEL_URL = process.env.PUBLIC_URL + "/models";
         await Promise.all([
           faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
           faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
           faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
         ]);
-        
+
         setModelsLoaded(true);
-        console.log("Face-api models loaded successfully");
+        console.log("@vladmandic/face-api models loaded successfully");
       } catch (err) {
         console.error("Error loading face-api models:", err);
         setError(
@@ -67,7 +67,13 @@ const ClassPhotoCapture: React.FC<ClassPhotoCaptureProps> = ({
   const detectFacesInImage = async (imageElement: HTMLImageElement) => {
     try {
       const detections = await faceapi
-        .detectAllFaces(imageElement, new faceapi.TinyFaceDetectorOptions())
+        .detectAllFaces(
+          imageElement,
+          new faceapi.TinyFaceDetectorOptions({
+            inputSize: 416, // Higher resolution for detecting multiple faces in class photo
+            scoreThreshold: 0.5,
+          })
+        )
         .withFaceLandmarks()
         .withFaceDescriptors();
 
@@ -162,7 +168,9 @@ const ClassPhotoCapture: React.FC<ClassPhotoCaptureProps> = ({
       // Send to backend for matching
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `${process.env.REACT_APP_API_URL || 'http://localhost:5000/api'}/smart-attendance/process-class-photo`,
+        `${
+          process.env.REACT_APP_API_URL || "http://localhost:5000/api"
+        }/smart-attendance/process-class-photo`,
         {
           method: "POST",
           headers: {
