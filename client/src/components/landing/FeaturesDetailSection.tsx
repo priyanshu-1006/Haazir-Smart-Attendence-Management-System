@@ -41,7 +41,7 @@ const FeaturesDetailSection: React.FC = () => {
       ],
       stats: [
         { label: 'Recognition Speed', value: '< 0.5s' },
-        { label: 'Accuracy Rate', value: '99.9%' },
+        { label: 'Accuracy Rate', value: '98%' },
         { label: 'Students/Minute', value: '120+' },
       ],
     },
